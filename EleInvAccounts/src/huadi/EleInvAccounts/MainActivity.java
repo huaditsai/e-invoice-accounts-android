@@ -13,9 +13,17 @@ import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.ImageButton;
+import android.widget.TextView;
 
 public class MainActivity extends Activity
 {
+	//UI宣告
+	public ImageButton btn_account, btn_invoice, btn_social, btn_setting;
+	public TextView text_account, text_invoice, text_social, text_setting;
+	
 	final static String appID = "YOUR_EINVOICE_APP_ID";
 //	String[] method = new String[]
 //		{
@@ -32,14 +40,74 @@ public class MainActivity extends Activity
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
+		
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
 		//Log.e("id", GetUUID());
 		
 		new InvDetails().execute("QRCode","VX20070106","","2013/07/13","g7Y1WPAG8PE1PbEIebrTQg==","01802112",GetUUID(),"9035",appID);
+		
+		setUI(); //設定UI
 	}
 
+	private void setUI() {
+		// TODO Auto-generated method stub
+		text_account = (TextView)findViewById(R.id.text_1);
+		text_invoice = (TextView)findViewById(R.id.text_2);
+		text_social = (TextView)findViewById(R.id.text_3);
+		text_setting = (TextView)findViewById(R.id.text_4);
+		btn_account = (ImageButton)findViewById(R.id.btn_1);
+		btn_invoice = (ImageButton)findViewById(R.id.btn_2);
+		btn_social = (ImageButton)findViewById(R.id.btn_3);
+		btn_setting = (ImageButton)findViewById(R.id.btn_4);
+		
+		text_account.setText("記帳");
+		text_invoice.setText("發票管理");
+		text_social.setText("成就");
+		text_setting.setText("設定");
+		
+		btn_account.setOnClickListener(new OnClickListener(){
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				btn_account.setX(btn_account.getX()+5);
+				btn_account.setY(btn_account.getY()+5);
+				text_account.setX(text_account.getX()+5);
+				text_account.setY(text_account.getY()+5);
+			}});
+		
+		btn_invoice.setOnClickListener(new OnClickListener(){
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				btn_invoice.setX(btn_invoice.getX()+5);
+				btn_invoice.setY(btn_invoice.getY()+5);
+				text_invoice.setX(text_invoice.getX()+5);
+				text_invoice.setY(text_invoice.getY()+5);
+			}});
+		
+		btn_social.setOnClickListener(new OnClickListener(){
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				btn_social.setX(btn_social.getX()+5);
+				btn_social.setY(btn_social.getY()+5);
+				text_social.setX(text_social.getX()+5);
+				text_social.setY(text_social.getY()+5);
+			}});
+		
+		btn_setting.setOnClickListener(new OnClickListener(){
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				btn_setting.setX(btn_setting.getX()+5);
+				btn_setting.setY(btn_setting.getY()+5);
+				text_setting.setX(text_setting.getX()+5);
+				text_setting.setY(text_setting.getY()+5);
+			}});
+	}
+	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu)
 	{

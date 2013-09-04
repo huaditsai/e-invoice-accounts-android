@@ -124,7 +124,7 @@ public class InvDetails extends AsyncTask<String, String, String> // <傳入參數, 
 		}
 		catch (Exception e)
 		{
-			Log.e("E", e.toString());
+			Log.e("InvDetails", e.toString());
 		}
 		
 		return null;

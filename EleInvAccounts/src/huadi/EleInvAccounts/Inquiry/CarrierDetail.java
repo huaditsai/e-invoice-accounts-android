@@ -115,7 +115,7 @@ public class CarrierDetail extends AsyncTask<String, String, String> // <¶Ç¤J°Ñ¼
 		}
 		catch (Exception e)
 		{
-			Log.e("E", e.toString());
+			Log.e("CarrierDetail", e.toString());
 		}
 		
 		return null;

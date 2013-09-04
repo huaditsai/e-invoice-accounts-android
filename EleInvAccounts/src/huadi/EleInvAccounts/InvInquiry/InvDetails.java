@@ -1,13 +1,25 @@
 package huadi.EleInvAccounts.InvInquiry;
 
+import huadi.EleInvAccounts.MySSLSocketFactory;
+
 import java.text.MessageFormat;
+
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpVersion;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.conn.ClientConnectionManager;
+import org.apache.http.conn.scheme.PlainSocketFactory;
+import org.apache.http.conn.scheme.Scheme;
+import org.apache.http.conn.scheme.SchemeRegistry;
+import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
+import org.apache.http.params.HttpProtocolParams;
+import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -46,14 +58,13 @@ public class InvDetails extends AsyncTask<String, String, String> // <傳入參數, 
 		{
 			HttpParams httpParameters = new BasicHttpParams();
 			HttpConnectionParams.setConnectionTimeout(httpParameters, 3000);
-			HttpClient httpClient = new DefaultHttpClient(httpParameters);
+			HttpClient httpClient = MySSLSocketFactory.createMyHttpClient(); //new DefaultHttpClient(httpParameters);
 
 			HttpResponse httpResponse = null;
 			httpResponse = httpClient.execute(get);
 
 			if (httpResponse.getStatusLine().getStatusCode() == 200)//判斷網路連接是否成功
 			{
-
 				strResult = EntityUtils.toString(httpResponse.getEntity()); //抓下來的資料
 			
 				JSONObject jsonObject = new JSONObject(strResult); //{}為JSONObject
@@ -61,27 +72,35 @@ public class InvDetails extends AsyncTask<String, String, String> // <傳入參數, 
 				String v =  jsonObject.getString("v"); //版本號碼
 				String code =  jsonObject.getString("code"); //訊息回應碼
 				String msg =  jsonObject.getString("msg"); //系統回應訊息
-				String invNum =  jsonObject.getString("invNum"); //發票號碼
-				String invDate =  jsonObject.getString("invDate"); //發票開立日期
-				String sellerName =  jsonObject.getString("sellerName"); //賣方名稱
-				String invStatus =  jsonObject.getString("invStatus"); //發票狀態
-				String invPeriod =  jsonObject.getString("invPeriod"); //對獎發票期別
 				
-				JSONArray detailObject = jsonObject.getJSONArray("details"); //[]為JSONArray
-				for(int i = 0; i < detailObject.length(); i++)
+				try
 				{
-					String rowNum = detailObject.getJSONObject(i).getString("rowNum"); //明細編號
-					String description = detailObject.getJSONObject(i).getString("description"); //品名
-					String quantity = detailObject.getJSONObject(i).getString("quantity"); //數量
-					String unitPrice = detailObject.getJSONObject(i).getString("unitPrice"); //單價
-					String amount = detailObject.getJSONObject(i).getString("amount"); //小計
+					String invNum =  jsonObject.getString("invNum"); //發票號碼
+					String invDate =  jsonObject.getString("invDate"); //發票開立日期
+					String sellerName =  jsonObject.getString("sellerName"); //賣方名稱
+					String invStatus =  jsonObject.getString("invStatus"); //發票狀態
+					String invPeriod =  jsonObject.getString("invPeriod"); //對獎發票期別
+					
+					JSONArray detailObject = jsonObject.getJSONArray("details"); //[]為JSONArray
+					for(int i = 0; i < detailObject.length(); i++)
+					{
+						String rowNum = detailObject.getJSONObject(i).getString("rowNum"); //明細編號
+						String description = detailObject.getJSONObject(i).getString("description"); //品名
+						String quantity = detailObject.getJSONObject(i).getString("quantity"); //數量
+						String unitPrice = detailObject.getJSONObject(i).getString("unitPrice"); //單價
+						String amount = detailObject.getJSONObject(i).getString("amount"); //小計
+					}
 				}
-			}
-			
+				catch(Exception e)
+				{
+					Log.e("v","版本, " + v + "訊息, " + msg + "回應碼, " + code);
+				}			
+				
+			}			
 		}
 		catch (Exception e)
 		{
-			Log.e("Exception", e.toString());
+			Log.e("E", e.toString());
 		}
 		
 		return null;
@@ -99,5 +118,19 @@ public class InvDetails extends AsyncTask<String, String, String> // <傳入參數, 
 		super.onProgressUpdate(params);
 	}
 	
+	public static HttpClient createHttpClient()
+	{
+	    HttpParams params = new BasicHttpParams();
+	    HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
+	    HttpProtocolParams.setContentCharset(params, HTTP.DEFAULT_CONTENT_CHARSET);
+	    HttpProtocolParams.setUseExpectContinue(params, true);
+
+	    SchemeRegistry schReg = new SchemeRegistry();
+	    schReg.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
+	    schReg.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443));
+	    ClientConnectionManager conMgr = new ThreadSafeClientConnManager(params, schReg);
+
+	    return new DefaultHttpClient(conMgr, params);
+	}
 
 }

@@ -1,5 +1,7 @@
 package huadi.EleInvAccounts;
 
+import huadi.EleInvAccounts.InvInquiry.InvDetails;
+
 import java.util.UUID;
 
 import android.app.Activity;
@@ -13,6 +15,7 @@ import android.view.Menu;
 
 public class MainActivity extends Activity
 {
+	final static String appID = "";
 	String[] method = new String[]
 		{
 			"/PB2CAPIVAN/invapp/InvApp", //琩高い贱祇布腹絏睲虫, 琩高祇布繷, 灿
@@ -31,12 +34,12 @@ public class MainActivity extends Activity
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
-		Log.e("id", GetUUID());
+		//Log.e("id", GetUUID());
 		
-		Intent intent = new Intent(MainActivity.this, CaptureActivity.class);
-		startActivity(intent);
+		//Intent intent = new Intent(MainActivity.this, CaptureActivity.class);
+		//startActivity(intent);
 		
-		//new InvDetails().execute("");
+		new InvDetails().execute("QRCode","AB12345678","","2012/07/11","3966","12345678",GetUUID(),"0000",appID);
 	}
 
 	@Override

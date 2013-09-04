@@ -40,13 +40,12 @@ public class MainActivity extends Activity
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
-		
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
 		//Log.e("id", GetUUID());
 		
-		new InvDetails().execute("QRCode","VX20070106","","2013/07/13","g7Y1WPAG8PE1PbEIebrTQg==","01802112",GetUUID(),"9035",appID);
+		//new InvDetails().execute("QRCode","VX20070106","","2013/07/13","g7Y1WPAG8PE1PbEIebrTQg==","01802112",GetUUID(),"9035",appID);
 		
 		setUI(); //設定UI
 	}
@@ -123,6 +122,8 @@ public class MainActivity extends Activity
 		{
 			case R.id.action_settings:
 				Intent intent = new Intent(MainActivity.this, CaptureActivity.class);
+				intent.putExtra("UUID", GetUUID());
+				intent.putExtra("appID", appID);
 				startActivity(intent);
 				//new AlertDialog.Builder(this).setTitle("關於").setMessage("huadi73@gmail.com").show();
 				return true;

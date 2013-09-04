@@ -110,7 +110,7 @@ public class InvDetails extends AsyncTask<String, String, String> // <傳入參數, 
 	@Override
 	protected void onPostExecute(String result)
 	{
-		super.onPostExecute(result);		
+		super.onPostExecute(result);
 	}
 
 	@Override

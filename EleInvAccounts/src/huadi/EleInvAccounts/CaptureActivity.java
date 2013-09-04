@@ -1,5 +1,7 @@
 package huadi.EleInvAccounts;
 
+import huadi.EleInvAccounts.Inquiry.InvDetails;
+
 import java.io.IOException;
 import java.util.Vector;
 
@@ -8,6 +10,7 @@ import zxing.decoding.CaptureActivityHandler;
 import zxing.decoding.InactivityTimer;
 import zxing.view.ViewfinderView;
 import android.app.Activity;
+import android.content.Intent;
 import android.content.res.AssetFileDescriptor;
 import android.graphics.Bitmap;
 import android.media.AudioManager;
@@ -27,6 +30,7 @@ import com.google.zxing.Result;
 
 public class CaptureActivity extends Activity implements Callback
 {
+	String appID, UUID;
 
 	private CaptureActivityHandler handler;
 	private ViewfinderView viewfinderView;
@@ -46,6 +50,11 @@ public class CaptureActivity extends Activity implements Callback
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_scanner);
+		
+		Intent intent = getIntent();
+		appID = intent.getStringExtra("appID");
+		UUID = intent.getStringExtra("UUID");
+		
 		// CameraManager
 		CameraManager.init(getApplication());
 
@@ -172,48 +181,49 @@ public class CaptureActivity extends Activity implements Callback
 		//txtResult.setText(obj.getBarcodeFormat().toString() + ":" + obj.getText()); // 顯示結果
 	}
 
-	private void parseInvoice(String format, String content) //分析條碼資訊
+	private void parseInvoice(String type, String content) //分析條碼資訊
 	{
-		if (format.equals("QR_CODE") && content.matches("^[A-Za-z]{2}[0-9]{8}[0-9]{3}[0-9]{2}[0-9]{2}[0-9]{4}.*"))
+		if (type.equals("QR_CODE") && content.matches("^[A-Za-z]{2}[0-9]{8}[0-9]{3}[0-9]{2}[0-9]{2}[0-9]{4}.*"))
 		{
-			format = "QRCode";
+			type = "QRCode";
 			
-			String code = content.substring(0, 10); //發票號碼(含英文)
+			String invNum = content.substring(0, 10); //發票號碼(含英文)
 
 			int year = Integer.parseInt(content.substring(10, 13)) + 1911; //民國(3)(轉西元)
 			String month = content.substring(13, 15);
 			String day = content.substring(15, 17);
 			
-			String date = year + "/" + month + "/" + day;
+			String invDate = year + "/" + month + "/" + day;
 
-			int randomCode = Integer.parseInt(content.substring(17, 21)); //發票上隨機碼四碼
+			String randomCode = content.substring(17, 21); //發票上隨機碼四碼
 			int sales = Integer.parseInt(content.substring(21, 29), 16); //未稅之金額8碼(16轉10進位)
 			int totlal = Integer.parseInt(content.substring(29, 37), 16); //含稅之金額8碼(16轉10進位)
-			String purchaserUniformNumbers = content.substring(37, 45); //買方統一編號 (一般消費者則以 00000000)
-			String vendorUniformNumbers = content.substring(45, 53); //賣方統一編號
-			String encryptedAuthentication = content.substring(53, 77); //加密驗證資訊
+			String purchaserID = content.substring(37, 45); //買方統一編號 (一般消費者則以 00000000)
+			String sellerID = content.substring(45, 53); //商家統一編號
+			String encrypt = content.substring(53, 77); //加密驗證資訊
+			
+			new InvDetails().execute(type, invNum, "", invDate, encrypt, sellerID, UUID, randomCode, appID);
 
 			//Log.e("",format + "\n" + code + "\n" + date + "\n" + encryptedAuthentication + "\n" + vendorUniformNumbers + "\n" + randomCode);
-			txtResult.setText(format + "\n" + code + "\n" + date + "\n" + encryptedAuthentication + "\n" + vendorUniformNumbers + "\n" + randomCode);
+			//txtResult.setText(format + "\n" + code + "\n" + date + "\n" + encryptedAuthentication + "\n" + vendorUniformNumbers + "\n" + randomCode);
 
-			//			if (db.insertInovice(year, month, number, code) > 0)
-			//				Toast.makeText(Scanner.this, code + " 已新增", Toast.LENGTH_SHORT).show();
 		}
 		else if (content.matches("^[0-9]{3}[0-9]{2}[A-Za-z]{2}[0-9]{8}[0-9]{4}.*"))
 		{
-			format = "Barcode";
+			type = "Barcode";
 			
-			int year = Integer.parseInt(content.substring(0, 3)) + 1911; //民國(3)(轉西元)
+			String invTerm = content.substring(0, 5); //發票期別(民國年月)
+			String year = content.substring(0, 3); //民國(3)(轉西元)
 			String month = content.substring(3, 5); //月(2)
-			String date = year + "/" + month;
+			String invDate = year + "/" + month;
 				
-			String code = content.substring(5, 15);
-			int randomCode = Integer.parseInt(content.substring(15, 19)); //隨機碼(4)
+			String invNum = content.substring(5, 15);
+			String randomCode = content.substring(15, 19); //隨機碼(4)
 
-			txtResult.setText(format + "\n" + code + "\n" + date + "\n" + randomCode);
+			//txtResult.setText(format + "\n" + code + "\n" + date + "\n" + randomCode);
+			
+			new InvDetails().execute(type, invNum, invTerm, invDate, "", "", UUID, randomCode, appID);
 
-			//			if (db.insertInovice(year, month, number, code) > 0)
-			//				Toast.makeText(Scanner.this, code + " 已新增", Toast.LENGTH_SHORT).show();
 		}
 	}
 

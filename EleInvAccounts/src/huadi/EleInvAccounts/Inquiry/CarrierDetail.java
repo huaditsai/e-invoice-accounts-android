@@ -6,52 +6,42 @@ import huadi.EleInvAccounts.MySSLSocketFactory;
 import java.text.MessageFormat;
 
 import org.apache.http.HttpResponse;
-import org.apache.http.HttpVersion;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.conn.ClientConnectionManager;
-import org.apache.http.conn.scheme.PlainSocketFactory;
-import org.apache.http.conn.scheme.Scheme;
-import org.apache.http.conn.scheme.SchemeRegistry;
-import org.apache.http.conn.ssl.SSLSocketFactory;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
-import org.apache.http.params.HttpProtocolParams;
-import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.util.Log;
 
-public class InvDetails extends AsyncTask<String, String, String> // <傳入參數, 處理中更新介面參數, 處理後傳出參數>
+public class CarrierDetail extends AsyncTask<String, String, String> // <傳入參數, 處理中更新介面參數, 處理後傳出參數>
 {
-	//電子發票明細
+	//載具明細
 	private DBHelper dbHelper;
 	private SQLiteDatabase db;
 	
-	private final String detailUrl = "https://www.einvoice.nat.gov.tw/PB2CAPIVAN/invapp/InvApp?"
-		+ "version=0.2"
-		+ "&type={0}" //QRCode, Barcode
-		+ "&invNum={1}" //發票號碼
-		+ "&action=qryInvDetail"
-		+ "&generation=V2"
-		+ "&invTerm={2}" //yyyMM, Type為Barcode時為必填
-		+ "&invDate={3}" //發票開立日期 (yyyy/MM/dd)
-		+ "&encrypt={4}" //發票檢驗碼, Type為QRCode時為必填
-		+ "&sellerID={5}" //商家統編, Type為QRCode時為必填
-		+ "&UUID={6}"
-		+ "&randomNumber={7}" //4位隨機碼
-		+ "&appID={8}";
+	private final String detailUrl = "https://www.einvoice.nat.gov.tw/PB2CAPIVAN/invServ/InvServ?"
+		+ "version=0.1"
+		+ "&cardType={0}" //卡別
+		+ "&cardNo={1}" //卡片隱碼
+		+ "&expTimeStamp={2}" //有效存續時間戳記
+		+ "&action=carrierInvDetail"
+		+ "&timeStamp={3}" //時間戳記
+		+ "&invNum={4}" //發票號碼
+		+ "&invDate={5}" //發票開立日期 (yyyy/MM/dd)
+		+ "&uuid={6}" //UUID
+		+ "&sellerName={7}" //開立賣方名稱(非必填)
+		+ "&amount={8}" //金額(非必填)
+		+ "&appID={9}" 
+		+ "&cardEncrypt={10}"; //卡片檢驗碼(手機條碼驗證碼)
 
-	public InvDetails(Context context)
+	public CarrierDetail(Context context)
 	{
 		dbHelper = new DBHelper(context);
 		db = dbHelper.getWritableDatabase(); //讓db可寫入
@@ -64,8 +54,7 @@ public class InvDetails extends AsyncTask<String, String, String> // <傳入參數, 
 			return null;
 		
 		String url = MessageFormat.format(detailUrl, params[0], params[1], params[2], params[3], params[4]
-													, params[5], params[6], params[7], params[8]);
-		String invTotalCost = params[9]; //一張發票總金額
+													, params[5], params[6], params[7], params[8], params[9], params[10]);
 		
 		HttpGet get = new HttpGet(url);
 		String strResult = "";
@@ -93,16 +82,18 @@ public class InvDetails extends AsyncTask<String, String, String> // <傳入參數, 
 				try
 				{
 //					ContentValues InvoiceCV = new ContentValues();
-//					InvoiceCV.put("invoice_no", params[1]); //發票編號
-//					InvoiceCV.put("invoice_month", params[3].split("/")[1]); //發票月份
-//					InvoiceCV.put("invoice_cost", invTotalCost); //消費金額
+//					InvoiceCV.put("invoice_no", params[4]); //發票編號
+//					InvoiceCV.put("invoice_month", params[5].split("/")[1]); //發票月份
+//					InvoiceCV.put("invoice_cost", params[8]); //消費金額
 //					db.insert("Invoice", null, InvoiceCV); //新增一筆至 Invoice
 					
 					String invNum =  jsonObject.getString("invNum"); //發票號碼
 					String invDate =  jsonObject.getString("invDate"); //發票開立日期(yyyyMMdd)
 					String sellerName =  jsonObject.getString("sellerName"); //賣方名稱
+					
+					String totalAmount =  jsonObject.getString("amount"); //總金額
+					
 					String invStatus =  jsonObject.getString("invStatus"); //發票狀態(已確認)
-					String invPeriod =  jsonObject.getString("invPeriod"); //對獎發票期別(民國年月)
 					
 					JSONArray detailObject = jsonObject.getJSONArray("details"); //[]為JSONArray
 					for(int i = 0; i < detailObject.length(); i++)

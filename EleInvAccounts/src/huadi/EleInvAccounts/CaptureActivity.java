@@ -18,12 +18,14 @@ import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.os.Vibrator;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceHolder.Callback;
 import android.view.SurfaceView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.Result;
@@ -50,11 +52,11 @@ public class CaptureActivity extends Activity implements Callback
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_scanner);
-		
+
 		Intent intent = getIntent();
 		appID = intent.getStringExtra("appID");
 		UUID = intent.getStringExtra("UUID");
-		
+
 		// CameraManager
 		CameraManager.init(getApplication());
 
@@ -186,13 +188,13 @@ public class CaptureActivity extends Activity implements Callback
 		if (type.equals("QR_CODE") && content.matches("^[A-Za-z]{2}[0-9]{8}[0-9]{3}[0-9]{2}[0-9]{2}[0-9]{4}.*"))
 		{
 			type = "QRCode";
-			
+
 			String invNum = content.substring(0, 10); //發票號碼(含英文)
 
 			int year = Integer.parseInt(content.substring(10, 13)) + 1911; //民國(3)(轉西元)
 			String month = content.substring(13, 15);
 			String day = content.substring(15, 17);
-			
+
 			String invDate = year + "/" + month + "/" + day;
 
 			String randomCode = content.substring(17, 21); //發票上隨機碼四碼
@@ -201,30 +203,36 @@ public class CaptureActivity extends Activity implements Callback
 			String purchaserID = content.substring(37, 45); //買方統一編號 (一般消費者則以 00000000)
 			String sellerID = content.substring(45, 53); //商家統一編號
 			String encrypt = content.substring(53, 77); //加密驗證資訊
-			
-			new InvDetails().execute(type, invNum, "", invDate, encrypt, sellerID, UUID, randomCode, appID);
+
+			new InvDetails(CaptureActivity.this).execute(type, invNum, "", invDate, encrypt, sellerID, UUID, randomCode, appID, "" + totlal);			
 
 			//Log.e("",format + "\n" + code + "\n" + date + "\n" + encryptedAuthentication + "\n" + vendorUniformNumbers + "\n" + randomCode);
 			//txtResult.setText(format + "\n" + code + "\n" + date + "\n" + encryptedAuthentication + "\n" + vendorUniformNumbers + "\n" + randomCode);
 
 		}
-		else if (content.matches("^[0-9]{3}[0-9]{2}[A-Za-z]{2}[0-9]{8}[0-9]{4}.*"))
+		else if (type.equals("CODE_39") && content.matches("^[0-9]{3}[0-9]{2}[A-Za-z]{2}[0-9]{8}[0-9]{4}.*"))
 		{
 			type = "Barcode";
-			
+
 			String invTerm = content.substring(0, 5); //發票期別(民國年月)
 			String year = content.substring(0, 3); //民國(3)(轉西元)
 			String month = content.substring(3, 5); //月(2)
 			String invDate = year + "/" + month;
-				
+
 			String invNum = content.substring(5, 15);
 			String randomCode = content.substring(15, 19); //隨機碼(4)
 
 			//txtResult.setText(format + "\n" + code + "\n" + date + "\n" + randomCode);
-			
-			new InvDetails().execute(type, invNum, invTerm, invDate, "", "", UUID, randomCode, appID);
 
+			new InvDetails(CaptureActivity.this).execute(type, invNum, invTerm, invDate, "", "", UUID, randomCode, appID);
 		}
+		else
+		{
+			Toast.makeText(CaptureActivity.this, "非發票條碼", Toast.LENGTH_LONG).show();
+		}
+		
+		Intent intent = new Intent(CaptureActivity.this, MainActivity.class);
+		startActivity(intent);
 	}
 
 	private void initBeepSound() //掃到了就叫一聲

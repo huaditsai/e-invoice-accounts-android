@@ -40,7 +40,8 @@ import zxing.camera.CameraManager;
  * 
  * @author dswitkin@google.com (Daniel Switkin)
  */
-public final class ViewfinderView extends View {
+public final class ViewfinderView extends View
+{
 
 	private static final int[] SCANNER_ALPHA = { 0, 64, 128, 192, 255, 192, 128, 64 };
 	private static final long ANIMATION_DELAY = 100L;
@@ -58,7 +59,8 @@ public final class ViewfinderView extends View {
 	private Collection<ResultPoint> lastPossibleResultPoints;
 
 	// This constructor is used when the class is built from an XML resource.
-	public ViewfinderView(Context context, AttributeSet attrs) {
+	public ViewfinderView(Context context, AttributeSet attrs)
+	{
 		super(context, attrs);
 
 		// Initialize these once for performance rather than calling them every
@@ -75,9 +77,11 @@ public final class ViewfinderView extends View {
 	}
 
 	@Override
-	public void onDraw(Canvas canvas) {
+	public void onDraw(Canvas canvas)
+	{
 		Rect frame = CameraManager.get().getFramingRect();
-		if (frame == null) {
+		if (frame == null)
+		{
 			return;
 		}
 		int width = canvas.getWidth();
@@ -90,11 +94,14 @@ public final class ViewfinderView extends View {
 		canvas.drawRect(frame.right + 1, frame.top, width, frame.bottom + 1, paint);
 		canvas.drawRect(0, frame.bottom + 1, width, height, paint);
 
-		if (resultBitmap != null) {
+		if (resultBitmap != null)
+		{
 			// Draw the opaque result bitmap over the scanning rectangle
 			paint.setAlpha(OPAQUE);
 			canvas.drawBitmap(resultBitmap, frame.left, frame.top, paint);
-		} else {
+		}
+		else
+		{
 
 			// Draw a two pixel solid black border inside the framing rect
 			paint.setColor(frameColor);
@@ -113,21 +120,27 @@ public final class ViewfinderView extends View {
 
 			Collection<ResultPoint> currentPossible = possibleResultPoints;
 			Collection<ResultPoint> currentLast = lastPossibleResultPoints;
-			if (currentPossible.isEmpty()) {
+			if (currentPossible.isEmpty())
+			{
 				lastPossibleResultPoints = null;
-			} else {
+			}
+			else
+			{
 				possibleResultPoints = new HashSet<ResultPoint>(5);
 				lastPossibleResultPoints = currentPossible;
 				paint.setAlpha(OPAQUE);
 				paint.setColor(resultPointColor);
-				for (ResultPoint point : currentPossible) {
+				for (ResultPoint point : currentPossible)
+				{
 					canvas.drawCircle(frame.left + point.getX(), frame.top + point.getY(), 6.0f, paint);
 				}
 			}
-			if (currentLast != null) {
+			if (currentLast != null)
+			{
 				paint.setAlpha(OPAQUE / 2);
 				paint.setColor(resultPointColor);
-				for (ResultPoint point : currentLast) {
+				for (ResultPoint point : currentLast)
+				{
 					canvas.drawCircle(frame.left + point.getX(), frame.top + point.getY(), 3.0f, paint);
 				}
 			}
@@ -139,7 +152,8 @@ public final class ViewfinderView extends View {
 		}
 	}
 
-	public void drawViewfinder() {
+	public void drawViewfinder()
+	{
 		resultBitmap = null;
 		invalidate();
 	}
@@ -151,12 +165,14 @@ public final class ViewfinderView extends View {
 	 * @param barcode
 	 *            An image of the decoded barcode.
 	 */
-	public void drawResultBitmap(Bitmap barcode) {
+	public void drawResultBitmap(Bitmap barcode)
+	{
 		resultBitmap = barcode;
 		invalidate();
 	}
 
-	public void addPossibleResultPoint(ResultPoint point) {
+	public void addPossibleResultPoint(ResultPoint point)
+	{
 		possibleResultPoints.add(point);
 	}
 

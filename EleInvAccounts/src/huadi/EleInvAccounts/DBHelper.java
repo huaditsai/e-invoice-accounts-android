@@ -2,7 +2,6 @@ package huadi.EleInvAccounts;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
 
 public class DBHelper extends SQLiteOpenHelper
@@ -11,7 +10,7 @@ public class DBHelper extends SQLiteOpenHelper
 	private final static String DBName = "EleInvAccounts.db";
 	String[] tableName = new String[]{"Account", "MainCategory", "SubCategory", "Invoice", "Charge"};
 
-	public DBHelper(Context context, String name, CursorFactory factory, int version)
+	public DBHelper(Context context)
 	{
 		super(context, DBName, null, DBVersion);// TODO 自動產生的建構子 Stub
 	}
@@ -47,7 +46,7 @@ public class DBHelper extends SQLiteOpenHelper
 			+ "_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
 			+ "invoice_no VARCHAR(10),"	//發票編號
 			+ "invoice_month VARCHAR(2),"	//發票月份
-			+ "invoice_cost INTEGER"	//消費金額
+			+ "invoice_cost INTEGER"	//消費總金額
 			+ ");";
 		db.execSQL(SQL);
 		
@@ -59,8 +58,8 @@ public class DBHelper extends SQLiteOpenHelper
 			+ "account_cost INTEGER," //項目所花的金額
 			+ "main_category NTEXT,"
 			+ "sub_category NTEXT,"
-			+ "item NTEXT,"
-			+ "store NTEXT,"
+			+ "item NTEXT," //項目
+			+ "store NTEXT," //商店名稱
 			+ "invoice_no VARCHAR(10)"	//發票編號
 			+ ");";
 		db.execSQL(SQL);

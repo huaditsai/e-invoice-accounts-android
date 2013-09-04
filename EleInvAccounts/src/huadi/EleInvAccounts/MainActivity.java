@@ -1,8 +1,14 @@
 package huadi.EleInvAccounts;
 
+import huadi.EleInvAccounts.Accounts.AccountsActivity;
 import huadi.EleInvAccounts.Inquiry.InvDetails;
+import huadi.EleInvAccounts.Manager.ManagerActivity;
+import huadi.EleInvAccounts.Settings.SettingsActivity;
+import huadi.EleInvAccounts.Social.SocialActivity;
+
 import java.util.UUID;
 
+import android.accounts.Account;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -74,6 +80,9 @@ public class MainActivity extends Activity
 				btn_account.setY(btn_account.getY()+5);
 				text_account.setX(text_account.getX()+5);
 				text_account.setY(text_account.getY()+5);
+				
+				Intent intent = new Intent(MainActivity.this, AccountsActivity.class);
+				startActivity(intent);
 			}});
 		
 		btn_invoice.setOnClickListener(new OnClickListener(){
@@ -84,6 +93,9 @@ public class MainActivity extends Activity
 				btn_invoice.setY(btn_invoice.getY()+5);
 				text_invoice.setX(text_invoice.getX()+5);
 				text_invoice.setY(text_invoice.getY()+5);
+				
+				Intent intent = new Intent(MainActivity.this, ManagerActivity.class);
+				startActivity(intent);
 			}});
 		
 		btn_social.setOnClickListener(new OnClickListener(){
@@ -94,6 +106,9 @@ public class MainActivity extends Activity
 				btn_social.setY(btn_social.getY()+5);
 				text_social.setX(text_social.getX()+5);
 				text_social.setY(text_social.getY()+5);
+				
+				Intent intent = new Intent(MainActivity.this, SocialActivity.class);
+				startActivity(intent);
 			}});
 		
 		btn_setting.setOnClickListener(new OnClickListener(){
@@ -104,6 +119,9 @@ public class MainActivity extends Activity
 				btn_setting.setY(btn_setting.getY()+5);
 				text_setting.setX(text_setting.getX()+5);
 				text_setting.setY(text_setting.getY()+5);
+				
+				Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+				startActivity(intent);
 			}});
 	}
 	

@@ -1,4 +1,4 @@
-package huadi.EleInvAccounts.InvInquiry;
+package huadi.EleInvAccounts.Inquiry;
 
 import huadi.EleInvAccounts.MySSLSocketFactory;
 
@@ -66,6 +66,7 @@ public class InvDetails extends AsyncTask<String, String, String> // <傳入參數, 
 			if (httpResponse.getStatusLine().getStatusCode() == 200)//判斷網路連接是否成功
 			{
 				strResult = EntityUtils.toString(httpResponse.getEntity()); //抓下來的資料
+				Log.e("strResult", strResult);
 			
 				JSONObject jsonObject = new JSONObject(strResult); //{}為JSONObject
 				
@@ -76,15 +77,15 @@ public class InvDetails extends AsyncTask<String, String, String> // <傳入參數, 
 				try
 				{
 					String invNum =  jsonObject.getString("invNum"); //發票號碼
-					String invDate =  jsonObject.getString("invDate"); //發票開立日期
+					String invDate =  jsonObject.getString("invDate"); //發票開立日期(yyyyMMdd)
 					String sellerName =  jsonObject.getString("sellerName"); //賣方名稱
-					String invStatus =  jsonObject.getString("invStatus"); //發票狀態
-					String invPeriod =  jsonObject.getString("invPeriod"); //對獎發票期別
+					String invStatus =  jsonObject.getString("invStatus"); //發票狀態(已確認)
+					String invPeriod =  jsonObject.getString("invPeriod"); //對獎發票期別(民國年月)
 					
 					JSONArray detailObject = jsonObject.getJSONArray("details"); //[]為JSONArray
 					for(int i = 0; i < detailObject.length(); i++)
 					{
-						String rowNum = detailObject.getJSONObject(i).getString("rowNum"); //明細編號
+						String rowNum = detailObject.getJSONObject(i).getString("rowNum"); //明細編號(1,2,3...)
 						String description = detailObject.getJSONObject(i).getString("description"); //品名
 						String quantity = detailObject.getJSONObject(i).getString("quantity"); //數量
 						String unitPrice = detailObject.getJSONObject(i).getString("unitPrice"); //單價
@@ -93,7 +94,7 @@ public class InvDetails extends AsyncTask<String, String, String> // <傳入參數, 
 				}
 				catch(Exception e)
 				{
-					Log.e("v","版本, " + v + "訊息, " + msg + "回應碼, " + code);
+					Log.e("JSONObject Exception","版本, " + v + "回應碼, " + code + "訊息, " + msg);
 				}			
 				
 			}			

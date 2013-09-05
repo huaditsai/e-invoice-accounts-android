@@ -28,7 +28,7 @@ public class CarrierDetail extends AsyncTask<String, String, String> // <¶Ç¤J°Ñ¼
 	
 	private final String detailUrl = "https://www.einvoice.nat.gov.tw/PB2CAPIVAN/invServ/InvServ?"
 		+ "version=0.1"
-		+ "&cardType={0}" //¥d§O
+		+ "&cardType={0}" //¥d§O, ¤â¾÷±ø½X3J0002, ±y¹C¥d1K0001, iCash 2G0001
 		+ "&cardNo={1}" //¥d¤ùÁô½X
 		+ "&expTimeStamp={2}" //¦³®Ä¦sÄò®É¶¡ÂW°O
 		+ "&action=carrierInvDetail"

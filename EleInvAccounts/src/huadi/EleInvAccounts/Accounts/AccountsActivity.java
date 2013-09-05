@@ -11,12 +11,14 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
 public class AccountsActivity extends Activity
 {
 	
 	//UI宣告
 	ImageButton btn_backfunc, btn_account, btn_manager, btn_social, btn_setting;
+	TextView text_total, text_income, text_expenditure, text_balance;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -34,20 +36,16 @@ public class AccountsActivity extends Activity
 		btn_manager = (ImageButton)findViewById(R.id.imageButton3);
 		btn_social = (ImageButton)findViewById(R.id.imageButton4);
 		btn_setting = (ImageButton)findViewById(R.id.imageButton5);
+		text_total = (TextView)findViewById(R.id.textView6);
+		text_income = (TextView)findViewById(R.id.textView7);
+		text_expenditure = (TextView)findViewById(R.id.textView8);
+		text_balance = (TextView)findViewById(R.id.textView9);
 				
 		btn_backfunc.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				Intent intent = new Intent(AccountsActivity.this, MainActivity.class);
-				startActivity(intent);
-				AccountsActivity.this.finish();
-			}});
-		btn_account.setOnClickListener(new OnClickListener(){
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				Intent intent = new Intent(AccountsActivity.this, AccountsActivity.class);
 				startActivity(intent);
 				AccountsActivity.this.finish();
 			}});
@@ -75,5 +73,10 @@ public class AccountsActivity extends Activity
 				startActivity(intent);
 				AccountsActivity.this.finish();
 			}});
+		
+		text_total.setText("總資產");
+		text_income.setText("本月收入");
+		text_expenditure.setText("本月支出");
+		text_balance.setText("本月結餘");
 	}
 }

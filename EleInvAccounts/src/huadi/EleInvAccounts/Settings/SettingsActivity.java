@@ -66,13 +66,5 @@ public class SettingsActivity extends Activity
 				startActivity(intent);
 				SettingsActivity.this.finish();
 			}});
-		btn_setting.setOnClickListener(new OnClickListener(){
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				Intent intent = new Intent(SettingsActivity.this, SettingsActivity.class);
-				startActivity(intent);
-				SettingsActivity.this.finish();
-			}});
 	}
 }

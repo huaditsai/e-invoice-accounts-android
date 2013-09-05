@@ -58,14 +58,6 @@ public class SocialActivity extends Activity
 				startActivity(intent);
 				SocialActivity.this.finish();
 			}});
-		btn_social.setOnClickListener(new OnClickListener(){
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				Intent intent = new Intent(SocialActivity.this, SocialActivity.class);
-				startActivity(intent);
-				SocialActivity.this.finish();
-			}});
 		btn_setting.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {

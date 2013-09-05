@@ -67,12 +67,15 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal" >
+            android:layout_gravity="center_horizontal"
+            android:gravity="center_horizontal"
+            android:paddingRight="30dp" >
 
             <ImageView
                 android:id="@+id/imageView3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:paddingRight="5dp"
                 android:src="@drawable/account_pen" />
 
             <LinearLayout
@@ -96,19 +99,34 @@
                         android:id="@+id/button1"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Button" />
+                        android:background="@drawable/button_style"
+                        android:minHeight="20dp"
+                        android:text="手動記帳"
+                        android:textColor="#ffffff"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
 
                     <Button
                         android:id="@+id/button2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Button" />
+                        android:background="@drawable/button_style"
+                        android:minHeight="20dp"
+                        android:text="發票掃描"
+                        android:textColor="#ffffff"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
 
                     <Button
                         android:id="@+id/button3"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Button" />
+                        android:background="@drawable/button_style"
+                        android:minHeight="20dp"
+                        android:text="載具匯入"
+                        android:textColor="#ffffff"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
 
                 </LinearLayout>
 

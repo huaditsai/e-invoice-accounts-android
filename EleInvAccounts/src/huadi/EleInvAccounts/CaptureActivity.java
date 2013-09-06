@@ -1,5 +1,6 @@
 package huadi.EleInvAccounts;
 
+import huadi.EleInvAccounts.Accounts.AccountsActivity;
 import huadi.EleInvAccounts.Inquiry.InvDetails;
 
 import java.io.IOException;
@@ -11,6 +12,7 @@ import zxing.decoding.InactivityTimer;
 import zxing.view.ViewfinderView;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.AssetFileDescriptor;
 import android.graphics.Bitmap;
 import android.media.AudioManager;
@@ -18,9 +20,7 @@ import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
 import android.os.Vibrator;
-import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceHolder.Callback;
 import android.view.SurfaceView;
@@ -53,9 +53,9 @@ public class CaptureActivity extends Activity implements Callback
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_scanner);
 
-		Intent intent = getIntent();
-		appID = intent.getStringExtra("appID");
-		UUID = intent.getStringExtra("UUID");
+		SharedPreferences ids = getSharedPreferences("IDs", MODE_PRIVATE ); //偏好設定
+		appID = ids.getString("appID", "");
+		UUID = ids.getString("UUID", "");
 
 		// CameraManager
 		CameraManager.init(getApplication());
@@ -231,7 +231,7 @@ public class CaptureActivity extends Activity implements Callback
 			Toast.makeText(CaptureActivity.this, "非發票條碼", Toast.LENGTH_LONG).show();
 		}
 		
-		Intent intent = new Intent(CaptureActivity.this, MainActivity.class);
+		Intent intent = new Intent(CaptureActivity.this, AccountsActivity.class);
 		startActivity(intent);
 	}
 

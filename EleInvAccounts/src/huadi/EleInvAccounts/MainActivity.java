@@ -203,11 +203,7 @@ public class MainActivity extends Activity
 		// Handle item selection
 		switch (item.getItemId())
 		{
-			case R.id.action_settings:
-				Intent intent = new Intent(MainActivity.this, CaptureActivity.class);
-				intent.putExtra("UUID", GetUUID());
-				intent.putExtra("appID", appID);
-				startActivity(intent);
+			case R.id.action_settings:				
 				//new AlertDialog.Builder(this).setTitle("關於").setMessage("huadi73@gmail.com").show();
 				return true;
 			default:
@@ -216,10 +212,8 @@ public class MainActivity extends Activity
 	}
 	
 	public void GetBarCode(String folderName, String content, int desiredWidth, int desiredHeight)
-	{
-		content = content + desiredWidth + desiredHeight + ".png";
-		
-		String filePath = Environment.getExternalStorageDirectory() + "/" + folderName + "/" + content;		
+	{		
+		String filePath = Environment.getExternalStorageDirectory() + "/" + folderName + "/" + content + ".png";		
 		File path = new File(filePath);
         if( !path.exists() ) //沒有檔案就產生吧
         	new CodeGenerator(folderName, content, desiredWidth, desiredHeight);

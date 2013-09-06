@@ -31,7 +31,7 @@ public class CodeGenerator
 				File folder = new File(Environment.getExternalStorageDirectory(), folderName);
 				if(!folder.exists())
 					folder.mkdir();
-				File file = new File(Environment.getExternalStorageDirectory() + "/" + folderName + "/", content);
+				File file = new File(Environment.getExternalStorageDirectory() + "/" + folderName + "/", content + ".png");
 				fos = new FileOutputStream(file);
 				bitmap.compress(Bitmap.CompressFormat.PNG, 0, fos);
 			}

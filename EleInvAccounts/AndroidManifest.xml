@@ -43,7 +43,9 @@
 		<activity
             android:name="huadi.EleInvAccounts.Accounts.AccountsActivity"
             android:screenOrientation="portrait"
-            android:configChanges="orientation|keyboardHidden">
+            android:configChanges="orientation|keyboardHidden"
+            android:windowSoftInputMode="adjustUnspecified|stateHidden"   
+            >
         </activity>
         <activity
             android:name="huadi.EleInvAccounts.Manager.ManagerActivity"

@@ -83,6 +83,7 @@ public class MainActivity extends Activity
 				
 				Intent intent = new Intent(MainActivity.this, AccountsActivity.class);
 				startActivity(intent);
+				MainActivity.this.finish();
 			}});
 		
 		btn_invoice.setOnClickListener(new OnClickListener(){
@@ -96,6 +97,7 @@ public class MainActivity extends Activity
 				
 				Intent intent = new Intent(MainActivity.this, ManagerActivity.class);
 				startActivity(intent);
+				MainActivity.this.finish();
 			}});
 		
 		btn_social.setOnClickListener(new OnClickListener(){
@@ -109,6 +111,7 @@ public class MainActivity extends Activity
 				
 				Intent intent = new Intent(MainActivity.this, SocialActivity.class);
 				startActivity(intent);
+				MainActivity.this.finish();
 			}});
 		
 		btn_setting.setOnClickListener(new OnClickListener(){
@@ -122,6 +125,7 @@ public class MainActivity extends Activity
 				
 				Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
 				startActivity(intent);
+				MainActivity.this.finish();
 			}});
 	}
 	

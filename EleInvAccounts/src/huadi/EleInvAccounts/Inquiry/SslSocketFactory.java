@@ -1,4 +1,4 @@
-package huadi.EleInvAccounts;
+package huadi.EleInvAccounts.Inquiry;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -29,7 +29,7 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.HTTP;
 
-public class MySSLSocketFactory extends SSLSocketFactory
+public class SslSocketFactory extends SSLSocketFactory
 {
 	//¸Ñ¨M android javax.net.ssl.SSLPeerUnverifiedException: No peer certificate
 	
@@ -47,7 +47,7 @@ public class MySSLSocketFactory extends SSLSocketFactory
 		return mSSLContext.getSocketFactory().createSocket(socket, host, port, autoClose);
 	}
 
-	public MySSLSocketFactory(KeyStore truststore)
+	public SslSocketFactory(KeyStore truststore)
 		throws NoSuchAlgorithmException, KeyManagementException,
 		KeyStoreException, UnrecoverableKeyException
 	{
@@ -82,7 +82,7 @@ public class MySSLSocketFactory extends SSLSocketFactory
 			KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
 			trustStore.load(null, null);
 
-			SSLSocketFactory mSSLSocketFactory = new MySSLSocketFactory(trustStore);
+			SSLSocketFactory mSSLSocketFactory = new SslSocketFactory(trustStore);
 			mSSLSocketFactory.setHostnameVerifier(SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
 
 			HttpParams params = new BasicHttpParams();

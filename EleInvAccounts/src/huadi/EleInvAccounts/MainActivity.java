@@ -1,27 +1,30 @@
 package huadi.EleInvAccounts;
 
 import huadi.EleInvAccounts.Accounts.AccountsActivity;
-import huadi.EleInvAccounts.Inquiry.InvDetails;
 import huadi.EleInvAccounts.Manager.ManagerActivity;
 import huadi.EleInvAccounts.Settings.SettingsActivity;
 import huadi.EleInvAccounts.Social.SocialActivity;
 
+import java.io.File;
 import java.util.UUID;
-
-import android.accounts.Account;
+import zxing.encoding.CodeGenerator;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.Settings.Secure;
 import android.telephony.TelephonyManager;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 public class MainActivity extends Activity
@@ -49,15 +52,37 @@ public class MainActivity extends Activity
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
-		Log.e("id", GetUUID());
+		SharedPreferences ids = getSharedPreferences("IDs", MODE_PRIVATE ); //偏好設定 
+		ids.edit().putString("appID", appID).commit(); //寫入appID
+		ids.edit().putString("UUID", GetUUID()).commit(); //寫入 uuid
+		//Log.e("id", GetUUID());
 		
 		//new InvDetails().execute("QRCode","VX20070106","","2013/07/13","g7Y1WPAG8PE1PbEIebrTQg==","01802112",GetUUID(),"9035",appID);
 		
-		setUI(); //設定UI
+		setUI(); //設定UI		
+		
+		GetBarCode(getResources().getString(R.string.app_name), "/XXXXXXX", 360, 85);
+		
+//		try
+//		{
+//			Map<String, List<String>> winning = new WinningList().execute("10206", GetUUID(), appID).get();
+//			ManualAward anualAward = new ManualAward();
+//			Log.e("winning", "" + manualAward.Award("516", winning));
+//		}
+//		catch (Exception e)
+//		{
+//			e.printStackTrace();
+//		}
+		
+		
+		//Log.e("now", "" + System.currentTimeMillis()/1000);
 	}
-
-	private void setUI() {
-		// TODO Auto-generated method stub
+		
+	private void setUI() 
+	{
+		final int btnMovePosi = 5; //按鈕位移量
+		final int btnMoveNega = -5; //按鈕位移量
+		
 		text_account = (TextView)findViewById(R.id.text_1);
 		text_invoice = (TextView)findViewById(R.id.text_2);
 		text_social = (TextView)findViewById(R.id.text_3);
@@ -72,60 +97,96 @@ public class MainActivity extends Activity
 		text_social.setText("成就");
 		text_setting.setText("設定");
 		
-		btn_account.setOnClickListener(new OnClickListener(){
+		btn_account.setOnTouchListener(new OnTouchListener(){
 			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				btn_account.setX(btn_account.getX()+5);
-				btn_account.setY(btn_account.getY()+5);
-				text_account.setX(text_account.getX()+5);
-				text_account.setY(text_account.getY()+5);
-				
-				Intent intent = new Intent(MainActivity.this, AccountsActivity.class);
-				startActivity(intent);
-				MainActivity.this.finish();
+			public boolean onTouch(View v, MotionEvent event){
+				if(event.getAction() == MotionEvent.ACTION_DOWN)
+				{
+					btn_account.setX(btn_account.getX() + btnMovePosi);
+					btn_account.setY(btn_account.getY() + btnMovePosi);
+					text_account.setX(text_account.getX() + btnMovePosi);
+					text_account.setY(text_account.getY() + btnMovePosi);
+				}
+				if(event.getAction() == MotionEvent.ACTION_UP)
+				{
+					btn_account.setX(btn_account.getX() + btnMoveNega);
+					btn_account.setY(btn_account.getY() + btnMoveNega);
+					text_account.setX(text_account.getX() + btnMoveNega);
+					text_account.setY(text_account.getY() + btnMoveNega);
+					Intent intent = new Intent(MainActivity.this, AccountsActivity.class);
+					startActivity(intent);
+					MainActivity.this.finish();
+				}				
+				return false;
+				}});
+		
+		btn_invoice.setOnTouchListener(new OnTouchListener(){
+			@Override
+			public boolean onTouch(View v, MotionEvent event){
+				if(event.getAction() == MotionEvent.ACTION_DOWN)
+				{
+					btn_invoice.setX(btn_invoice.getX() + btnMovePosi);
+					btn_invoice.setY(btn_invoice.getY() + btnMovePosi);
+					text_invoice.setX(text_invoice.getX() + btnMovePosi);
+					text_invoice.setY(text_invoice.getY() + btnMovePosi);
+				}
+				if(event.getAction() == MotionEvent.ACTION_UP)
+				{
+					btn_invoice.setX(btn_invoice.getX() + btnMoveNega);
+					btn_invoice.setY(btn_invoice.getY() + btnMoveNega);
+					text_invoice.setX(text_invoice.getX() + btnMoveNega);
+					text_invoice.setY(text_invoice.getY() + btnMoveNega);
+					Intent intent = new Intent(MainActivity.this, ManagerActivity.class);
+					startActivity(intent);
+					MainActivity.this.finish();
+				}
+				return false;
 			}});
 		
-		btn_invoice.setOnClickListener(new OnClickListener(){
+		btn_social.setOnTouchListener(new OnTouchListener(){
 			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				btn_invoice.setX(btn_invoice.getX()+5);
-				btn_invoice.setY(btn_invoice.getY()+5);
-				text_invoice.setX(text_invoice.getX()+5);
-				text_invoice.setY(text_invoice.getY()+5);
-				
-				Intent intent = new Intent(MainActivity.this, ManagerActivity.class);
-				startActivity(intent);
-				MainActivity.this.finish();
+			public boolean onTouch(View v, MotionEvent event){
+				if(event.getAction() == MotionEvent.ACTION_DOWN)
+				{
+					btn_social.setX(btn_social.getX() + btnMovePosi);
+					btn_social.setY(btn_social.getY() + btnMovePosi);
+					text_social.setX(text_social.getX() + btnMovePosi);
+					text_social.setY(text_social.getY() + btnMovePosi);
+				}
+				if(event.getAction() == MotionEvent.ACTION_UP)
+				{
+					btn_social.setX(btn_social.getX() + btnMoveNega);
+					btn_social.setY(btn_social.getY() + btnMoveNega);
+					text_social.setX(text_social.getX() + btnMoveNega);
+					text_social.setY(text_social.getY() + btnMoveNega);				
+					Intent intent = new Intent(MainActivity.this, SocialActivity.class);
+					startActivity(intent);
+					MainActivity.this.finish();
+				}				
+				return false;				
 			}});
 		
-		btn_social.setOnClickListener(new OnClickListener(){
+		btn_setting.setOnTouchListener(new OnTouchListener(){
 			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				btn_social.setX(btn_social.getX()+5);
-				btn_social.setY(btn_social.getY()+5);
-				text_social.setX(text_social.getX()+5);
-				text_social.setY(text_social.getY()+5);
-				
-				Intent intent = new Intent(MainActivity.this, SocialActivity.class);
-				startActivity(intent);
-				MainActivity.this.finish();
-			}});
-		
-		btn_setting.setOnClickListener(new OnClickListener(){
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				btn_setting.setX(btn_setting.getX()+5);
-				btn_setting.setY(btn_setting.getY()+5);
-				text_setting.setX(text_setting.getX()+5);
-				text_setting.setY(text_setting.getY()+5);
-				
-				Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
-				startActivity(intent);
-				MainActivity.this.finish();
+			public boolean onTouch(View v, MotionEvent event){
+				if(event.getAction() == MotionEvent.ACTION_DOWN)
+				{
+					btn_setting.setX(btn_setting.getX() + btnMovePosi);
+					btn_setting.setY(btn_setting.getY() + btnMovePosi);
+					text_setting.setX(text_setting.getX() + btnMovePosi);
+					text_setting.setY(text_setting.getY() + btnMovePosi);
+				}
+				if(event.getAction() == MotionEvent.ACTION_UP)
+				{
+					btn_setting.setX(btn_setting.getX() + btnMoveNega);
+					btn_setting.setY(btn_setting.getY() + btnMoveNega);
+					text_setting.setX(text_setting.getX() + btnMoveNega);
+					text_setting.setY(text_setting.getY() + btnMoveNega);			
+					Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+					startActivity(intent);
+					MainActivity.this.finish();
+				}
+				return false;								
 			}});
 	}
 	
@@ -152,6 +213,30 @@ public class MainActivity extends Activity
 			default:
 				return super.onOptionsItemSelected(item);
 		}
+	}
+	
+	public void GetBarCode(String folderName, String content, int desiredWidth, int desiredHeight)
+	{
+		content = content + desiredWidth + desiredHeight + ".png";
+		
+		String filePath = Environment.getExternalStorageDirectory() + "/" + folderName + "/" + content;		
+		File path = new File(filePath);
+        if( !path.exists() ) //沒有檔案就產生吧
+        	new CodeGenerator(folderName, content, desiredWidth, desiredHeight);
+        
+		try //顯示
+		{
+			Bitmap bitmap = BitmapFactory.decodeFile(filePath);
+			ImageView imageView = (ImageView)findViewById(R.id.imageView2);
+			imageView.setImageBitmap(bitmap);
+			
+			TextView textView = (TextView)findViewById(R.id.textView1);
+			textView.setText(content);
+		}  
+		catch (Exception e)  
+		{  
+			e.printStackTrace();   
+		}  
 	}
 	
 	public String GetUUID()

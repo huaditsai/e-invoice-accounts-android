@@ -10,22 +10,14 @@ import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Environment;
 
 public class CodeGenerator
 {
-	Context mContext;
-	
-	public CodeGenerator(Context context, String content, int desiredWidth, int desiredHeight)
-	{
-		mContext = context;		
-		content = "/XXXXXXX";		
-		desiredWidth = 512;
-		desiredHeight = 512;
-		
-		final String imageFileName = "CarrierCode.png";
+	public CodeGenerator(String folderName, String content, int desiredWidth, int desiredHeight)
+	{		
+		//final String imageFileName = content + desiredWidth + desiredHeight + ".png";
 		
 		FileOutputStream fos = null;
 		Bitmap bitmap = null;
@@ -36,7 +28,10 @@ public class CodeGenerator
 			if (null != bitmap)
 			{
 				//將二維碼圖像保存
-				File file = new File(Environment.getExternalStorageDirectory(), imageFileName);
+				File folder = new File(Environment.getExternalStorageDirectory(), folderName);
+				if(!folder.exists())
+					folder.mkdir();
+				File file = new File(Environment.getExternalStorageDirectory() + "/" + folderName + "/", content);
 				fos = new FileOutputStream(file);
 				bitmap.compress(Bitmap.CompressFormat.PNG, 0, fos);
 			}

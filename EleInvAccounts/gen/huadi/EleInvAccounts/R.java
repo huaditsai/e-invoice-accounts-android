@@ -75,14 +75,14 @@ public final class R {
     public static final class id {
         public static final int LinearLayout1=0x7f070027;
         public static final int TableLayout1=0x7f070018;
-        public static final int action_settings=0x7f070046;
+        public static final int action_settings=0x7f070047;
         /**  Messages IDs 
          */
         public static final int auto_focus=0x7f070000;
-        public static final int btn_1=0x7f07003b;
-        public static final int btn_2=0x7f07003d;
-        public static final int btn_3=0x7f07003f;
-        public static final int btn_4=0x7f070041;
+        public static final int btn_1=0x7f07003c;
+        public static final int btn_2=0x7f07003e;
+        public static final int btn_3=0x7f070040;
+        public static final int btn_4=0x7f070042;
         public static final int button1=0x7f070014;
         public static final int button2=0x7f070015;
         public static final int button3=0x7f070016;
@@ -112,7 +112,8 @@ public final class R {
         public static final int imageView3=0x7f070012;
         public static final int imageView4=0x7f070028;
         public static final int launch_product_query=0x7f070006;
-        public static final int preview_view=0x7f070043;
+        public static final int linearLayout1=0x7f07003b;
+        public static final int preview_view=0x7f070044;
         public static final int quit=0x7f070007;
         public static final int restart_preview=0x7f070008;
         public static final int return_scan_result=0x7f070009;
@@ -140,12 +141,12 @@ public final class R {
         public static final int textView7=0x7f07000f;
         public static final int textView8=0x7f070010;
         public static final int textView9=0x7f070011;
-        public static final int text_1=0x7f07003c;
-        public static final int text_2=0x7f07003e;
-        public static final int text_3=0x7f070040;
-        public static final int text_4=0x7f070042;
-        public static final int txtResult=0x7f070045;
-        public static final int viewfinder_view=0x7f070044;
+        public static final int text_1=0x7f07003d;
+        public static final int text_2=0x7f07003f;
+        public static final int text_3=0x7f070041;
+        public static final int text_4=0x7f070043;
+        public static final int txtResult=0x7f070046;
+        public static final int viewfinder_view=0x7f070045;
     }
     public static final class layout {
         public static final int activity_accounts=0x7f030000;

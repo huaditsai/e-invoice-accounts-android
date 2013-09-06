@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageButton;
 
+//¦¨´N
 public class SocialActivity extends Activity
 {
 	//UI«Å§i

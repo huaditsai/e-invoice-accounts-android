@@ -24,6 +24,7 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+//°O±b
 public class AccountsActivity extends Activity
 {
 	

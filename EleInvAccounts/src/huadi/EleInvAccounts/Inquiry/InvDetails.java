@@ -1,7 +1,6 @@
 package huadi.EleInvAccounts.Inquiry;
 
 import huadi.EleInvAccounts.DBHelper;
-import huadi.EleInvAccounts.MySSLSocketFactory;
 
 import java.text.MessageFormat;
 
@@ -74,7 +73,7 @@ public class InvDetails extends AsyncTask<String, String, String> // <傳入參數, 
 		{
 			HttpParams httpParameters = new BasicHttpParams();
 			HttpConnectionParams.setConnectionTimeout(httpParameters, 3000);
-			HttpClient httpClient = MySSLSocketFactory.createMyHttpClient(); //new DefaultHttpClient(httpParameters);
+			HttpClient httpClient = SslSocketFactory.createMyHttpClient(); //new DefaultHttpClient(httpParameters);
 
 			HttpResponse httpResponse = null;
 			httpResponse = httpClient.execute(get);

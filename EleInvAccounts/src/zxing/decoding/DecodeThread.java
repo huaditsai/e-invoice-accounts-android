@@ -24,7 +24,7 @@ import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Looper;
 import android.preference.PreferenceManager;
-import huadi.EleInvAccounts.CaptureActivity;
+import huadi.EleInvAccounts.Accounts.CaptureActivity;
 
 import java.util.Hashtable;
 import java.util.Vector;

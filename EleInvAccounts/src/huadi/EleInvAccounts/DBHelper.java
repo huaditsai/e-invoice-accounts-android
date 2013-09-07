@@ -8,7 +8,7 @@ public class DBHelper extends SQLiteOpenHelper
 {
 	private final static int DBVersion = 1; // 版本
 	private final static String DBName = "EleInvAccounts.db";
-	String[] tableName = new String[]{"Account", "MainCategory", "SubCategory", "Invoice", "Charge"};
+	String[] tableName = new String[]{"Account", "MainCategory", "SubCategory", "Invoice", "InvDetail", "Charge"};
 
 	public DBHelper(Context context)
 	{
@@ -20,37 +20,52 @@ public class DBHelper extends SQLiteOpenHelper
 	{		
 		String SQL = "";
 		
-		SQL = "CREATE TABLE IF NOT EXISTS " + tableName[0] //帳戶（錢包、郵局、iCash…）
+		SQL = "CREATE TABLE IF NOT EXISTS " + tableName[0] //Account 帳戶（錢包、郵局、iCash…）
 			+ "("
 			+ "_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
 			+ "account_name NTEXT" //帳戶名稱
 			+ ");";
 		db.execSQL(SQL);
 		
-		SQL = "CREATE TABLE IF NOT EXISTS " + tableName[1]	//主分類（食、衣、住、行、育、樂、收入、其他）
+		SQL = "CREATE TABLE IF NOT EXISTS " + tableName[1]	//MainCategory 主分類（食、衣、收入、其他）
 			+ "("
 			+ "_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
 			+ "main_category NTEXT"
 			+ ");";
 		db.execSQL(SQL);
 		
-		SQL = "CREATE TABLE IF NOT EXISTS " + tableName[2]	//次分類
+		SQL = "CREATE TABLE IF NOT EXISTS " + tableName[2]	//SubCategory 次分類
 			+ "("
 			+ "_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
 			+ "sub_category NTEXT"
 			+ ");";
 		db.execSQL(SQL);
 		
-		SQL = "CREATE TABLE IF NOT EXISTS " + tableName[3]	//發票
+		SQL = "CREATE TABLE IF NOT EXISTS " + tableName[3]	//Invoice 發票
 			+ "("
 			+ "_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
-			+ "invoice_no VARCHAR(10),"	//發票編號
-			+ "invoice_month VARCHAR(2),"	//發票月份
-			+ "invoice_cost INTEGER"	//消費總金額
+			+ "invNum VARCHAR(10),"	//發票編號
+			+ "invTotalCost INTEGER,"	//消費金額
+			+ "invDate INTEGER"	//發票開立日期(yyyyMMdd)
+			+ "sellerName NTEXT"	//賣方名稱
+			+ "invStatus NTEXT"	//發票狀態(已確認)
+			+ "invPeriod INTEGER"	//對獎發票期別(民國年月)
 			+ ");";
 		db.execSQL(SQL);
 		
-		SQL = "CREATE TABLE IF NOT EXISTS " + tableName[4]	//記帳
+		SQL = "CREATE TABLE IF NOT EXISTS " + tableName[4]	//InvDetail 發票明細
+			+ "("
+			+ "_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
+			+ "invNum VARCHAR(10),"	//發票編號
+			+ "rowNum INTEGER,"	//明細編號(1,2,3...)
+			+ "description NTEXT"	//品名
+			+ "quantity INTEGER"	//數量
+			+ "unitPrice INTEGER"	//單價
+			+ "amount INTEGER"	//小記
+			+ ");";
+		db.execSQL(SQL);
+		
+		SQL = "CREATE TABLE IF NOT EXISTS " + tableName[5]	//Charge 記帳
 			+ "("
 			+ "_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
 			+ "account_date VARCHAR(10),"	//記帳日期

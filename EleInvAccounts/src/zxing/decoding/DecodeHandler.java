@@ -16,8 +16,8 @@
 
 package zxing.decoding;
 
-import huadi.EleInvAccounts.CaptureActivity;
 import huadi.EleInvAccounts.R;
+import huadi.EleInvAccounts.Accounts.CaptureActivity;
 
 import java.util.Hashtable;
 

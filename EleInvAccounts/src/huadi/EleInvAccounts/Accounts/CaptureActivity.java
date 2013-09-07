@@ -1,7 +1,10 @@
-package huadi.EleInvAccounts;
+package huadi.EleInvAccounts.Accounts;
 
-import huadi.EleInvAccounts.Accounts.AccountsActivity;
+import huadi.EleInvAccounts.R;
 import huadi.EleInvAccounts.Inquiry.InvDetails;
+import huadi.EleInvAccounts.R.id;
+import huadi.EleInvAccounts.R.layout;
+import huadi.EleInvAccounts.R.raw;
 
 import java.io.IOException;
 import java.util.Vector;

@@ -1,5 +1,8 @@
 package huadi.EleInvAccounts.Manager;
 
+import java.util.Calendar;
+
+import huadi.EleInvAccounts.DBHelper;
 import huadi.EleInvAccounts.MainActivity;
 import huadi.EleInvAccounts.R;
 import huadi.EleInvAccounts.Accounts.AccountsActivity;
@@ -7,6 +10,8 @@ import huadi.EleInvAccounts.Settings.SettingsActivity;
 import huadi.EleInvAccounts.Social.SocialActivity;
 import android.app.Activity;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.TextPaint;
@@ -28,6 +33,8 @@ import android.widget.Toast;
 //發票清單
 public class InvoiceListActivity extends Activity
 {
+	SQLiteDatabase db = null;
+	int year, month;
 	//UI宣告
 	ImageButton btn_backfunc, btn_account, btn_manager, btn_social, btn_setting;
 	ImageButton btn_left, btn_right;
@@ -43,7 +50,11 @@ public class InvoiceListActivity extends Activity
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_invoicelist);
 		
+		DBHelper dbHelper = new DBHelper(this);
+		
+		db = dbHelper.getWritableDatabase();
 		setUI();
+		db.close();
 	}
 
 	private void setUI() {
@@ -67,6 +78,38 @@ public class InvoiceListActivity extends Activity
 		table_pop = (TableLayout)findViewById(R.id.TablePop);
 		popclose = (Button)findViewById(R.id.button6);
 		
+		//月份選擇----------------------------------------------------
+		Calendar calendar = Calendar.getInstance();
+		year = calendar.get(Calendar.YEAR) - 1911; //民國
+		month = calendar.get(Calendar.MONTH) + 1; //Calendar.MONTH 從0開始...
+		if(month % 2 == 1)
+			month ++;
+		
+		text_month.setText(String.format("%d 年 %02d - %02d 月", year, month-1, month)); //月份
+		btn_left.setOnClickListener(new OnClickListener(){
+			@Override
+			public void onClick(View v) {
+				month -= 2;
+				if(month == 0 && year != 0)
+				{
+					year--;
+					month = 12;
+				}
+				text_month.setText(String.format("%d 年 %02d - %02d 月", year, month-1, month)); //月份
+			}});
+		btn_right.setOnClickListener(new OnClickListener(){
+			@Override
+			public void onClick(View v) {
+				month += 2;
+				if(month == 14 && year != 0)
+				{
+					year++;
+					month = 2;
+				}
+				text_month.setText(String.format("%d 年 %02d - %02d 月", year, month-1, month)); //月份
+			}});
+		//月份選擇----------------------------------------------------
+		
 		//發票清單----------------------------------------------------
 		TableRow tr = new TableRow(this);
 		RelativeLayout rl;
@@ -79,6 +122,10 @@ public class InvoiceListActivity extends Activity
 		store = new TextView[count];
 		cost = new TextView[count];
 		btn = new ImageButton[count];
+		
+//		Cursor invListCursor = db.rawQuery("SELECT invNum, invTotalCost, invDate "
+//			+ "FROM Invoice "
+//			+ "WHERE invPeriod = " + String.format("%d%02d", year, month), null);
 
 		for (int i = 0; i < count; i++)
 		{
@@ -171,23 +218,7 @@ public class InvoiceListActivity extends Activity
 			}});
 		
 		//popview--------------------------------------------------
-
-		//月份選擇----------------------------------------------------
-		text_month.setText("102年 07-08月"); //月份
-		btn_left.setOnClickListener(new OnClickListener(){
-			@Override
-			public void onClick(View v) {
-				// TODO 自動產生的方法 Stub
 				
-			}});
-		btn_right.setOnClickListener(new OnClickListener(){
-			@Override
-			public void onClick(View v) {
-				// TODO 自動產生的方法 Stub
-				
-			}});
-		//月份選擇----------------------------------------------------
-		
 		//Side menu -----------------------------------------------
 		btn_backfunc.setOnClickListener(new OnClickListener(){
 			@Override

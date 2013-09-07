@@ -1,6 +1,5 @@
 package huadi.EleInvAccounts.Accounts;
 
-import huadi.EleInvAccounts.CaptureActivity;
 import huadi.EleInvAccounts.MainActivity;
 import huadi.EleInvAccounts.R;
 import huadi.EleInvAccounts.Manager.ManagerActivity;

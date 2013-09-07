@@ -90,18 +90,22 @@ public class InvDetails extends AsyncTask<String, String, String> // <傳入參數, 
 				String msg =  jsonObject.getString("msg"); //系統回應訊息
 				
 				try
-				{
-//					ContentValues InvoiceCV = new ContentValues();
-//					InvoiceCV.put("invoice_no", params[1]); //發票編號
-//					InvoiceCV.put("invoice_month", params[3].split("/")[1]); //發票月份
-//					InvoiceCV.put("invoice_cost", invTotalCost); //消費金額
-//					db.insert("Invoice", null, InvoiceCV); //新增一筆至 Invoice
-					
+				{					
 					String invNum =  jsonObject.getString("invNum"); //發票號碼
 					String invDate =  jsonObject.getString("invDate"); //發票開立日期(yyyyMMdd)
 					String sellerName =  jsonObject.getString("sellerName"); //賣方名稱
 					String invStatus =  jsonObject.getString("invStatus"); //發票狀態(已確認)
 					String invPeriod =  jsonObject.getString("invPeriod"); //對獎發票期別(民國年月)
+					
+					ContentValues InvoiceCV = new ContentValues();
+					InvoiceCV.put("invNum", invNum); //發票編號
+					InvoiceCV.put("invTotalCost", invTotalCost); //消費金額
+					InvoiceCV.put("invDate", invDate); //發票開立日期(yyyyMMdd)
+					InvoiceCV.put("sellerName", sellerName); //賣方名稱
+					InvoiceCV.put("invStatus", invStatus); //發票狀態(已確認)
+					InvoiceCV.put("invPeriod", invPeriod); //對獎發票期別(民國年月)
+					
+					db.insert("Invoice", null, InvoiceCV); //新增一筆至 Invoice
 					
 					JSONArray detailObject = jsonObject.getJSONArray("details"); //[]為JSONArray
 					for(int i = 0; i < detailObject.length(); i++)
@@ -112,6 +116,14 @@ public class InvDetails extends AsyncTask<String, String, String> // <傳入參數, 
 						String unitPrice = detailObject.getJSONObject(i).getString("unitPrice"); //單價
 						String amount = detailObject.getJSONObject(i).getString("amount"); //小計
 						
+						ContentValues InvDetailCV = new ContentValues();
+						InvDetailCV.put("invNum", invNum); //發票編號
+						InvDetailCV.put("rowNum", rowNum); //明細編號(1,2,3...)
+						InvDetailCV.put("description", description); //品名
+						InvDetailCV.put("quantity", quantity); //數量
+						InvDetailCV.put("unitPrice", unitPrice); //單價
+						InvDetailCV.put("amount", amount); //小記
+						db.insert("InvDetail", null, InvDetailCV); //新增一筆至 InvDetail
 					}
 				}
 				catch(Exception e)

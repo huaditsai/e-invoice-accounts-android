@@ -46,10 +46,10 @@ public class DBHelper extends SQLiteOpenHelper
 			+ "_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
 			+ "invNum VARCHAR(10),"	//發票編號
 			+ "invTotalCost INTEGER,"	//消費金額
-			+ "invDate INTEGER"	//發票開立日期(yyyyMMdd)
-			+ "sellerName NTEXT"	//賣方名稱
-			+ "invStatus NTEXT"	//發票狀態(已確認)
-			+ "invPeriod INTEGER"	//對獎發票期別(民國年月)
+			+ "invDate VARCHAR(8),"	//發票開立日期(yyyyMMdd)
+			+ "sellerName NTEXT,"	//賣方名稱
+			+ "invStatus NTEXT,"	//發票狀態(已確認)
+			+ "invPeriod VARCHAR(5)"	//對獎發票期別(民國年月yyyMM)
 			+ ");";
 		db.execSQL(SQL);
 		
@@ -58,9 +58,9 @@ public class DBHelper extends SQLiteOpenHelper
 			+ "_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
 			+ "invNum VARCHAR(10),"	//發票編號
 			+ "rowNum INTEGER,"	//明細編號(1,2,3...)
-			+ "description NTEXT"	//品名
-			+ "quantity INTEGER"	//數量
-			+ "unitPrice INTEGER"	//單價
+			+ "description NTEXT,"	//品名
+			+ "quantity INTEGER,"	//數量
+			+ "unitPrice INTEGER,"	//單價
 			+ "amount INTEGER"	//小記
 			+ ");";
 		db.execSQL(SQL);

@@ -326,6 +326,7 @@ public class InvoiceListActivity extends Activity
 				popview.setVisibility(View.GONE);
 				db.delete("Invoice", "invNum = '" + invNum + "'", null);
 				db.delete("InvDetail", "invNum = '" + invNum + "'", null);
+				db.delete("Charge", "invNum = '" + invNum + "'", null);
 				GetInvList();					
 				}});
 		}

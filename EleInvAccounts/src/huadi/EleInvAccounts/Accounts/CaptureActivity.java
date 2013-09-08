@@ -188,11 +188,12 @@ public class CaptureActivity extends Activity implements Callback
 
 	private void parseInvoice(String type, String content) //分析條碼資訊
 	{
+		String invNum = "";
 		if (type.equals("QR_CODE") && content.matches("^[A-Za-z]{2}[0-9]{8}[0-9]{3}[0-9]{2}[0-9]{2}[0-9]{4}.*"))
 		{
 			type = "QRCode";
 
-			String invNum = content.substring(0, 10); //發票號碼(含英文)
+			invNum = content.substring(0, 10); //發票號碼(含英文)
 
 			int year = Integer.parseInt(content.substring(10, 13)) + 1911; //民國(3)(轉西元)
 			String month = content.substring(13, 15);
@@ -222,7 +223,7 @@ public class CaptureActivity extends Activity implements Callback
 			String month = content.substring(3, 5); //月(2)
 			String invDate = year + "/" + month;
 
-			String invNum = content.substring(5, 15);
+			invNum = content.substring(5, 15);
 			String randomCode = content.substring(15, 19); //隨機碼(4)
 
 			//txtResult.setText(format + "\n" + code + "\n" + date + "\n" + randomCode);
@@ -235,6 +236,8 @@ public class CaptureActivity extends Activity implements Callback
 		}
 		
 		Intent intent = new Intent(CaptureActivity.this, AccountsActivity.class);
+		intent.putExtra("isCapture", true);
+		intent.putExtra("invNum", invNum);
 		startActivity(intent);
 	}
 

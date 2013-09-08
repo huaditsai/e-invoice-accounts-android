@@ -70,7 +70,7 @@ public class DBHelper extends SQLiteOpenHelper
 			+ "_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
 			+ "date INTEGER,"	//日期(yyyyMMdd)
 			+ "accountName NTEXT,"	//記帳帳本
-			+ "cost INTEGER," //項目所花的金額
+			+ "money INTEGER," //項目所花的金額 , 收入為正
 			+ "mainCategory NTEXT,"
 			+ "subCategory NTEXT,"
 			+ "item NTEXT," //項目

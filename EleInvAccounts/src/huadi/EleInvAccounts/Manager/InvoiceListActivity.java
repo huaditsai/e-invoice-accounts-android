@@ -167,6 +167,9 @@ public class InvoiceListActivity extends Activity
 		
 		int count = invListCursor.getCount(); //資料筆數
 		Log.e("count", "" + count);
+
+		table.removeAllViews();
+		
 		if(count != 0)
 		{
 			invListCursor.moveToFirst(); //移至資料庫第一筆
@@ -260,9 +263,11 @@ public class InvoiceListActivity extends Activity
 			
 		item = new TextView[count];
 		cost2 = new TextView[count];
+		
+		table_pop.removeAllViews();
 
 		if(count != 0)
-		{
+		{	
 			invDetailCursor.moveToFirst(); //移至資料庫第一筆
 			for (int i = 0; i < count; i++)
 			{			
@@ -274,7 +279,7 @@ public class InvoiceListActivity extends Activity
 				item[i].setMaxEms(20);
 				item[i].setLines(1);
 				item[i].setEllipsize(TruncateAt.END);
-				item[i].setMinimumWidth(700);
+				item[i].setMinimumWidth(680);
 				l2.addView(item[i]);
 				
 				cost2[i] = new TextView(this);

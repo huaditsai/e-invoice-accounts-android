@@ -188,6 +188,8 @@ public class AccountsActivity extends Activity
 		cost = new TextView[count];
 		account = new TextView[count];
 
+		table.removeAllViews();
+		
 		for (int i = 0; i < count; i++)
 		{
 			l1 = new LinearLayout(this);

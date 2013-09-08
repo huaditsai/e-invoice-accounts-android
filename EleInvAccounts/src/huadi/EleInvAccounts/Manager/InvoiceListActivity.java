@@ -32,11 +32,11 @@ public class InvoiceListActivity extends Activity
 {
 	SQLiteDatabase db = null;
 	int year, month;
-	String invNum; //發票編號
+	String[] invNum; //發票編號
 	String invPeriod; //對獎發票期別(yyyMM)
-	String sellerName; //賣方名稱
-	String invDate; //發票開立日期(yyyyMMdd)
-	int invTotalCost; //消費金額
+	String[] sellerName; //賣方名稱
+	String[] invDate; //發票開立日期(yyyyMMdd)
+	int[] invTotalCost; //消費金額
 	
 	//UI宣告
 	ImageButton btn_backfunc, btn_account, btn_manager, btn_social, btn_setting;
@@ -184,28 +184,34 @@ public class InvoiceListActivity extends Activity
 			store = new TextView[count];
 			cost = new TextView[count];
 			btn = new ImageButton[count];
+			invNum = new String[count];
+			invTotalCost = new int[count];
+			invDate = new String[count];
+			sellerName = new String[count];
 
 			for (int i = 0; i < count; i++)
 			{
+				final int j = i;
 				rl = new RelativeLayout(this);
 				
-				invNum = invListCursor.getString(invListCursor.getColumnIndex("invNum"));
-				invTotalCost = invListCursor.getInt(invListCursor.getColumnIndex("invTotalCost"));
+				invNum[i] = invListCursor.getString(invListCursor.getColumnIndex("invNum"));
+				invTotalCost[i] = invListCursor.getInt(invListCursor.getColumnIndex("invTotalCost"));
 				
-				invDate = invListCursor.getString(invListCursor.getColumnIndex("invDate"));
-				invDate = invDate.substring(0,4) + "-" + invDate.substring(4,6) + "-" + invDate.substring(6,8);
+				invDate[i] = invListCursor.getString(invListCursor.getColumnIndex("invDate"));
+				invDate[i] = invDate[i].substring(0,4) + "-" + invDate[i].substring(4,6) + "-" + invDate[i].substring(6,8);
 				
-				sellerName = invListCursor.getString(invListCursor.getColumnIndex("sellerName"));
+				sellerName[i] = invListCursor.getString(invListCursor.getColumnIndex("sellerName"));
+				Log.e("inv", invNum[i]+":"+invPeriod+":"+sellerName[i]+":"+invDate[i]+":"+invTotalCost[i]);
 				
 				l1 = new LinearLayout(this);
 				l1.setOrientation(LinearLayout.HORIZONTAL);
 				date[i] = new TextView(this);
-				date[i].setText(invDate);
+				date[i].setText(invDate[i]);
 				date[i].setPadding(0, 0, 20, 0);
 				l1.addView(date[i]);				
 				
 				store[i] = new TextView(this);
-				store[i].setText(sellerName);
+				store[i].setText(sellerName[i]);
 				store[i].setMaxEms(7);
 				store[i].setLines(1);
 				store[i].setEllipsize(TruncateAt.END);
@@ -213,7 +219,7 @@ public class InvoiceListActivity extends Activity
 				l1.addView(store[i]);				
 				
 				cost[i] = new TextView(this);
-				cost[i].setText(invTotalCost + " NTD");
+				cost[i].setText(invTotalCost[i] + " NTD");
 				l1.addView(cost[i]);
 				
 				btn[i] = new ImageButton(this);
@@ -226,6 +232,7 @@ public class InvoiceListActivity extends Activity
 					public void onClick(View arg0) {
 						popview.setVisibility(View.VISIBLE);
 //						PopViewInfo(invNum, invPeriod, sellerName, invDate, invTotalCost);
+						PopViewInfo(invNum[j], invPeriod, sellerName[j], invDate[j], invTotalCost[j]);
 					}});
 	
 				rl.addView(l1);
@@ -234,7 +241,7 @@ public class InvoiceListActivity extends Activity
 				table.addView(tr);
 				tr = new TableRow(this);
 
-				PopViewInfo(invNum, invPeriod, sellerName, invDate, invTotalCost);
+//				PopViewInfo(invNum[i], invPeriod, sellerName[i], invDate[i], invTotalCost[i]);
 				
 				invListCursor.moveToNext(); //移至資料庫下一筆
 			}

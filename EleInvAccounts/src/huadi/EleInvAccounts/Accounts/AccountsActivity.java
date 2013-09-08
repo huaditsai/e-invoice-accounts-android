@@ -9,6 +9,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextPaint;
+import android.text.TextUtils.TruncateAt;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -208,6 +209,10 @@ public class AccountsActivity extends Activity
 			l2.setOrientation(LinearLayout.VERTICAL);
 			item[i] = new TextView(this);
 			item[i].setText("¶µ¥Ø");
+			item[i].setMinimumWidth(400);
+			item[i].setMaxEms(5);
+			item[i].setEllipsize(TruncateAt.END);
+			item[i].setLines(1);
 			l2.addView(item[i]);
 			l3 = new LinearLayout(this);
 			l3.setOrientation(LinearLayout.HORIZONTAL);
@@ -222,6 +227,7 @@ public class AccountsActivity extends Activity
 			l1.addView(l2);
 			cost[i] = new TextView(this);
 			cost[i].setText("ª÷ÃB");
+			cost[i].setMinimumWidth(100);
 			cost[i].setPadding(0, 0, 40, 0);
 			l1.addView(cost[i]);
 			account[i] = new TextView(this);

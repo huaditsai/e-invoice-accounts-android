@@ -417,13 +417,21 @@
             android:paddingTop="5dp" >
 
             <Button
+                android:id="@+id/button7"
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="120dp"
+                android:layout_height="30dp"
+                android:background="@color/transparent"
+                android:text="刪除"
+                android:textColor="#ffffff"
+                android:textSize="12sp" />
+
+            <Button
                 android:id="@+id/button6"
                 style="?android:attr/buttonStyleSmall"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_width="120dp"
+                android:layout_height="30dp"
                 android:background="@color/transparent"
-                android:minHeight="10dp"
-                android:minWidth="80dp"
                 android:text="關閉"
                 android:textColor="#ffffff"
                 android:textSize="12sp" />

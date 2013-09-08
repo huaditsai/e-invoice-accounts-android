@@ -45,7 +45,7 @@ public class InvoiceListActivity extends Activity
 	TextView text_invoiceno, text_invoicemonth, text_store, text_date, text_cost;
 	TableLayout table, table_pop;
 	LinearLayout popview;
-	Button popclose;
+	Button popclose, popdelete;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -77,6 +77,7 @@ public class InvoiceListActivity extends Activity
 		text_cost = (TextView)findViewById(R.id.textView16);
 		table_pop = (TableLayout)findViewById(R.id.TablePop);
 		popclose = (Button)findViewById(R.id.button6);
+		popdelete = (Button)findViewById(R.id.button7);
 		
 		//月份選擇----------------------------------------------------
 		Calendar calendar = Calendar.getInstance();
@@ -312,6 +313,13 @@ public class InvoiceListActivity extends Activity
 			popclose.setOnClickListener(new OnClickListener(){	
 				@Override
 				public void onClick(View v) {
+					popview.setVisibility(View.GONE);
+				}});
+			
+			popdelete.setOnClickListener(new OnClickListener(){
+				@Override
+				public void onClick(View v) {
+					//刪除
 					popview.setVisibility(View.GONE);
 				}});
 		}

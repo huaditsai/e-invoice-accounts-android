@@ -139,16 +139,16 @@
             android:id="@+id/scrollView1"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_marginLeft="40dp"
+            android:layout_marginRight="40dp"
             android:paddingBottom="65dp"
-            android:paddingLeft="30dp"
             android:paddingTop="5dp" >
 
             <TableLayout
                 android:id="@+id/TableLayout1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:paddingRight="30dp" >
+                android:layout_gravity="center_horizontal" >
 
                 <TableRow
                     android:id="@+id/tableRow1"
@@ -310,9 +310,11 @@
 
     <LinearLayout
         android:id="@+id/LinearLayout1"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
         android:background="@drawable/pop_style"
         android:orientation="vertical"
         android:visibility="gone" >
@@ -383,7 +385,7 @@
 
                         <EditText
                             android:id="@+id/editText1"
-                            android:layout_width="wrap_content"
+                            android:layout_width="150dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:width="100dp" >
@@ -403,7 +405,7 @@
                     android:id="@+id/textView12"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="帳本" />
+                    android:text="帳　　本" />
 
                 <EditText
                     android:id="@+id/editText2"
@@ -420,7 +422,24 @@
                     android:id="@+id/textView13"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="項目" />
+                    android:text="發票編號" />
+
+                <EditText
+                    android:id="@+id/editText14"
+                    android:layout_width="150dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+
+                <TextView
+                    android:id="@+id/textView13"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="項　　目" />
 
                 <EditText
                     android:id="@+id/editText3"
@@ -437,7 +456,7 @@
                     android:id="@+id/textView14"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="分類" />
+                    android:text="分　　類" />
 
                 <EditText
                     android:id="@+id/editText4"
@@ -454,7 +473,7 @@
                     android:id="@+id/textView15"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="日期" />
+                    android:text="日　　期" />
 
                 <EditText
                     android:id="@+id/editText5"
@@ -472,7 +491,7 @@
                     android:id="@+id/textView16"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="商店" />
+                    android:text="商　　店" />
 
                 <EditText
                     android:id="@+id/editText6"
@@ -489,7 +508,7 @@
                     android:id="@+id/textView17"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="備註" />
+                    android:text="備　　註" />
 
                 <EditText
                     android:id="@+id/editText7"
@@ -497,6 +516,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1" />
             </LinearLayout>
+
         </LinearLayout>
 
         <LinearLayout
@@ -510,11 +530,9 @@
             <Button
                 android:id="@+id/button6"
                 style="?android:attr/buttonStyleSmall"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="120dp"
+                android:layout_height="30dp"
                 android:background="@color/transparent"
-                android:minHeight="10dp"
-                android:minWidth="80dp"
                 android:text="新增"
                 android:textColor="#ffffff"
                 android:textSize="12sp" />
@@ -522,11 +540,9 @@
             <Button
                 android:id="@+id/button7"
                 style="?android:attr/buttonStyleSmall"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="120dp"
+                android:layout_height="30dp"
                 android:background="@color/transparent"
-                android:minHeight="10dp"
-                android:minWidth="80dp"
                 android:text="取消"
                 android:textColor="#ffffff"
                 android:textSize="12sp" />

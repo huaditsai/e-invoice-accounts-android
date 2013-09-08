@@ -1,18 +1,25 @@
 package huadi.EleInvAccounts.Accounts;
 
+import java.util.Calendar;
+
+import huadi.EleInvAccounts.DBHelper;
 import huadi.EleInvAccounts.MainActivity;
 import huadi.EleInvAccounts.R;
 import huadi.EleInvAccounts.Manager.ManagerActivity;
 import huadi.EleInvAccounts.Settings.SettingsActivity;
 import huadi.EleInvAccounts.Social.SocialActivity;
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.text.TextPaint;
 import android.text.TextUtils.TruncateAt;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TableLayout;
@@ -22,18 +29,23 @@ import android.widget.TextView;
 //記帳
 public class AccountsActivity extends Activity
 {	
+	SQLiteDatabase db = null;
 	//UI宣告
 	ImageButton btn_backfunc, btn_account, btn_manager, btn_social, btn_setting;
 	Button btn_addone, btn_scan, btn_import, btn_income, btn_expend, btn_save, btn_cancel;
 	TextView text_total, text_income, text_expenditure, text_balance;
 	TableLayout table;
 	LinearLayout popview;
+	EditText editText1, editText2, editText3, editText4, editText5, editText6, editText7;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_accounts);
+		
+		DBHelper dbHelper = new DBHelper(this);
+		db = dbHelper.getWritableDatabase();
 
 		setUI();		
 	}
@@ -81,6 +93,15 @@ public class AccountsActivity extends Activity
 		});
 
 		//popview ---------------------------------
+		
+		editText1 = (EditText)findViewById(R.id.editText1);
+		editText2 = (EditText)findViewById(R.id.editText2); //帳本
+		editText3 = (EditText)findViewById(R.id.editText3); //項目
+		editText4 = (EditText)findViewById(R.id.editText4); //分類
+		editText5 = (EditText)findViewById(R.id.editText5); //日期
+		editText6 = (EditText)findViewById(R.id.editText6); //商店
+		editText7 = (EditText)findViewById(R.id.editText7); //備註
+		
 		btn_income.getBackground().setAlpha(60);
 		btn_expend.getBackground().setAlpha(60);
 		btn_income.setOnClickListener(new OnClickListener()
@@ -108,8 +129,52 @@ public class AccountsActivity extends Activity
 			@Override
 			public void onClick(View v)
 			{
-				// TODO Auto-generated method stub
-
+				String date = editText5.getText().toString();
+				String accountName = editText2.getText().toString();
+				String cost = editText1.getText().toString();
+					String mainCategory = editText4.getText().toString();
+					String subCategory = editText4.getText().toString();
+				String item = editText3.getText().toString();
+				String store = editText6.getText().toString();
+					String invNum = editText5.getText().toString();
+				String remark = editText7.getText().toString();
+				
+				ContentValues accountCV = new ContentValues();
+				accountCV.put("date", date); //日期(yyyyMMdd)
+				accountCV.put("accountName", accountName); //記帳帳本
+				accountCV.put("cost", cost); //項目所花的金額
+				accountCV.put("mainCategory", mainCategory); //
+				accountCV.put("subCategory", subCategory); //
+				accountCV.put("item", item); //項目
+				accountCV.put("store", store); //商店名稱
+				accountCV.put("invNum", invNum); //發票編號
+				accountCV.put("remark", remark); //備註
+				
+				Cursor accountCursor = db.rawQuery("SELECT invNum "
+					+ "FROM Charge "
+					+ "WHERE item = '" + item + "' "
+					+ "AND invNum = '" + invNum + "' ", null); //要記得''包起來
+				
+				int count = accountCursor.getCount(); //資料筆數
+				if(count == 0)
+					db.insert("Charge", null, accountCV); //新增一筆至 Invoice
+				else
+				{
+					accountCursor.moveToFirst();
+					for (int i = 0; i < count; i++)
+					{
+						db.update("Charge", accountCV, "invNum = '" + invNum + "'" + "AND item = '" + item + "' ", null);
+						accountCursor.moveToNext(); //移至資料庫下一筆
+					}
+				}
+				popview.setVisibility(View.GONE);
+				editText1.setText("");
+				editText2.setText("");
+				editText3.setText("");
+				editText4.setText("");
+				editText5.setText("");
+				editText6.setText("");
+				editText7.setText("");
 			}
 		});
 		btn_cancel.setOnClickListener(new OnClickListener()
@@ -119,6 +184,13 @@ public class AccountsActivity extends Activity
 			{
 				// TODO Auto-generated method stub
 				popview.setVisibility(View.GONE);
+				editText1.setText("");
+				editText2.setText("");
+				editText3.setText("");
+				editText4.setText("");
+				editText5.setText("");
+				editText6.setText("");
+				editText7.setText("");
 			}
 		});
 		//popview ---------------------------------
@@ -170,11 +242,36 @@ public class AccountsActivity extends Activity
 		});
 		//Side menu -----------------------------------------------
 		
+		Calendar calendar = Calendar.getInstance();
+		int _year = calendar.get(Calendar.YEAR); //民國
+		int _month = calendar.get(Calendar.MONTH) + 1; //Calendar.MONTH 從0開始
+		Cursor invListCursor = db.rawQuery("SELECT cost "
+			+ "FROM Charge "
+			+ "WHERE date >= " + String.format("'%d%02d00' ", _year, _month)
+			+ "AND date <= " + String.format("'%d%02d31' ", _year, _month), null);
+		int costCount = invListCursor.getCount(); //資料筆數
+		int income = 0, expend = 0, balance = 0;
+		if(costCount != 0)
+		{
+			invListCursor.moveToFirst(); //移至資料庫第一筆
+			for (int i = 0; i < costCount; i++)
+			{
+				int money = invListCursor.getInt(invListCursor.getColumnIndex("cost"));
+				balance += money;
+				
+				if(money > 0)
+					expend += money;
+				else 
+					income += money;
+				
+				invListCursor.moveToNext(); //移至資料庫下一筆
+			}
+		}
 		
 		text_total.setText("總資產");
-		text_income.setText("本月收入");
-		text_expenditure.setText("本月支出");
-		text_balance.setText("本月結餘");
+		text_income.setText("本月收入 " + income);
+		text_expenditure.setText("本月支出 " + expend);
+		text_balance.setText("本月結餘 " + balance);
 
 		TableRow tr = new TableRow(this);
 		LinearLayout l1, l2, l3;

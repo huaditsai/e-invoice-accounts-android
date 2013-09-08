@@ -68,14 +68,15 @@ public class DBHelper extends SQLiteOpenHelper
 		SQL = "CREATE TABLE IF NOT EXISTS " + tableName[5]	//Charge 記帳
 			+ "("
 			+ "_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
-			+ "account_date VARCHAR(10),"	//記帳日期
-			+ "account_name NTEXT,"	//記帳帳本
-			+ "account_cost INTEGER," //項目所花的金額
-			+ "main_category NTEXT,"
-			+ "sub_category NTEXT,"
+			+ "date INTEGER,"	//日期(yyyyMMdd)
+			+ "accountName NTEXT,"	//記帳帳本
+			+ "cost INTEGER," //項目所花的金額
+			+ "mainCategory NTEXT,"
+			+ "subCategory NTEXT,"
 			+ "item NTEXT," //項目
 			+ "store NTEXT," //商店名稱
-			+ "invoice_no VARCHAR(10)"	//發票編號
+			+ "invNum VARCHAR(10),"	//發票編號
+			+ "remark NTEXT" //備註
 			+ ");";
 		db.execSQL(SQL);
 

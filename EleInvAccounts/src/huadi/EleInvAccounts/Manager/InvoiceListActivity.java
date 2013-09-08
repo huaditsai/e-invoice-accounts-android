@@ -166,7 +166,8 @@ public class InvoiceListActivity extends Activity
 	{		
 		Cursor invListCursor = db.rawQuery("SELECT invNum, invTotalCost, invDate, sellerName "
 			+ "FROM Invoice "
-			+ "WHERE invPeriod = " + String.format("'%d%02d'", year, month), null); //要記得''包起來
+			+ "WHERE invPeriod = " + String.format("'%d%02d'", year, month)
+			+ "ORDER BY invDate ASC", null); //要記得''包起來 ASC小-大 DESC大-小
 		
 		int count = invListCursor.getCount(); //資料筆數
 		//Log.e("count", "" + count);
@@ -252,14 +253,14 @@ public class InvoiceListActivity extends Activity
 		
 	}
 	
-	public void PopViewInfo(String invNum, String invPeriod, String sellerName, String invDate, int invTotalCost)
+	public void PopViewInfo(final String invNum, String invPeriod, String sellerName, String invDate, int invTotalCost)
 	{
 //		Log.e("invNum", invNum);
 //		Log.e("sellerName", sellerName);
 //		Log.e("invDate", invDate);
 //		Log.e("invTotalCost", "" + invTotalCost);
 		
-		text_invoiceno.setText(invNum);
+		text_invoiceno.setText(invNum.substring(0, 2) + "-" + invNum.substring(2, 10));
 		text_invoicemonth.setText(invPeriod);
 		text_store.setText(sellerName);
 		text_date.setText(invDate);
@@ -289,7 +290,11 @@ public class InvoiceListActivity extends Activity
 				l2 = new LinearLayout(this);
 				l2.setOrientation(LinearLayout.HORIZONTAL);
 				item[i] = new TextView(this);
-				item[i].setText(invDetailCursor.getString(invDetailCursor.getColumnIndex("description")));
+				item[i].setText(invDetailCursor.getString(invDetailCursor.getColumnIndex("description")) 
+//					+ " " 
+//					+ invDetailCursor.getInt(invDetailCursor.getColumnIndex("unitPrice")) + " x " //單價
+//					+ invDetailCursor.getInt(invDetailCursor.getColumnIndex("quantity")) //數量
+					);
 				item[i].setPadding(20, 0, 20, 0);
 				item[i].setMaxEms(10);
 				item[i].setLines(1);
@@ -315,12 +320,13 @@ public class InvoiceListActivity extends Activity
 				public void onClick(View v) {
 					popview.setVisibility(View.GONE);
 				}});
-			
 			popdelete.setOnClickListener(new OnClickListener(){
 				@Override
-				public void onClick(View v) {
-					//刪除
-					popview.setVisibility(View.GONE);
+				public void onClick(View v) { //刪除					
+				popview.setVisibility(View.GONE);
+				db.delete("Invoice", "invNum = '" + invNum + "'", null);
+				db.delete("InvDetail", "invNum = '" + invNum + "'", null);
+				GetInvList();					
 				}});
 		}
 	}

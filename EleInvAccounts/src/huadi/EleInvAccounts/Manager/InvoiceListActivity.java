@@ -96,7 +96,8 @@ public class InvoiceListActivity extends Activity
 					year--;
 					month = 12;
 				}
-				text_month.setText(String.format("%d 年 %02d - %02d 月", year, month-1, month)); //月份
+				invPeriod = String.format("%d 年 %02d - %02d 月", year, month-1, month);
+				text_month.setText(invPeriod); //月份
 				GetInvList(); //發票清單
 			}});
 		btn_right.setOnClickListener(new OnClickListener(){
@@ -108,7 +109,8 @@ public class InvoiceListActivity extends Activity
 					year++;
 					month = 2;
 				}
-				text_month.setText(String.format("%d 年 %02d - %02d 月", year, month-1, month)); //月份
+				invPeriod = String.format("%d 年 %02d - %02d 月", year, month-1, month);
+				text_month.setText(invPeriod); //月份
 				GetInvList(); //發票清單
 			}});
 		//月份選擇----------------------------------------------------
@@ -166,7 +168,7 @@ public class InvoiceListActivity extends Activity
 			+ "WHERE invPeriod = " + String.format("'%d%02d'", year, month), null); //要記得''包起來
 		
 		int count = invListCursor.getCount(); //資料筆數
-		Log.e("count", "" + count);
+		//Log.e("count", "" + count);
 
 		table.removeAllViews();
 		
@@ -201,7 +203,7 @@ public class InvoiceListActivity extends Activity
 				invDate[i] = invDate[i].substring(0,4) + "-" + invDate[i].substring(4,6) + "-" + invDate[i].substring(6,8);
 				
 				sellerName[i] = invListCursor.getString(invListCursor.getColumnIndex("sellerName"));
-				Log.e("inv", invNum[i]+":"+invPeriod+":"+sellerName[i]+":"+invDate[i]+":"+invTotalCost[i]);
+//				Log.e("inv", invNum[i]+":"+invPeriod+":"+sellerName[i]+":"+invDate[i]+":"+invTotalCost[i]);
 				
 				l1 = new LinearLayout(this);
 				l1.setOrientation(LinearLayout.HORIZONTAL);
@@ -231,7 +233,6 @@ public class InvoiceListActivity extends Activity
 					@Override
 					public void onClick(View arg0) {
 						popview.setVisibility(View.VISIBLE);
-//						PopViewInfo(invNum, invPeriod, sellerName, invDate, invTotalCost);
 						PopViewInfo(invNum[j], invPeriod, sellerName[j], invDate[j], invTotalCost[j]);
 					}});
 	
@@ -252,6 +253,11 @@ public class InvoiceListActivity extends Activity
 	
 	public void PopViewInfo(String invNum, String invPeriod, String sellerName, String invDate, int invTotalCost)
 	{
+//		Log.e("invNum", invNum);
+//		Log.e("sellerName", sellerName);
+//		Log.e("invDate", invDate);
+//		Log.e("invTotalCost", "" + invTotalCost);
+		
 		text_invoiceno.setText(invNum);
 		text_invoicemonth.setText(invPeriod);
 		text_store.setText(sellerName);
@@ -267,7 +273,7 @@ public class InvoiceListActivity extends Activity
 			+ "WHERE invNum = '" + invNum + "'", null);
 
 		int count = invDetailCursor.getCount(); //資料筆數
-		Log.e("count2", "" + count);
+		//Log.e("count2", "" + count);
 			
 		item = new TextView[count];
 		cost2 = new TextView[count];

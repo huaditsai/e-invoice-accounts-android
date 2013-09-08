@@ -96,7 +96,7 @@ public class InvoiceListActivity extends Activity
 					year--;
 					month = 12;
 				}
-				text_month.setText(invPeriod); //月份
+				text_month.setText(String.format("%d 年 %02d - %02d 月", year, month-1, month)); //月份
 				GetInvList(); //發票清單
 			}});
 		btn_right.setOnClickListener(new OnClickListener(){
@@ -108,7 +108,7 @@ public class InvoiceListActivity extends Activity
 					year++;
 					month = 2;
 				}
-				text_month.setText(invPeriod); //月份
+				text_month.setText(String.format("%d 年 %02d - %02d 月", year, month-1, month)); //月份
 				GetInvList(); //發票清單
 			}});
 		//月份選擇----------------------------------------------------
@@ -225,7 +225,7 @@ public class InvoiceListActivity extends Activity
 					@Override
 					public void onClick(View arg0) {
 						popview.setVisibility(View.VISIBLE);
-						PopViewInfo(invNum, invPeriod, sellerName, invDate, invTotalCost);
+//						PopViewInfo(invNum, invPeriod, sellerName, invDate, invTotalCost);
 					}});
 	
 				rl.addView(l1);
@@ -233,11 +233,12 @@ public class InvoiceListActivity extends Activity
 				tr.addView(rl);
 				table.addView(tr);
 				tr = new TableRow(this);
+
+				PopViewInfo(invNum, invPeriod, sellerName, invDate, invTotalCost);
 				
 				invListCursor.moveToNext(); //移至資料庫下一筆
 			}
 			
-			PopViewInfo(invNum, invPeriod, sellerName, invDate, invTotalCost);
 		}
 		
 	}
@@ -276,7 +277,7 @@ public class InvoiceListActivity extends Activity
 				item[i] = new TextView(this);
 				item[i].setText(invDetailCursor.getString(invDetailCursor.getColumnIndex("description")));
 				item[i].setPadding(20, 0, 20, 0);
-				item[i].setMaxEms(20);
+				item[i].setMaxEms(10);
 				item[i].setLines(1);
 				item[i].setEllipsize(TruncateAt.END);
 				item[i].setMinimumWidth(680);

@@ -183,7 +183,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@color/transparent"
-                android:padding="5dp"
+                android:padding="10dp"
                 android:src="@drawable/btn_left" />
 
             <RelativeLayout
@@ -210,7 +210,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@color/transparent"
-                android:padding="5dp"
+                android:padding="10dp"
                 android:src="@drawable/btn_right" />
 
         </LinearLayout>

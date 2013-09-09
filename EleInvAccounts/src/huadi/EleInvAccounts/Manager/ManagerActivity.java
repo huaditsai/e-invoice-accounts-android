@@ -29,7 +29,7 @@ public class ManagerActivity extends Activity
 {
 	String appID, UUID;
 	
-	int year, month;
+	int year, month, day;
 	String invPeriod; //對獎發票期別(yyyMM)
 	//UI宣告
 	ImageButton btn_backfunc, btn_account, btn_manager, btn_social, btn_setting;
@@ -211,8 +211,16 @@ public class ManagerActivity extends Activity
 		Calendar calendar = Calendar.getInstance();
 		year = calendar.get(Calendar.YEAR) - 1911; //民國
 		month = calendar.get(Calendar.MONTH) + 1; //Calendar.MONTH 從0開始...
+		day = calendar.get(Calendar.DAY_OF_MONTH);
 		if(month % 2 == 1)
-			month ++;
+		{
+			if(day < 25)
+				month -= 3; //若現在為9月, 還沒到25號, 只能看56月
+			else 
+				month--; //若現在為9月, 減減來看78月
+		}
+		else
+			month -= 2; //若現在為10月, 減2來看78月
 		invPeriod = String.format("%d 年 %02d - %02d 月", year, month-1, month);
 		text_month.setText(invPeriod); //月份
 		
@@ -260,22 +268,22 @@ public class ManagerActivity extends Activity
 		{
 			Map<String, List<String>> winning = new WinningList().execute(_invPeriod, UUID, appID).get();
 			
-			String spcPrizeNo = null, firstPrizeNo = null, sixthPrizeNo = null, superPrizeNo = null;
+			String spcPrizeNo = "", firstPrizeNo = "", sixthPrizeNo = "", superPrizeNo = "";
 			
 			for (String no : winning.get("spcPrizeNo")) //特獎號
-				spcPrizeNo += no;
+				spcPrizeNo += no + "\n";
 			text_price1.setText(spcPrizeNo);
 			
 			for (String no : winning.get("firstPrizeNo")) //頭獎號
-				firstPrizeNo += no;
+				firstPrizeNo += no + "\n";
 			text_price2.setText(firstPrizeNo);
 			
 			for (String no : winning.get("sixthPrizeNo")) //增開獎號
-				sixthPrizeNo += no;
+				sixthPrizeNo += no + "\n";
 			text_price3.setText(sixthPrizeNo);
 			
 			for (String no : winning.get("superPrizeNo")) //特別獎號
-				superPrizeNo += no;
+				superPrizeNo += no + "\n";
 			text_price4.setText(superPrizeNo);
 		}
 		catch (Exception e)

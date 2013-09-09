@@ -15,7 +15,6 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
 
-import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -61,11 +60,11 @@ public class WinningList extends AsyncTask<String, String, Map<String, List<Stri
 				String v =  jsonObject.getString("v"); //版本號碼
 				String code =  jsonObject.getString("code"); //訊息回應碼
 				String msg =  jsonObject.getString("msg"); //系統回應訊息
-				Log.e("JSONObject Exception","版本" + v + ", 回應碼 " + code + ", 訊息" + msg);
+				//Log.e("JSONObject Exception","版本" + v + ", 回應碼 " + code + ", 訊息" + msg);
 				
 				try
 				{					
-					String invoYm =  jsonObject.getString("invoYm"); //查詢開獎期別(民國年月)
+					//String invoYm =  jsonObject.getString("invoYm"); //查詢開獎期別(民國年月)
 					
 					List<String> superPrizeNo = new ArrayList<String>(); //千萬特獎號碼
 					superPrizeNo.add(jsonObject.getString("superPrizeNo"));

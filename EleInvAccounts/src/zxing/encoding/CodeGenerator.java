@@ -66,7 +66,7 @@ public class CodeGenerator
 	
 	private static Bitmap EncodeAsBitmap(String contents, BarcodeFormat format, int desiredWidth, int desiredHeight) throws WriterException
 	{
-		final int WHITE = 0xFFFFFFFF; //可以指定其他顏色，讓二維碼變成彩色效果
+		final int WHITE = 0x00FFFFFF; //可以指定其他顏色，讓二維碼變成彩色效果(ARGB)
 		final int BLACK = 0xFF000000;
 
 		HashMap<EncodeHintType, String> hints = null;

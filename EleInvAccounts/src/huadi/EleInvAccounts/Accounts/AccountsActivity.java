@@ -16,6 +16,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.text.TextPaint;
 import android.text.TextUtils.TruncateAt;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.InputMethodManager;
@@ -63,7 +64,6 @@ public class AccountsActivity extends Activity
 
 	private void setUI()
 	{
-		// TODO Auto-generated method stub
 		btn_backfunc = (ImageButton) findViewById(R.id.imageButton1);
 		btn_account = (ImageButton) findViewById(R.id.imageButton2);
 		btn_manager = (ImageButton) findViewById(R.id.imageButton3);
@@ -114,12 +114,15 @@ public class AccountsActivity extends Activity
 		editText6 = (EditText)findViewById(R.id.editText6); //商店
 		editText7 = (EditText)findViewById(R.id.editText7); //備註
 		
+		//預設支出
+		isIncome = false;
 		btn_income.getBackground().setAlpha(60);
-		btn_expend.getBackground().setAlpha(60);
+		btn_expend.getBackground().setAlpha(255);
 		
 		if(isCapture) //若是掃QR code
 		{
 			//發票應該都是支出
+			isIncome = false;
 			btn_expend.getBackground().setAlpha(255);
 			btn_income.getBackground().setAlpha(60);
 			popview.setVisibility(View.VISIBLE);
@@ -142,7 +145,7 @@ public class AccountsActivity extends Activity
 						isIncome = true;
 						btn_expend.getBackground().setAlpha(60);
 						btn_income.getBackground().setAlpha(255);
-					} else isIncome = false;
+					} 
 					editText1.setText("" + amount);
 					editText14.setText(invDetailCursor.getString(invDetailCursor.getColumnIndex("invNum")));
 					editText3.setText(invDetailCursor.getString(invDetailCursor.getColumnIndex("description")));
@@ -173,7 +176,6 @@ public class AccountsActivity extends Activity
 			@Override
 			public void onClick(View v)
 			{
-				// TODO Auto-generated method stub
 				btn_income.getBackground().setAlpha(255);
 				btn_expend.getBackground().setAlpha(60);
 				isIncome = true;
@@ -184,7 +186,6 @@ public class AccountsActivity extends Activity
 			@Override
 			public void onClick(View v)
 			{
-				// TODO Auto-generated method stub
 				btn_expend.getBackground().setAlpha(255);
 				btn_income.getBackground().setAlpha(60);
 				isIncome = false;
@@ -239,30 +240,32 @@ public class AccountsActivity extends Activity
 					}
 				}
 				
-				if(!isCapture && invNum != "") //手動發票記帳(傳統發票), 若為 發票, 就要存到Invoice,InvDetail
-				{
-					int month = Integer.parseInt(date.substring(0, 4)) % 2 == 1?Integer.parseInt(date.substring(0, 4)) + 1 
-						: Integer.parseInt(date.substring(0, 4));
+				if(!isCapture && invNum.length() > 0) //手動發票記帳(傳統發票), 若為 發票, 就要存到Invoice,InvDetail
+				{					
+					int month = Integer.parseInt(date.substring(4, 6)) % 2 == 1?Integer.parseInt(date.substring(4, 6)) + 1 
+						: Integer.parseInt(date.substring(4, 6));
 					String invPeriod = String.format("%d%02d", Integer.parseInt(date.substring(0, 4))-1911, month);
 					ContentValues invoiceCV = new ContentValues();
 					invoiceCV.put("invNum", invNum); //發票編號
-					invoiceCV.put("invTotalCost", money); //消費金額
+					invoiceCV.put("invTotalCost", -money); //消費金額
 					invoiceCV.put("invDate", date); //發票開立日期(yyyyMMdd)
 					invoiceCV.put("sellerName", sellerName); //賣方名稱
 					invoiceCV.put("invStatus", ""); //發票狀態(已確認)
 					invoiceCV.put("invPeriod", invPeriod); //對獎發票期別(民國年月)
 					
+					//Log.e("invPeriod", invNum + ", " + invPeriod);
+					
 					Cursor invoiceCursor = db.rawQuery("SELECT invNum "
 						+ "FROM Invoice "
 						+ "WHERE invNum = '" + invNum + "'", null); //要記得''包起來
 					
-					int invoiceCVcount = invoiceCursor.getCount(); //資料筆數
-					if(count == 0)
+					int invCount = invoiceCursor.getCount(); //資料筆數
+					if(invCount == 0)
 						db.insert("Invoice", null, invoiceCV); //新增一筆至 Invoice
 					else
 					{
 						invoiceCursor.moveToFirst();
-						for (int i = 0; i < invoiceCVcount; i++)
+						for (int i = 0; i < invCount; i++)
 						{
 							db.update("Invoice", invoiceCV, "invNum = '" + invNum + "'", null);
 							invoiceCursor.moveToNext(); //移至資料庫下一筆
@@ -274,8 +277,8 @@ public class AccountsActivity extends Activity
 					invDetailCV.put("rowNum", "1"); //明細編號(1,2,3...)
 					invDetailCV.put("description", item); //品名
 					invDetailCV.put("quantity", "1"); //數量
-					invDetailCV.put("unitPrice", money); //單價
-					invDetailCV.put("amount", money); //小記
+					invDetailCV.put("unitPrice", -money); //單價
+					invDetailCV.put("amount", -money); //小記
 					
 					Cursor invDetailCursor = db.rawQuery("SELECT invNum, rowNum "
 						+ "FROM InvDetail "
@@ -314,7 +317,6 @@ public class AccountsActivity extends Activity
 			@Override
 			public void onClick(View v)
 			{
-				// TODO Auto-generated method stub
 				InputMethodManager imm = ((InputMethodManager)getSystemService(INPUT_METHOD_SERVICE)); //隱藏 keyboard
 				imm.hideSoftInputFromWindow(AccountsActivity.this.getCurrentFocus().getWindowToken(),InputMethodManager.HIDE_NOT_ALWAYS);
 				popview.setVisibility(View.GONE);
@@ -337,7 +339,6 @@ public class AccountsActivity extends Activity
 			@Override
 			public void onClick(View v)
 			{
-				// TODO Auto-generated method stub
 				Intent intent = new Intent(AccountsActivity.this, MainActivity.class);
 				startActivity(intent);
 				db.close();
@@ -349,7 +350,6 @@ public class AccountsActivity extends Activity
 			@Override
 			public void onClick(View v)
 			{
-				// TODO Auto-generated method stub
 				Intent intent = new Intent(AccountsActivity.this, ManagerActivity.class);
 				startActivity(intent);
 				db.close();
@@ -361,7 +361,6 @@ public class AccountsActivity extends Activity
 			@Override
 			public void onClick(View v)
 			{
-				// TODO Auto-generated method stub
 				Intent intent = new Intent(AccountsActivity.this, SocialActivity.class);
 				startActivity(intent);
 				db.close();
@@ -373,7 +372,6 @@ public class AccountsActivity extends Activity
 			@Override
 			public void onClick(View v)
 			{
-				// TODO Auto-generated method stub
 				Intent intent = new Intent(AccountsActivity.this, SettingsActivity.class);
 				startActivity(intent);
 				db.close();
@@ -385,7 +383,7 @@ public class AccountsActivity extends Activity
 		GetChargeList();
 	}
 	
-	public void GetChargeList()
+	public void GetChargeList() //一進去的列表
 	{
 		Calendar calendar = Calendar.getInstance();
 		int _year = calendar.get(Calendar.YEAR); //民國
@@ -415,7 +413,7 @@ public class AccountsActivity extends Activity
 		
 		text_total.setText("總資產");
 		text_income.setText("本月收入 " + income);
-		text_expenditure.setText("本月支出 " + expend);
+		text_expenditure.setText("本月支出 " + -expend);
 		text_balance.setText("本月結餘 " + balance);
 
 		TableRow tr = new TableRow(this);
@@ -425,7 +423,8 @@ public class AccountsActivity extends Activity
 		Cursor ChargeListCursor = db.rawQuery("SELECT date, accountName, money, item, mainCategory, subCategory "
 			+ "FROM Charge "
 			+ "WHERE date >= " + String.format("'%d%02d00' ", _year, _month)
-			+ "AND date <= " + String.format("'%d%02d31' ", _year, _month), null);
+			+ "AND date <= " + String.format("'%d%02d31' ", _year, _month)
+			+ "ORDER BY date ASC", null);
 		
 		int ChargeListCount = ChargeListCursor.getCount(); //資料筆數
 		month = new TextView[ChargeListCount];

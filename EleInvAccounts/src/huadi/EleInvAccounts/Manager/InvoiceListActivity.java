@@ -166,7 +166,7 @@ public class InvoiceListActivity extends Activity
 	{		
 		Cursor invListCursor = db.rawQuery("SELECT invNum, invTotalCost, invDate, sellerName "
 			+ "FROM Invoice "
-			+ "WHERE invPeriod = " + String.format("'%d%02d'", year, month)
+			+ "WHERE invPeriod = " + String.format("'%d%02d' ", year, month)
 			+ "ORDER BY invDate ASC", null); //要記得''包起來 ASC小-大 DESC大-小
 		
 		int count = invListCursor.getCount(); //資料筆數
@@ -303,7 +303,7 @@ public class InvoiceListActivity extends Activity
 				l2.addView(item[i]);
 				
 				cost2[i] = new TextView(this);
-				cost2[i].setText(invDetailCursor.getInt(invDetailCursor.getColumnIndex("amount")) + "NTD");
+				cost2[i].setText(invDetailCursor.getInt(invDetailCursor.getColumnIndex("amount")) + " NTD");
 				cost2[i].setMinimumWidth(100);
 				cost2[i].setGravity(Gravity.RIGHT);
 				l2.addView(cost2[i]);

@@ -239,6 +239,7 @@ public class CaptureActivity extends Activity implements Callback
 		intent.putExtra("isCapture", true);
 		intent.putExtra("invNum", invNum);
 		startActivity(intent);
+		finish();
 	}
 
 	private void initBeepSound() //掃到了就叫一聲

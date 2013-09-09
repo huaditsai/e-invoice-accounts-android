@@ -9,11 +9,16 @@ import huadi.EleInvAccounts.Manager.ManagerActivity;
 import huadi.EleInvAccounts.Settings.SettingsActivity;
 import huadi.EleInvAccounts.Social.SocialActivity;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.text.TextPaint;
 import android.text.TextUtils.TruncateAt;
 import android.util.Log;
@@ -99,9 +104,31 @@ public class AccountsActivity extends Activity
 			@Override
 			public void onClick(View v)
 			{
-				isCapture = true;
-				Intent intent = new Intent(AccountsActivity.this, CaptureActivity.class);
-				startActivity(intent);
+				if(IsInternet())
+				{
+					isCapture = true;
+					Intent intent = new Intent(AccountsActivity.this, CaptureActivity.class);
+					startActivity(intent);
+				}
+				else
+				{
+					new AlertDialog.Builder(AccountsActivity.this)
+					.setTitle("請開啟網路連線功能")
+					.setMessage("取得發票資訊需要網路連線")
+					.setPositiveButton("確定", new DialogInterface.OnClickListener()
+					{
+						@Override
+						public void onClick(DialogInterface dialog, int which)
+						{
+							startActivity(new Intent(Settings.ACTION_WIRELESS_SETTINGS));							
+						}									
+					})
+					.setNegativeButton("取消", new DialogInterface.OnClickListener()	{
+						@Override
+						public void onClick(DialogInterface dialog, int which){														
+						}
+					}).show();
+				}
 			}
 		});
 
@@ -134,6 +161,15 @@ public class AccountsActivity extends Activity
 				+ "WHERE invNum = '" + invNum + "' ", null); //要記得''包起來
 			
 			int count = invDetailCursor.getCount(); //資料筆數
+			
+			if(count == 0) //當網路慢, 更新ui會比爬資料快
+			{
+				Intent intent = new Intent(AccountsActivity.this, AccountsActivity.class);
+				intent.putExtra("isCapture", true);
+				intent.putExtra("invNum", invNum);
+				startActivity(intent);
+				finish();
+			}
 			//Log.e("count",""+count);
 			if(count != 0)
 			{
@@ -494,6 +530,17 @@ public class AccountsActivity extends Activity
 				ChargeListCursor.moveToNext(); //移至資料庫下一筆
 			}
 		}
+	}
+	
+	private boolean IsInternet()
+	{
+		ConnectivityManager conManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);//先取得此service
+		NetworkInfo networInfo = conManager.getActiveNetworkInfo(); //在取得相關資訊
+		
+		if (networInfo == null || !networInfo.isAvailable()) //沒網路
+			return false;
+		else
+			return true;
 	}
 
 }

@@ -12,7 +12,9 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
+import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 //發票
@@ -22,6 +24,10 @@ public class ManagerActivity extends Activity
 	ImageButton btn_backfunc, btn_account, btn_manager, btn_social, btn_setting;
 	ImageButton btn_list, btn_analysis, btn_prize, btn_prizelist;
 	TextView text_list, text_analysis, text_prize, text_prizelist;
+	LinearLayout linear1;
+	ImageButton btn_right, btn_left;
+	TextView text_month, text_price1, text_price2, text_price3, text_price4;
+	Button btn_close;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -50,6 +56,15 @@ public class ManagerActivity extends Activity
 		btn_analysis = (ImageButton)findViewById(R.id.imageButton7);
 		btn_prize = (ImageButton)findViewById(R.id.imageButton8);
 		btn_prizelist = (ImageButton)findViewById(R.id.imageButton9);
+		linear1 = (LinearLayout)findViewById(R.id.LinearLayout1);
+		btn_right = (ImageButton)findViewById(R.id.imageButton7);
+		btn_left = (ImageButton)findViewById(R.id.imageButton6);
+		text_month = (TextView)findViewById(R.id.textView7);
+		text_price1 = (TextView)findViewById(R.id.textView11);
+		text_price2 = (TextView)findViewById(R.id.textView12);
+		text_price3 = (TextView)findViewById(R.id.textView16);
+		text_price4 = (TextView)findViewById(R.id.textView17);
+		btn_close = (Button)findViewById(R.id.button7);
 		
 		text_list.setText("發票清單");
 		text_analysis.setText("消費分析");
@@ -135,6 +150,9 @@ public class ManagerActivity extends Activity
 					btn_prizelist.setY(btn_prizelist.getY() + btnMoveNega);
 					text_prizelist.setX(text_prizelist.getX() + btnMoveNega);
 					text_prizelist.setY(text_prizelist.getY() + btnMoveNega);
+					
+					linear1.setVisibility(View.VISIBLE);
+					setPrizelistPop();
 				}
 				return false;								
 			}});
@@ -171,5 +189,31 @@ public class ManagerActivity extends Activity
 				startActivity(intent);
 				ManagerActivity.this.finish();
 			}});
+	}
+	
+	private void setPrizelistPop() {
+		btn_right.setOnClickListener(new OnClickListener(){
+			@Override
+			public void onClick(View arg0) {
+				text_month.setText("月份");
+			}});
+		
+		btn_left.setOnClickListener(new OnClickListener(){
+			@Override
+			public void onClick(View arg0) {
+				text_month.setText("月份");
+			}});
+		
+		text_price1.setText("特獎號");
+		text_price2.setText("頭獎號");
+		text_price3.setText("增開獎號");
+		text_price4.setText("特別獎號");
+		
+		btn_close.setOnClickListener(new OnClickListener(){
+			@Override
+			public void onClick(View v) {
+				linear1.setVisibility(View.GONE);
+			}});
+		
 	}
 }

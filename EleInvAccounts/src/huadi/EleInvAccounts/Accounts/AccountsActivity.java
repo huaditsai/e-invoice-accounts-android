@@ -25,6 +25,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -38,6 +39,9 @@ import android.widget.TextView;
 public class AccountsActivity extends Activity
 {	
 	boolean isCapture = false;
+	int index = 0;
+	boolean isCapturePopView = false;
+	
 	String invNum = "";
 	SQLiteDatabase db = null;
 	//UI宣告
@@ -147,67 +151,75 @@ public class AccountsActivity extends Activity
 		isIncome = false;
 		btn_income.getBackground().setAlpha(60);
 		btn_expend.getBackground().setAlpha(255);
-		
-		if(isCapture) //若是掃QR code
+				
+		index = 0;
+		if(isCapture)
 		{
-			//發票應該都是支出
-			isIncome = false;
-			btn_expend.getBackground().setAlpha(255);
-			btn_income.getBackground().setAlpha(60);
-			popview.setVisibility(View.VISIBLE);
-			
-			Cursor invDetailCursor = db.rawQuery("SELECT invNum, description, amount "
-				+ "FROM InvDetail "
-				+ "WHERE invNum = '" + invNum + "' ", null); //要記得''包起來
-			
-			int count = invDetailCursor.getCount(); //資料筆數
-			
-			if(count == 0) //當網路慢, 更新ui會比爬資料快
+			isCapturePopView = true;
+			CapturePopView(index);
+		}
+		
+		//mainCategory
+		Cursor mainCateCursor = db.rawQuery("SELECT mainCategory "
+			+ "FROM MainCategory ", null); //要記得''包起來
+		
+		int mainCateCount = mainCateCursor.getCount(); //資料筆數
+		String[] mainCategory = new String[mainCateCount];
+		
+		if(mainCateCount != 0)
+		{
+			mainCateCursor.moveToFirst();
+			for (int i = 0; i < mainCateCount; i++)
 			{
-				Intent intent = new Intent(AccountsActivity.this, AccountsActivity.class);
-				intent.putExtra("isCapture", true);
-				intent.putExtra("invNum", invNum);
-				startActivity(intent);
-				finish();
-			}
-			//Log.e("count",""+count);
-			if(count != 0)
-			{
-				invDetailCursor.moveToFirst();
-				for (int i = 0; i < count; i++)
-				{
-					int amount = invDetailCursor.getInt(invDetailCursor.getColumnIndex("amount"));
-					if(amount < 0) //若(發票)小計<0, 支出就變收入
-					{
-						amount = -amount;
-						isIncome = true;
-						btn_expend.getBackground().setAlpha(60);
-						btn_income.getBackground().setAlpha(255);
-					} 
-					editText1.setText("" + amount);
-					editText14.setText(invDetailCursor.getString(invDetailCursor.getColumnIndex("invNum")));
-					editText3.setText(invDetailCursor.getString(invDetailCursor.getColumnIndex("description")));
-					invDetailCursor.moveToNext();
-				}
-			}
-			
-			Cursor invCursor = db.rawQuery("SELECT invDate, sellerName "
-				+ "FROM Invoice "
-				+ "WHERE invNum = '" + invNum + "' ", null); //要記得''包起來
-			
-			int count2 = invCursor.getCount(); //資料筆數
-			//Log.e("count2",""+count);
-			if(count2 != 0)
-			{
-				invCursor.moveToFirst();
-				for (int i = 0; i < count2; i++)
-				{			
-					editText5.setText(invCursor.getString(invCursor.getColumnIndex("invDate")));
-					editText6.setText(invCursor.getString(invCursor.getColumnIndex("sellerName")));
-					invCursor.moveToNext();
-				}
+				mainCategory[i] = mainCateCursor.getString(mainCateCursor.getColumnIndex("mainCategory"));
+				mainCateCursor.moveToNext(); //移至資料庫下一筆
 			}
 		}
+		else 
+		{
+			ContentValues mainCateCV = new ContentValues();
+			mainCateCV.put("mainCategory", "食");
+			db.insert("MainCategory", null, mainCateCV);
+			mainCateCV.put("mainCategory", "衣");
+			db.insert("MainCategory", null, mainCateCV);
+		}
+		
+		//建立一個ArrayAdapter物件，並放置下拉選單的內容
+		ArrayAdapter<String> adapter1 = new ArrayAdapter<String>(AccountsActivity.this, 
+			android.R.layout.simple_spinner_item, mainCategory);
+		adapter1.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item); //設定下拉選單的樣式
+		spinner1.setAdapter(adapter1);
+		
+		//SubCategory
+		Cursor subCursor = db.rawQuery("SELECT subCategory "
+			+ "FROM SubCategory ", null); //要記得''包起來
+		
+		int subCateCount = subCursor.getCount(); //資料筆數
+		String[] subCategory = new String[subCateCount];
+		
+		if(subCateCount != 0)
+		{
+			subCursor.moveToFirst();
+			for (int i = 0; i < subCateCount; i++)
+			{
+				subCategory[i] = subCursor.getString(subCursor.getColumnIndex("subCategory"));
+				subCursor.moveToNext(); //移至資料庫下一筆
+			}
+		}
+		else 
+		{
+			ContentValues subCateCV = new ContentValues();
+			subCateCV.put("subCategory", "飲料");
+			db.insert("SubCategory", null, subCateCV);
+			subCateCV.put("subCategory", "T-shirt");
+			db.insert("SubCategory", null, subCateCV);
+		}
+		
+		ArrayAdapter<String> adapter2 = new ArrayAdapter<String>(AccountsActivity.this, 
+			android.R.layout.simple_spinner_item, subCategory);
+		adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item); //設定下拉選單的樣式
+		spinner2.setAdapter(adapter2);
+		
 		
 		btn_income.setOnClickListener(new OnClickListener()
 		{
@@ -233,15 +245,15 @@ public class AccountsActivity extends Activity
 		{
 			@Override
 			public void onClick(View v)
-			{
+			{				
 				String date = editText5.getText().toString(); // TODO 要規定為yyyyMMdd
 //				String accountName = editText2.getText().toString();
-				String accountName = spinner1.getSelectedItem().toString();
-				int money = Integer.parseInt(editText1.getText().toString()); // TODO 要規定必填
+				String accountName = spinner1.getSelectedItem().toString();				
+				int money = Integer.parseInt(editText1.getText().toString()); // TODO 要規定必填, 數字
 //					String mainCategory = editText4.getText().toString();
 //					String subCategory = editText4.getText().toString();
-					String mainCategory = spinner2.getSelectedItem().toString();
-					String subCategory = spinner2.getSelectedItem().toString();
+				String mainCategory = spinner2.getSelectedItem().toString();
+				String subCategory = spinner2.getSelectedItem().toString();
 				String item = editText3.getText().toString(); // TODO 要規定必填
 				String sellerName = editText6.getText().toString();
 				String invNum = editText14.getText().toString();
@@ -284,8 +296,8 @@ public class AccountsActivity extends Activity
 				if(!isCapture && invNum.length() > 0) //手動發票記帳(傳統發票), 若為 發票, 就要存到Invoice,InvDetail
 				{					
 					int month = Integer.parseInt(date.substring(4, 6)) % 2 == 1?Integer.parseInt(date.substring(4, 6)) + 1 
-						: Integer.parseInt(date.substring(4, 6));
-					String invPeriod = String.format("%d%02d", Integer.parseInt(date.substring(0, 4))-1911, month);
+						: Integer.parseInt(date.substring(4, 6)); //雙數月
+					String invPeriod = String.format("%d%02d", Integer.parseInt(date.substring(0, 4))-1911, month);//yyyMM
 					ContentValues invoiceCV = new ContentValues();
 					invoiceCV.put("invNum", invNum); //發票編號
 					invoiceCV.put("invTotalCost", -money); //消費金額
@@ -338,19 +350,15 @@ public class AccountsActivity extends Activity
 						}
 					}
 				}
+
+				InitPopView();
 				
-				InputMethodManager imm = ((InputMethodManager)getSystemService(INPUT_METHOD_SERVICE)); //隱藏 keyboard
-				imm.hideSoftInputFromWindow(AccountsActivity.this.getCurrentFocus().getWindowToken(),InputMethodManager.HIDE_NOT_ALWAYS);
-				popview.setVisibility(View.GONE);
-				editText1.setText("");
-//				editText2.setText("");
-				editText14.setText("");
-				editText3.setText("");
-//				editText4.setText("");
-				editText5.setText("");
-				editText6.setText("");
-				editText7.setText("");
-				GetChargeList();
+				if(isCapturePopView) //發票掃完會逐一跳出
+				{
+					index++;
+					CapturePopView(index);
+					//Log.e("index", "" + index);
+				}
 			}
 		});
 		btn_cancel.setOnClickListener(new OnClickListener()
@@ -359,21 +367,10 @@ public class AccountsActivity extends Activity
 			public void onClick(View v)
 			{
 				//掃完qrCode時, 會先進db
-				db.delete("Invoice", "invNum = '" + invNum + "'", null);
-				db.delete("InvDetail", "invNum = '" + invNum + "'", null);
+				//db.delete("Invoice", "invNum = '" + invNum + "'", null);
+				//db.delete("InvDetail", "invNum = '" + invNum + "'", null);
 				
-				InputMethodManager imm = ((InputMethodManager)getSystemService(INPUT_METHOD_SERVICE)); //隱藏 keyboard
-				imm.hideSoftInputFromWindow(AccountsActivity.this.getCurrentFocus().getWindowToken(),InputMethodManager.HIDE_NOT_ALWAYS);
-				popview.setVisibility(View.GONE);
-				editText1.setText("");
-//				editText2.setText("");
-				editText14.setText("");
-				editText3.setText("");
-//				editText4.setText("");
-				editText5.setText("");
-				editText6.setText("");
-				editText7.setText("");
-				GetChargeList();
+				InitPopView();
 			}
 		});
 		//popview ---------------------------------
@@ -532,6 +529,88 @@ public class AccountsActivity extends Activity
 				tr = new TableRow(this);				
 				
 				ChargeListCursor.moveToNext(); //移至資料庫下一筆
+			}
+		}
+	}
+	
+	private void InitPopView()
+	{
+		InputMethodManager imm = ((InputMethodManager)getSystemService(INPUT_METHOD_SERVICE)); //隱藏 keyboard
+		imm.hideSoftInputFromWindow(AccountsActivity.this.getCurrentFocus().getWindowToken(),InputMethodManager.HIDE_NOT_ALWAYS);
+		popview.setVisibility(View.GONE);
+		editText1.setText("");
+//		editText2.setText("");
+		editText14.setText("");
+		editText3.setText("");
+//		editText4.setText("");
+		editText5.setText("");
+		editText6.setText("");
+		editText7.setText("");
+		GetChargeList();
+	}
+	
+	private void CapturePopView(int _index)
+	{
+		Cursor invDetailCursor = db.rawQuery("SELECT invNum, description, amount "
+			+ "FROM InvDetail "
+			+ "WHERE invNum = '" + invNum + "' ", null); //要記得''包起來
+		
+		int count = invDetailCursor.getCount(); //資料筆數
+		if(index >= count)
+			isCapturePopView = false;
+		
+		if(isCapturePopView) //若是掃QR code
+		{
+			//發票應該都是支出
+			isIncome = false;
+			btn_expend.getBackground().setAlpha(255);
+			btn_income.getBackground().setAlpha(60);
+			popview.setVisibility(View.VISIBLE);
+			
+			if(count == 0) //當網路慢, 更新ui會比爬資料快
+			{
+				Intent intent = new Intent(AccountsActivity.this, AccountsActivity.class);
+				intent.putExtra("isCapture", true);
+				intent.putExtra("invNum", invNum);
+				startActivity(intent);
+				finish();
+			}
+			//Log.e("count",""+count);
+			if(count != 0)
+			{
+				if (_index < count)
+				{
+					invDetailCursor.moveToPosition(_index);
+					int amount = invDetailCursor.getInt(invDetailCursor.getColumnIndex("amount"));
+					if(amount < 0) //若(發票)小計<0, 支出就變收入
+					{
+						amount = -amount;
+						isIncome = true;
+						btn_expend.getBackground().setAlpha(60);
+						btn_income.getBackground().setAlpha(255);
+					} 
+					editText1.setText("" + amount);
+					editText14.setText(invDetailCursor.getString(invDetailCursor.getColumnIndex("invNum")));
+					editText3.setText(invDetailCursor.getString(invDetailCursor.getColumnIndex("description")));
+					//invDetailCursor.moveToNext();
+				}
+			}
+			
+			Cursor invCursor = db.rawQuery("SELECT invDate, sellerName "
+				+ "FROM Invoice "
+				+ "WHERE invNum = '" + invNum + "' ", null); //要記得''包起來
+			
+			int count2 = invCursor.getCount(); //資料筆數
+			//Log.e("count2",""+count2);
+			if(count2 != 0)
+			{
+				invCursor.moveToFirst();
+				for (int i = 0; i < count2; i++)
+				{			
+					editText5.setText(invCursor.getString(invCursor.getColumnIndex("invDate")));
+					editText6.setText(invCursor.getString(invCursor.getColumnIndex("sellerName")));
+					invCursor.moveToNext();
+				}
 			}
 		}
 	}

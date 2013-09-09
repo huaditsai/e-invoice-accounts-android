@@ -288,6 +288,8 @@ public class ManagerActivity extends Activity
 		store = new TextView[count];
 		cost = new TextView[count];
 		
+		invoicetable.removeAllViews();
+		
 		for (int i = 0; i < count; i++)
 		{
 			l1 = new LinearLayout(this);

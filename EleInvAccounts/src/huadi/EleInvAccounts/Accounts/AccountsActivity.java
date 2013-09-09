@@ -46,7 +46,7 @@ public class AccountsActivity extends Activity
 	SQLiteDatabase db = null;
 	//UI宣告
 	ImageButton btn_backfunc, btn_account, btn_manager, btn_social, btn_setting;
-	Button btn_addone, btn_scan, btn_import, btn_income, btn_expend, btn_save, btn_cancel;
+	Button btn_addone, btn_scan, btn_import, btn_income, btn_expend, btn_save, btn_cancel, btn_bg;
 	TextView text_total, text_income, text_expenditure, text_balance;
 	TableLayout table;
 	LinearLayout popview;
@@ -93,6 +93,7 @@ public class AccountsActivity extends Activity
 		text_balance = (TextView) findViewById(R.id.textView9);
 		table = (TableLayout) findViewById(R.id.TableLayout1);
 		popview = (LinearLayout) findViewById(R.id.LinearLayout1);
+		btn_bg = (Button)findViewById(R.id.button8);
 
 		btn_addone.setOnClickListener(new OnClickListener() //手動記帳
 		{
@@ -101,6 +102,7 @@ public class AccountsActivity extends Activity
 			{
 				isCapture = false;
 				popview.setVisibility(View.VISIBLE);
+				btn_bg.setVisibility(View.VISIBLE);
 			}
 		});
 		btn_scan.setOnClickListener(new OnClickListener() //條碼掃描
@@ -539,6 +541,7 @@ public class AccountsActivity extends Activity
 		InputMethodManager imm = ((InputMethodManager)getSystemService(INPUT_METHOD_SERVICE)); //隱藏 keyboard
 		imm.hideSoftInputFromWindow(AccountsActivity.this.getCurrentFocus().getWindowToken(),InputMethodManager.HIDE_NOT_ALWAYS);
 		popview.setVisibility(View.GONE);
+		btn_bg.setVisibility(View.GONE);
 		editText1.setText("");
 //		editText2.setText("");
 		editText14.setText("");
@@ -567,6 +570,7 @@ public class AccountsActivity extends Activity
 			btn_expend.getBackground().setAlpha(255);
 			btn_income.getBackground().setAlpha(60);
 			popview.setVisibility(View.VISIBLE);
+			btn_bg.setVisibility(View.VISIBLE);
 			
 			if(count == 0) //當網路慢, 更新ui會比爬資料快
 			{

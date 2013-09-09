@@ -45,7 +45,7 @@ public class ManagerActivity extends Activity
 	TextView text_month2, text_input, text_prizeornot;
 	Button btn_close, btn_close2, btn_invoice, btn_number;
 	TableLayout invoicetable;
-	Button btn_0, btn_1, btn_2, btn_3, btn_4, btn_5, btn_6, btn_7, btn_8, btn_9, btn_clear, btn_backspace;
+	Button btn_0, btn_1, btn_2, btn_3, btn_4, btn_5, btn_6, btn_7, btn_8, btn_9, btn_clear, btn_backspace, btn_bg;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -111,6 +111,7 @@ public class ManagerActivity extends Activity
 		btn_clear = (Button)findViewById(R.id.button13);
 		btn_backspace = (Button)findViewById(R.id.button15);
 		btn_close2 = (Button)findViewById(R.id.button77);
+		btn_bg = (Button)findViewById(R.id.button16);
 		
 		text_list.setText("發票清單");
 		text_analysis.setText("消費分析");
@@ -241,6 +242,7 @@ public class ManagerActivity extends Activity
 	}
 	
 	private void setPrizePop(){
+		btn_bg.setVisibility(View.VISIBLE);
 		btn_right2.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View arg0) {
@@ -271,6 +273,7 @@ public class ManagerActivity extends Activity
 			@Override
 			public void onClick(View v) {
 				linear2.setVisibility(View.GONE);
+				btn_bg.setVisibility(View.GONE);
 			}});
 		
 		//invoicetable
@@ -412,6 +415,7 @@ public class ManagerActivity extends Activity
 	
 	private void setPrizelistPop() 
 	{
+		btn_bg.setVisibility(View.VISIBLE);
 		Calendar calendar = Calendar.getInstance();
 		year = calendar.get(Calendar.YEAR) - 1911; //民國
 		month = calendar.get(Calendar.MONTH) + 1; //Calendar.MONTH 從0開始...
@@ -462,6 +466,7 @@ public class ManagerActivity extends Activity
 			@Override
 			public void onClick(View v) {
 				linear1.setVisibility(View.GONE);
+				btn_bg.setVisibility(View.GONE);
 			}});
 		
 	}

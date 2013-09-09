@@ -20,7 +20,7 @@ public class ManualAward
 		for (String no : winning.get("superPrizeNo"))
 		{
 			if(input.equals(no.substring(no.length() - 3, no.length())))
-				infoString = "有機會中 千萬特獎";
+				infoString = "有機會中 特獎 一千萬";
 			//Log.e("su",no.substring(no.length() - 3, no.length()));
 		}
 		

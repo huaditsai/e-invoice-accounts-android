@@ -47,7 +47,7 @@ public class DBHelper extends SQLiteOpenHelper
 			+ "invNum VARCHAR(10),"	//發票編號
 			+ "invTotalCost INTEGER,"	//消費金額
 			+ "invDate VARCHAR(8),"	//發票開立日期(yyyyMMdd)
-			+ "sellerName NTEXT,"	//賣方名稱
+			+ "sellerName NTEXT,"	//賣方(商店)名稱
 			+ "invStatus NTEXT,"	//發票狀態(已確認)
 			+ "invPeriod VARCHAR(5)"	//對獎發票期別(民國年月yyyMM)
 			+ ");";

@@ -3,19 +3,25 @@ package huadi.EleInvAccounts.Manager;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 
 import huadi.EleInvAccounts.MainActivity;
 import huadi.EleInvAccounts.R;
 import huadi.EleInvAccounts.Accounts.AccountsActivity;
+import huadi.EleInvAccounts.Accounts.CaptureActivity;
 import huadi.EleInvAccounts.Inquiry.WinningList;
 import huadi.EleInvAccounts.Settings.SettingsActivity;
 import huadi.EleInvAccounts.Social.SocialActivity;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.provider.Settings;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -38,6 +44,10 @@ public class ManagerActivity extends Activity
 	
 	Map<String, List<String>> winning; //開獎號碼
 	ManualAward manualAward; //手動對獎
+	boolean isAuto = true;
+	Map<String, List<String>> winningAward; //中獎號碼
+	AutoAward autoAward; //資料庫對獎
+	
 	//UI宣告
 	ImageButton btn_backfunc, btn_account, btn_manager, btn_social, btn_setting;
 	ImageButton btn_list, btn_analysis, btn_prize, btn_prizelist;
@@ -64,7 +74,6 @@ public class ManagerActivity extends Activity
 	}
 
 	private void setUI() {
-		// TODO Auto-generated method stub
 		final int btnMovePosi = 5; //按鈕位移量
 		final int btnMoveNega = -5; //按鈕位移量
 		
@@ -144,7 +153,7 @@ public class ManagerActivity extends Activity
 				return false;
 				}});
 		
-		btn_analysis.setOnTouchListener(new OnTouchListener(){
+		btn_analysis.setOnTouchListener(new OnTouchListener(){ //消費分析
 			@Override
 			public boolean onTouch(View v, MotionEvent event){
 				if(event.getAction() == MotionEvent.ACTION_DOWN)
@@ -164,7 +173,7 @@ public class ManagerActivity extends Activity
 				return false;
 			}});
 		
-		btn_prize.setOnTouchListener(new OnTouchListener(){
+		btn_prize.setOnTouchListener(new OnTouchListener(){ //發票對獎
 			@Override
 			public boolean onTouch(View v, MotionEvent event){
 				if(event.getAction() == MotionEvent.ACTION_DOWN)
@@ -181,13 +190,35 @@ public class ManagerActivity extends Activity
 					text_prize.setX(text_prize.getX() + btnMoveNega);
 					text_prize.setY(text_prize.getY() + btnMoveNega);
 					
-					linear2.setVisibility(View.VISIBLE);
-					setPrizePop();
+					if(IsInternet()) //判斷網路狀態
+					{
+						linear2.setVisibility(View.VISIBLE);
+						setPrizePop(); //發票對獎
+					}
+					else
+					{
+						new AlertDialog.Builder(ManagerActivity.this)
+						.setTitle("請開啟網路連線功能")
+						.setMessage("取得對獎資訊需要網路連線")
+						.setPositiveButton("確定", new DialogInterface.OnClickListener()
+						{
+							@Override
+							public void onClick(DialogInterface dialog, int which)
+							{
+								startActivity(new Intent(Settings.ACTION_WIRELESS_SETTINGS));							
+							}									
+						})
+						.setNegativeButton("取消", new DialogInterface.OnClickListener()	{
+							@Override
+							public void onClick(DialogInterface dialog, int which){														
+							}
+						}).show();
+					}
 				}				
 				return false;				
 			}});
 		
-		btn_prizelist.setOnTouchListener(new OnTouchListener(){
+		btn_prizelist.setOnTouchListener(new OnTouchListener(){ //各期獎號
 			@Override
 			public boolean onTouch(View v, MotionEvent event){
 				if(event.getAction() == MotionEvent.ACTION_DOWN)
@@ -204,16 +235,38 @@ public class ManagerActivity extends Activity
 					text_prizelist.setX(text_prizelist.getX() + btnMoveNega);
 					text_prizelist.setY(text_prizelist.getY() + btnMoveNega);
 					
-					linear1.setVisibility(View.VISIBLE);
-					setPrizelistPop();
+					if(IsInternet()) //判斷網路狀態
+					{
+						linear1.setVisibility(View.VISIBLE);
+						setPrizelistPop(); //各期獎號
+					}
+					else
+					{
+						new AlertDialog.Builder(ManagerActivity.this)
+						.setTitle("請開啟網路連線功能")
+						.setMessage("取得對獎資訊需要網路連線")
+						.setPositiveButton("確定", new DialogInterface.OnClickListener()
+						{
+							@Override
+							public void onClick(DialogInterface dialog, int which)
+							{
+								startActivity(new Intent(Settings.ACTION_WIRELESS_SETTINGS));							
+							}									
+						})
+						.setNegativeButton("取消", new DialogInterface.OnClickListener()	{
+							@Override
+							public void onClick(DialogInterface dialog, int which){														
+							}
+						}).show();
+					}					
 				}
 				return false;								
 			}});
-				
+			
+		//slide--------------------------------------------------------------
 		btn_backfunc.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {
-				// TODO Auto-generated method stub
 				Intent intent = new Intent(ManagerActivity.this, MainActivity.class);
 				startActivity(intent);
 				ManagerActivity.this.finish();
@@ -221,7 +274,6 @@ public class ManagerActivity extends Activity
 		btn_account.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {
-				// TODO Auto-generated method stub
 				Intent intent = new Intent(ManagerActivity.this, AccountsActivity.class);
 				startActivity(intent);
 				ManagerActivity.this.finish();
@@ -229,7 +281,6 @@ public class ManagerActivity extends Activity
 		btn_social.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {
-				// TODO Auto-generated method stub
 				Intent intent = new Intent(ManagerActivity.this, SocialActivity.class);
 				startActivity(intent);
 				ManagerActivity.this.finish();
@@ -237,11 +288,11 @@ public class ManagerActivity extends Activity
 		btn_setting.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {
-				// TODO Auto-generated method stub
 				Intent intent = new Intent(ManagerActivity.this, SettingsActivity.class);
 				startActivity(intent);
 				ManagerActivity.this.finish();
 			}});
+		//slide-----------------------------------------------------------------
 	}
 	
 	private void setPrizePop(){ //發票對獎
@@ -275,6 +326,8 @@ public class ManagerActivity extends Activity
 				}
 				invPeriod = String.format("%d 年 %02d - %02d 月", year, month-1, month);
 				text_month2.setText(invPeriod); //月份
+				if(isAuto) Auto();
+				else Manual();				
 			}});
 		
 		btn_right2.setOnClickListener(new OnClickListener(){
@@ -288,6 +341,8 @@ public class ManagerActivity extends Activity
 				}
 				invPeriod = String.format("%d 年 %02d - %02d 月", year, month-1, month);
 				text_month2.setText(invPeriod); //月份
+				if(isAuto) Auto();
+				else Manual();
 			}});
 		
 		btn_invoice.setOnClickListener(new OnClickListener(){ //發票對獎
@@ -295,6 +350,8 @@ public class ManagerActivity extends Activity
 			public void onClick(View v) {
 				invoice.setVisibility(View.VISIBLE);
 				number.setVisibility(View.GONE);
+				isAuto = true;
+				Auto(); //自動對獎
 			}});
 		
 		btn_number.setOnClickListener(new OnClickListener(){ //三碼對獎
@@ -302,6 +359,8 @@ public class ManagerActivity extends Activity
 			public void onClick(View v) {
 				invoice.setVisibility(View.GONE);
 				number.setVisibility(View.VISIBLE);
+				isAuto = false;
+				Manual(); //手動對獎
 			}});
 		
 		btn_close2.setOnClickListener(new OnClickListener(){
@@ -311,8 +370,28 @@ public class ManagerActivity extends Activity
 				btn_bg.setVisibility(View.GONE);
 			}});
 		
-		//invoicetable
-		int count=5; //中獎筆數
+		
+		if(isAuto) Auto(); //自動對獎
+		else Manual(); //手動對獎
+	}
+	
+	private void Auto() //自動對獎
+	{
+		int count = 0; //中獎筆數
+		try
+		{
+			winning = new WinningList().execute(String.format("%d%02d", year, month), UUID, appID).get();
+			autoAward = new AutoAward(ManagerActivity.this);
+
+			winningAward = autoAward.Award(String.format("%d%02d", year, month), winning);
+			count = winningAward.size(); 
+		}
+		catch(Exception e)
+		{
+			//e.printStackTrace();
+		}
+		
+		//Log.e("count", "" + count);
 		
 		TableRow tr = new TableRow(this);
 		LinearLayout l1;
@@ -328,143 +407,63 @@ public class ManagerActivity extends Activity
 		
 		invoicetable.removeAllViews();
 		
-		for (int i = 0; i < count; i++)
+		if(count > 0)
 		{
-			l1 = new LinearLayout(this);
-			l1.setOrientation(LinearLayout.HORIZONTAL);
-
-			prize[i] = new TextView(this);
-			prize[i].setText("獎項");
-			prize[i].setPadding(0, 0, 20, 0);
-			prize[i].setTextColor(Color.RED);
-			prize[i].setMinimumWidth(150);
-			prize[i].setGravity(Gravity.CENTER);
-			date[i] = new TextView(this);
-			date[i].setText("日期");
-			date[i].setPadding(0, 0, 20, 0);
-			date[i].setMinimumWidth(100);
-			date[i].setGravity(Gravity.CENTER);
-			number[i] = new TextView(this);
-			number[i].setText("發票號碼");
-			number[i].setPadding(0, 0, 20, 0);
-			number[i].setMinimumWidth(150);
-			number[i].setGravity(Gravity.CENTER);
-			store[i] = new TextView(this);
-			store[i].setText("消費商店");
-			store[i].setMaxEms(6);
-			store[i].setLines(1);
-			store[i].setPadding(0, 0, 20, 0);
-			store[i].setMinimumWidth(100);
-			store[i].setGravity(Gravity.CENTER);
-			cost[i] = new TextView(this);
-			cost[i].setText("金額");
-			cost[i].setMinimumWidth(100);
-			cost[i].setGravity(Gravity.CENTER);
-			
-			l1.addView(prize[i]);
-			l1.addView(date[i]);
-			l1.addView(number[i]);
-			l1.addView(store[i]);
-			l1.addView(cost[i]);
-			
-			tr.addView(l1);
-			invoicetable.addView(tr);
-			tr = new TableRow(this);
-		}
-		
-		//手動對獎
-		try
-		{
-			winning = new WinningList().execute(String.format("%d%02d", year, month), UUID, appID).get();
-			manualAward = new ManualAward();
-			//Log.e("winning", "" + manualAward.Award("516", winning));		
-		
-			text_input.setText("輸入的號碼");
-			text_prizeornot.setText("未中獎");
-			
-			btn_0.setOnClickListener(new OnClickListener(){
-				@Override
-				public void onClick(View v) {
-					AwardInput("0");
-				}});
-			
-			btn_1.setOnClickListener(new OnClickListener(){
-				@Override
-				public void onClick(View v) {
-					AwardInput("1");
-				}});
-			
-			btn_2.setOnClickListener(new OnClickListener(){
-				@Override
-				public void onClick(View v) {
-					AwardInput("2");
-				}});
-			
-			btn_3.setOnClickListener(new OnClickListener(){
-				@Override
-				public void onClick(View v) {
-					AwardInput("3");
-				}});
-			
-			btn_4.setOnClickListener(new OnClickListener(){
-				@Override
-				public void onClick(View v) {
-					AwardInput("4");
-				}});
-			
-			btn_5.setOnClickListener(new OnClickListener(){
-				@Override
-				public void onClick(View v) {
-					AwardInput("5");
-				}});
-			
-			btn_6.setOnClickListener(new OnClickListener(){
-				@Override
-				public void onClick(View v) {
-					AwardInput("6");
-				}});
-			
-			btn_7.setOnClickListener(new OnClickListener(){
-				@Override
-				public void onClick(View v) {
-					AwardInput("7");
-				}});
-			
-			btn_8.setOnClickListener(new OnClickListener(){
-				@Override
-				public void onClick(View v) {
-					AwardInput("8");
-				}});
-			
-			btn_9.setOnClickListener(new OnClickListener(){
-				@Override
-				public void onClick(View v) {
-					AwardInput("9");
-				}});
-			
-			btn_clear.setOnClickListener(new OnClickListener(){
-				@Override
-				public void onClick(View v) {
-					text_input.setText("");
-				}});
-			
-			btn_backspace.setOnClickListener(new OnClickListener(){
-				@Override
-				public void onClick(View v) {
-					String currInput = text_input.getText().toString();
-					if(currInput.length() == 1) //只有一個就清空
-						text_input.setText("");
-					else if(currInput.length() == 2) //兩個就減一, 三個已經對獎了
-						text_input.setText(currInput.substring(0, 1));
-				}});
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
-	}
+			List<String> prizeInfoList = winningAward.get("prize");
+			for (int i = 0; i < prizeInfoList.size(); i++)
+			{
+				//prizeName, invDate, invNum, sellerName, invTotalCost
+				String prizeName = prizeInfoList.get(i).split(",")[0]; //獎項
+				String invDate = prizeInfoList.get(i).split(",")[1]; //發票號碼
+				String invNum = prizeInfoList.get(i).split(",")[2] + " NTD"; //金額
+				String sellerName = prizeInfoList.get(i).split(",")[3]; //日期
+				String invTotalCost =prizeInfoList.get(i).split(",")[4]; //消費商店
+					
+				l1 = new LinearLayout(this);
+				l1.setOrientation(LinearLayout.HORIZONTAL);
 	
-	private void setPrizelistPop() 
+				prize[i] = new TextView(this);
+				prize[i].setText(prizeName); //獎項
+				prize[i].setPadding(0, 0, 20, 0);
+				prize[i].setTextColor(Color.RED);
+				prize[i].setMinimumWidth(150);
+				prize[i].setGravity(Gravity.CENTER);
+				date[i] = new TextView(this);
+				date[i].setText(invDate); //日期
+				date[i].setPadding(0, 0, 20, 0);
+				date[i].setMinimumWidth(100);
+				date[i].setGravity(Gravity.CENTER);
+				number[i] = new TextView(this);
+				number[i].setText(invNum); //發票號碼
+				number[i].setPadding(0, 0, 20, 0);
+				number[i].setMinimumWidth(150);
+				number[i].setGravity(Gravity.CENTER);
+				store[i] = new TextView(this);
+				store[i].setText(sellerName); //消費商店
+				store[i].setMaxEms(6);
+				store[i].setLines(1);
+				store[i].setPadding(0, 0, 20, 0);
+				store[i].setMinimumWidth(100);
+				store[i].setGravity(Gravity.CENTER);
+				cost[i] = new TextView(this);
+				cost[i].setText(invTotalCost); //金額
+				cost[i].setMinimumWidth(100);
+				cost[i].setGravity(Gravity.CENTER);
+				
+				l1.addView(prize[i]);
+				l1.addView(date[i]);
+				l1.addView(number[i]);
+				l1.addView(store[i]);
+				l1.addView(cost[i]);
+				
+				tr.addView(l1);
+				invoicetable.addView(tr);
+				tr = new TableRow(this);
+			}
+		}		
+	}
+
+	private void setPrizelistPop() //開獎號碼列表popView
 	{
 		btn_bg.setVisibility(View.VISIBLE);
 		Calendar calendar = Calendar.getInstance();
@@ -523,7 +522,7 @@ public class ManagerActivity extends Activity
 		
 	}
 	
-	public void GetWinningList(String _invPeriod)
+	public void GetWinningList(String _invPeriod) //取得開獎號碼
 	{
 		try
 		{
@@ -556,19 +555,131 @@ public class ManagerActivity extends Activity
 			e.printStackTrace();
 		}		
 	}
+	public void Manual() //手動對獎
+	{
+		try
+		{
+			winning = new WinningList().execute(String.format("%d%02d", year, month), UUID, appID).get();
+			manualAward = new ManualAward();
+			//Log.e("winning", "" + manualAward.Award("516", winning));		
+		}
+		catch (Exception e)
+		{
+			//e.printStackTrace();
+		}
+		
+		text_input.setText("輸入的號碼");
+		text_prizeornot.setText("未中獎");
+		
+		btn_0.setOnClickListener(new OnClickListener(){
+			@Override
+			public void onClick(View v) {
+				AwardInput("0");
+			}});
+		
+		btn_1.setOnClickListener(new OnClickListener(){
+			@Override
+			public void onClick(View v) {
+				AwardInput("1");
+			}});
+		
+		btn_2.setOnClickListener(new OnClickListener(){
+			@Override
+			public void onClick(View v) {
+				AwardInput("2");
+			}});
+		
+		btn_3.setOnClickListener(new OnClickListener(){
+			@Override
+			public void onClick(View v) {
+				AwardInput("3");
+			}});
+		
+		btn_4.setOnClickListener(new OnClickListener(){
+			@Override
+			public void onClick(View v) {
+				AwardInput("4");
+			}});
+		
+		btn_5.setOnClickListener(new OnClickListener(){
+			@Override
+			public void onClick(View v) {
+				AwardInput("5");
+			}});
+		
+		btn_6.setOnClickListener(new OnClickListener(){
+			@Override
+			public void onClick(View v) {
+				AwardInput("6");
+			}});
+		
+		btn_7.setOnClickListener(new OnClickListener(){
+			@Override
+			public void onClick(View v) {
+				AwardInput("7");
+			}});
+		
+		btn_8.setOnClickListener(new OnClickListener(){
+			@Override
+			public void onClick(View v) {
+				AwardInput("8");
+			}});
+		
+		btn_9.setOnClickListener(new OnClickListener(){
+			@Override
+			public void onClick(View v) {
+				AwardInput("9");
+			}});
+		
+		btn_clear.setOnClickListener(new OnClickListener(){
+			@Override
+			public void onClick(View v) {
+				text_input.setText("");
+			}});
+		
+		btn_backspace.setOnClickListener(new OnClickListener(){
+			@Override
+			public void onClick(View v) {
+				String currInput = text_input.getText().toString();
+				if(currInput.length() == 1) //只有一個就清空
+					text_input.setText("");
+				else if(currInput.length() == 2) //兩個就減一, 三個已經對獎了
+					text_input.setText(currInput.substring(0, 1));
+			}});		
+	}
 	
-	public void AwardInput(String InputNumString)
+	public void AwardInput(String InputNumString) //判斷手動對獎的輸入
 	{
 		if(!text_input.getText().toString().equals("輸入的號碼")) //為數字
 		{
 			text_input.setText(text_input.getText().toString() + InputNumString);
 			if(text_input.getText().toString().length() == 3)
 			{
-				text_prizeornot.setText(manualAward.Award(text_input.getText().toString(), winning));
+				try
+				{
+					text_prizeornot.setText(manualAward.Award(text_input.getText().toString(), winning));
+				}
+				catch (Exception e)
+				{
+					//e.printStackTrace();
+					text_prizeornot.setText("無此期別資料");
+				}
 				text_input.setText("輸入的號碼");
 			}
 		}
 		else					
 			text_input.setText(InputNumString);
 	}
+	
+	private boolean IsInternet()
+	{
+		ConnectivityManager conManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);//先取得此service
+		NetworkInfo networInfo = conManager.getActiveNetworkInfo(); //在取得相關資訊
+		
+		if (networInfo == null || !networInfo.isAvailable()) //沒網路
+			return false;
+		else
+			return true;
+	}
+	
 }

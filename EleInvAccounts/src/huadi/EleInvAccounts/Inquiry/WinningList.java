@@ -103,7 +103,7 @@ public class WinningList extends AsyncTask<String, String, Map<String, List<Stri
 				}
 				catch(Exception e)
 				{
-					Log.e("JSONObject Exception","版本" + v + ", 回應碼 " + code + ", 訊息" + msg);
+					Log.e("JSONObject Exception","版本 " + v + ", 回應碼  " + code + ", 訊息 " + msg);
 				}			
 				
 			}			

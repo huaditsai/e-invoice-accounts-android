@@ -1,0 +1,33 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/RelativeLayout1"
+    android:layout_width="400dp"
+    android:layout_height="120dp"
+    android:orientation="vertical" >
+
+    <ImageView
+        android:id="@+id/weget_background"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/pop_style" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+
+        <ImageView
+            android:id="@+id/weget_imageView"
+            android:layout_width="match_parent"
+            android:layout_height="85dp"
+            android:scaleType="fitCenter"
+            android:src="@android:drawable/divider_horizontal_dark" />
+
+        <TextView
+            android:id="@+id/weget_textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_gravity="center" />
+    </LinearLayout>
+
+</RelativeLayout>

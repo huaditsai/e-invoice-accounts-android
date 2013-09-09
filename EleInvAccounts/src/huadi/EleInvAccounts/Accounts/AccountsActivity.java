@@ -24,6 +24,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -40,7 +41,8 @@ public class AccountsActivity extends Activity
 	TextView text_total, text_income, text_expenditure, text_balance;
 	TableLayout table;
 	LinearLayout popview;
-	EditText editText1, editText2, editText3, editText4, editText5, editText6, editText7, editText14;
+	EditText editText1, editText3, editText5, editText6, editText7, editText14;
+	Spinner spinner1, spinner2;
 	
 	boolean isIncome = false;
 
@@ -106,10 +108,10 @@ public class AccountsActivity extends Activity
 		//popview ---------------------------------
 		
 		editText1 = (EditText)findViewById(R.id.editText1);
-		editText2 = (EditText)findViewById(R.id.editText2); //帳本
+		spinner1 = (Spinner)findViewById(R.id.spinner1); //帳本
 		editText14 = (EditText)findViewById(R.id.editText14); //發票編號
 		editText3 = (EditText)findViewById(R.id.editText3); //項目
-		editText4 = (EditText)findViewById(R.id.editText4); //分類
+		spinner2 = (Spinner)findViewById(R.id.spinner2); //分類
 		editText5 = (EditText)findViewById(R.id.editText5); //日期
 		editText6 = (EditText)findViewById(R.id.editText6); //商店
 		editText7 = (EditText)findViewById(R.id.editText7); //備註
@@ -197,10 +199,13 @@ public class AccountsActivity extends Activity
 			public void onClick(View v)
 			{
 				String date = editText5.getText().toString(); // TODO 要規定為yyyyMMdd
-				String accountName = editText2.getText().toString(); // TODO 要下啦選擇
+//				String accountName = editText2.getText().toString(); // TODO 要下啦選擇
+				String accountName = spinner1.getSelectedItem().toString();
 				int money = Integer.parseInt(editText1.getText().toString()); // TODO 要規定必填
-					String mainCategory = editText4.getText().toString(); // TODO 要下啦選擇
-					String subCategory = editText4.getText().toString(); // TODO 要下啦選擇
+//					String mainCategory = editText4.getText().toString(); // TODO 要下啦選擇
+//					String subCategory = editText4.getText().toString(); // TODO 要下啦選擇
+					String mainCategory = spinner2.getSelectedItem().toString();
+					String subCategory = spinner2.getSelectedItem().toString();
 				String item = editText3.getText().toString(); // TODO 要規定必填
 				String sellerName = editText6.getText().toString();
 				String invNum = editText14.getText().toString();
@@ -302,10 +307,10 @@ public class AccountsActivity extends Activity
 				imm.hideSoftInputFromWindow(AccountsActivity.this.getCurrentFocus().getWindowToken(),InputMethodManager.HIDE_NOT_ALWAYS);
 				popview.setVisibility(View.GONE);
 				editText1.setText("");
-				editText2.setText("");
+//				editText2.setText("");
 				editText14.setText("");
 				editText3.setText("");
-				editText4.setText("");
+//				editText4.setText("");
 				editText5.setText("");
 				editText6.setText("");
 				editText7.setText("");
@@ -321,10 +326,10 @@ public class AccountsActivity extends Activity
 				imm.hideSoftInputFromWindow(AccountsActivity.this.getCurrentFocus().getWindowToken(),InputMethodManager.HIDE_NOT_ALWAYS);
 				popview.setVisibility(View.GONE);
 				editText1.setText("");
-				editText2.setText("");
+//				editText2.setText("");
 				editText14.setText("");
 				editText3.setText("");
-				editText4.setText("");
+//				editText4.setText("");
 				editText5.setText("");
 				editText6.setText("");
 				editText7.setText("");

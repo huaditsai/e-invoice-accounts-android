@@ -156,7 +156,7 @@
             <ImageButton
                 android:id="@+id/imageButton6"
                 android:layout_width="match_parent"
-                android:layout_height="70dp"
+                android:layout_height="wrap_content"
                 android:background="@color/transparent"
                 android:scaleType="fitCenter"
                 android:src="@drawable/btn_01" />
@@ -178,7 +178,7 @@
             <ImageButton
                 android:id="@+id/imageButton7"
                 android:layout_width="match_parent"
-                android:layout_height="70dp"
+                android:layout_height="wrap_content"
                 android:background="@color/transparent"
                 android:scaleType="fitCenter"
                 android:src="@drawable/btn_02" />
@@ -200,7 +200,7 @@
             <ImageButton
                 android:id="@+id/imageButton8"
                 android:layout_width="match_parent"
-                android:layout_height="70dp"
+                android:layout_height="wrap_content"
                 android:background="@color/transparent"
                 android:scaleType="fitCenter"
                 android:src="@drawable/btn_03" />
@@ -222,7 +222,7 @@
             <ImageButton
                 android:id="@+id/imageButton9"
                 android:layout_width="match_parent"
-                android:layout_height="70dp"
+                android:layout_height="wrap_content"
                 android:background="@color/transparent"
                 android:scaleType="fitCenter"
                 android:src="@drawable/btn_04" />

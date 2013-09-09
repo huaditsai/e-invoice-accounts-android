@@ -235,11 +235,11 @@ public class AccountsActivity extends Activity
 			public void onClick(View v)
 			{
 				String date = editText5.getText().toString(); // TODO 要規定為yyyyMMdd
-//				String accountName = editText2.getText().toString(); // TODO 要下啦選擇
+//				String accountName = editText2.getText().toString();
 				String accountName = spinner1.getSelectedItem().toString();
 				int money = Integer.parseInt(editText1.getText().toString()); // TODO 要規定必填
-//					String mainCategory = editText4.getText().toString(); // TODO 要下啦選擇
-//					String subCategory = editText4.getText().toString(); // TODO 要下啦選擇
+//					String mainCategory = editText4.getText().toString();
+//					String subCategory = editText4.getText().toString();
 					String mainCategory = spinner2.getSelectedItem().toString();
 					String subCategory = spinner2.getSelectedItem().toString();
 				String item = editText3.getText().toString(); // TODO 要規定必填
@@ -358,6 +358,10 @@ public class AccountsActivity extends Activity
 			@Override
 			public void onClick(View v)
 			{
+				//掃完qrCode時, 會先進db
+				db.delete("Invoice", "invNum = '" + invNum + "'", null);
+				db.delete("InvDetail", "invNum = '" + invNum + "'", null);
+				
 				InputMethodManager imm = ((InputMethodManager)getSystemService(INPUT_METHOD_SERVICE)); //隱藏 keyboard
 				imm.hideSoftInputFromWindow(AccountsActivity.this.getCurrentFocus().getWindowToken(),InputMethodManager.HIDE_NOT_ALWAYS);
 				popview.setVisibility(View.GONE);

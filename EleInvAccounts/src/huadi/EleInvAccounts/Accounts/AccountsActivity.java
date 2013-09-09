@@ -51,7 +51,7 @@ public class AccountsActivity extends Activity
 	TableLayout table;
 	LinearLayout popview;
 	EditText editText1, editText3, editText5, editText6, editText7, editText14;
-	Spinner spinner1, spinner2;
+	Spinner spinner1, spinner2, spinner3;
 	
 	boolean isIncome = false;
 
@@ -143,6 +143,7 @@ public class AccountsActivity extends Activity
 		editText14 = (EditText)findViewById(R.id.editText14); //發票編號
 		editText3 = (EditText)findViewById(R.id.editText3); //項目
 		spinner2 = (Spinner)findViewById(R.id.spinner2); //分類
+		spinner3 = (Spinner)findViewById(R.id.spinner3); //分類2
 		editText5 = (EditText)findViewById(R.id.editText5); //日期
 		editText6 = (EditText)findViewById(R.id.editText6); //商店
 		editText7 = (EditText)findViewById(R.id.editText7); //備註
@@ -253,7 +254,7 @@ public class AccountsActivity extends Activity
 //					String mainCategory = editText4.getText().toString();
 //					String subCategory = editText4.getText().toString();
 				String mainCategory = spinner2.getSelectedItem().toString();
-				String subCategory = spinner2.getSelectedItem().toString();
+				String subCategory = spinner3.getSelectedItem().toString();
 				String item = editText3.getText().toString(); // TODO 要規定必填
 				String sellerName = editText6.getText().toString();
 				String invNum = editText14.getText().toString();

@@ -66,7 +66,7 @@ public class InvoiceListActivity extends Activity
 		btn_social = (ImageButton)findViewById(R.id.imageButton4);
 		btn_setting = (ImageButton)findViewById(R.id.imageButton5);
 		btn_left = (ImageButton)findViewById(R.id.imageButton6);
-		btn_right = (ImageButton)findViewById(R.id.imageButton7);
+		btn_right = (ImageButton)findViewById(R.id.imageButton97);
 		text_month = (TextView)findViewById(R.id.textView7);
 		table = (TableLayout)findViewById(R.id.TableLayout);
 		popview = (LinearLayout)findViewById(R.id.LinearLayout1);

@@ -14,7 +14,9 @@ import huadi.EleInvAccounts.Social.SocialActivity;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -22,6 +24,8 @@ import android.view.View.OnTouchListener;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 
 //發票
@@ -35,10 +39,13 @@ public class ManagerActivity extends Activity
 	ImageButton btn_backfunc, btn_account, btn_manager, btn_social, btn_setting;
 	ImageButton btn_list, btn_analysis, btn_prize, btn_prizelist;
 	TextView text_list, text_analysis, text_prize, text_prizelist;
-	LinearLayout linear1;
-	ImageButton btn_right, btn_left;
+	LinearLayout linear1, linear2, invoice, number;
+	ImageButton btn_right, btn_left, btn_right2, btn_left2;
 	TextView text_month, text_price1, text_price2, text_price3, text_price4;
-	Button btn_close;
+	TextView text_month2, text_input, text_prizeornot;
+	Button btn_close, btn_close2, btn_invoice, btn_number;
+	TableLayout invoicetable;
+	Button btn_0, btn_1, btn_2, btn_3, btn_4, btn_5, btn_6, btn_7, btn_8, btn_9, btn_clear, btn_backspace;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -64,22 +71,46 @@ public class ManagerActivity extends Activity
 		btn_social = (ImageButton)findViewById(R.id.imageButton4);
 		btn_setting = (ImageButton)findViewById(R.id.imageButton5);
 		text_list = (TextView)findViewById(R.id.textView6);
-			text_analysis = (TextView)findViewById(R.id.textView7);
+		text_analysis = (TextView)findViewById(R.id.textView7);
 		text_prize = (TextView)findViewById(R.id.textView8);
 		text_prizelist = (TextView)findViewById(R.id.textView9);
-			btn_list = (ImageButton)findViewById(R.id.imageButton6);
-			btn_analysis = (ImageButton)findViewById(R.id.imageButton7);
+		btn_list = (ImageButton)findViewById(R.id.imageButton6);
+		btn_analysis = (ImageButton)findViewById(R.id.imageButton7);
 		btn_prize = (ImageButton)findViewById(R.id.imageButton8);
 		btn_prizelist = (ImageButton)findViewById(R.id.imageButton9);
 		linear1 = (LinearLayout)findViewById(R.id.LinearLayout1);
-			btn_right = (ImageButton)findViewById(R.id.imageButton7);
-			btn_left = (ImageButton)findViewById(R.id.imageButton6);
-			text_month = (TextView)findViewById(R.id.textView7);
+		btn_right = (ImageButton)findViewById(R.id.imageButton97);
+		btn_left = (ImageButton)findViewById(R.id.imageButton96);
+		text_month = (TextView)findViewById(R.id.textView27);
 		text_price1 = (TextView)findViewById(R.id.textView11);
 		text_price2 = (TextView)findViewById(R.id.textView12);
 		text_price3 = (TextView)findViewById(R.id.textView16);
 		text_price4 = (TextView)findViewById(R.id.textView17);
 		btn_close = (Button)findViewById(R.id.button7);
+		linear2 = (LinearLayout)findViewById(R.id.LinearLayout2);
+		btn_right2 = (ImageButton)findViewById(R.id.imageButton77);
+		btn_left2 = (ImageButton)findViewById(R.id.imageButton76);
+		text_month2 = (TextView)findViewById(R.id.textView37);
+		btn_invoice = (Button)findViewById(R.id.button1);
+		btn_number = (Button)findViewById(R.id.button2);
+		invoice = (LinearLayout)findViewById(R.id.invoice);
+		number = (LinearLayout)findViewById(R.id.number);
+		invoicetable = (TableLayout)findViewById(R.id.invoicetable);
+		text_input = (TextView)findViewById(R.id.textView97);
+		text_prizeornot = (TextView)findViewById(R.id.textView22);
+		btn_0 = (Button)findViewById(R.id.button14);
+		btn_1 = (Button)findViewById(R.id.button10);
+		btn_2 = (Button)findViewById(R.id.button11);
+		btn_3 = (Button)findViewById(R.id.button12);
+		btn_4 = (Button)findViewById(R.id.button6);
+		btn_5 = (Button)findViewById(R.id.button8);
+		btn_6 = (Button)findViewById(R.id.button9);
+		btn_7 = (Button)findViewById(R.id.button3);
+		btn_8 = (Button)findViewById(R.id.button4);
+		btn_9 = (Button)findViewById(R.id.button5);
+		btn_clear = (Button)findViewById(R.id.button13);
+		btn_backspace = (Button)findViewById(R.id.button15);
+		btn_close2 = (Button)findViewById(R.id.button77);
 		
 		text_list.setText("發票清單");
 		text_analysis.setText("消費分析");
@@ -145,6 +176,9 @@ public class ManagerActivity extends Activity
 					btn_prize.setY(btn_prize.getY() + btnMoveNega);
 					text_prize.setX(text_prize.getX() + btnMoveNega);
 					text_prize.setY(text_prize.getY() + btnMoveNega);
+					
+					linear2.setVisibility(View.VISIBLE);
+					setPrizePop();
 				}				
 				return false;				
 			}});
@@ -206,6 +240,174 @@ public class ManagerActivity extends Activity
 			}});
 	}
 	
+	private void setPrizePop(){
+		btn_right2.setOnClickListener(new OnClickListener(){
+			@Override
+			public void onClick(View arg0) {
+				text_month2.setText("月份");
+			}});
+		
+		btn_left2.setOnClickListener(new OnClickListener(){
+			@Override
+			public void onClick(View arg0) {
+				text_month2.setText("月份");
+			}});
+		
+		btn_invoice.setOnClickListener(new OnClickListener(){
+			@Override
+			public void onClick(View v) {
+				invoice.setVisibility(View.VISIBLE);
+				number.setVisibility(View.GONE);
+			}});
+		
+		btn_number.setOnClickListener(new OnClickListener(){
+			@Override
+			public void onClick(View v) {
+				invoice.setVisibility(View.GONE);
+				number.setVisibility(View.VISIBLE);
+			}});
+		
+		btn_close2.setOnClickListener(new OnClickListener(){
+			@Override
+			public void onClick(View v) {
+				linear2.setVisibility(View.GONE);
+			}});
+		
+		//invoicetable
+		int count=5; //中獎筆數
+		
+		TableRow tr = new TableRow(this);
+		LinearLayout l1;
+		TextView[] prize;
+		final TextView[] number;
+		TextView[] date, store, cost;
+		
+		prize = new TextView[count];
+		number = new TextView[count];
+		date = new TextView[count];
+		store = new TextView[count];
+		cost = new TextView[count];
+		
+		for (int i = 0; i < count; i++)
+		{
+			l1 = new LinearLayout(this);
+			l1.setOrientation(LinearLayout.HORIZONTAL);
+
+			prize[i] = new TextView(this);
+			prize[i].setText("獎項");
+			prize[i].setPadding(0, 0, 20, 0);
+			prize[i].setTextColor(Color.RED);
+			prize[i].setMinimumWidth(150);
+			prize[i].setGravity(Gravity.CENTER);
+			date[i] = new TextView(this);
+			date[i].setText("日期");
+			date[i].setPadding(0, 0, 20, 0);
+			date[i].setMinimumWidth(100);
+			date[i].setGravity(Gravity.CENTER);
+			number[i] = new TextView(this);
+			number[i].setText("發票號碼");
+			number[i].setPadding(0, 0, 20, 0);
+			number[i].setMinimumWidth(150);
+			number[i].setGravity(Gravity.CENTER);
+			store[i] = new TextView(this);
+			store[i].setText("消費商店");
+			store[i].setMaxEms(6);
+			store[i].setLines(1);
+			store[i].setPadding(0, 0, 20, 0);
+			store[i].setMinimumWidth(100);
+			store[i].setGravity(Gravity.CENTER);
+			cost[i] = new TextView(this);
+			cost[i].setText("金額");
+			cost[i].setMinimumWidth(100);
+			cost[i].setGravity(Gravity.CENTER);
+			
+			l1.addView(prize[i]);
+			l1.addView(date[i]);
+			l1.addView(number[i]);
+			l1.addView(store[i]);
+			l1.addView(cost[i]);
+			
+			tr.addView(l1);
+			invoicetable.addView(tr);
+			tr = new TableRow(this);
+		}
+		
+		text_input.setText("輸入的號碼");
+		text_prizeornot.setText("未中獎");
+		
+		btn_0.setOnClickListener(new OnClickListener(){
+			@Override
+			public void onClick(View v) {
+				
+			}});
+		
+		btn_1.setOnClickListener(new OnClickListener(){
+			@Override
+			public void onClick(View v) {
+				
+			}});
+		
+		btn_2.setOnClickListener(new OnClickListener(){
+			@Override
+			public void onClick(View v) {
+				
+			}});
+		
+		btn_3.setOnClickListener(new OnClickListener(){
+			@Override
+			public void onClick(View v) {
+				
+			}});
+		
+		btn_4.setOnClickListener(new OnClickListener(){
+			@Override
+			public void onClick(View v) {
+				
+			}});
+		
+		btn_5.setOnClickListener(new OnClickListener(){
+			@Override
+			public void onClick(View v) {
+				
+			}});
+		
+		btn_6.setOnClickListener(new OnClickListener(){
+			@Override
+			public void onClick(View v) {
+				
+			}});
+		
+		btn_7.setOnClickListener(new OnClickListener(){
+			@Override
+			public void onClick(View v) {
+				
+			}});
+		
+		btn_8.setOnClickListener(new OnClickListener(){
+			@Override
+			public void onClick(View v) {
+				
+			}});
+		
+		btn_9.setOnClickListener(new OnClickListener(){
+			@Override
+			public void onClick(View v) {
+				
+			}});
+		
+		btn_clear.setOnClickListener(new OnClickListener(){
+			@Override
+			public void onClick(View v) {
+				
+			}});
+		
+		btn_backspace.setOnClickListener(new OnClickListener(){
+			@Override
+			public void onClick(View v) {
+				
+			}});
+	}
+	
 	private void setPrizelistPop() 
 	{
 		Calendar calendar = Calendar.getInstance();
@@ -224,7 +426,7 @@ public class ManagerActivity extends Activity
 		invPeriod = String.format("%d 年 %02d - %02d 月", year, month-1, month);
 		text_month.setText(invPeriod); //月份
 		
-		btn_right.setOnClickListener(new OnClickListener(){
+		btn_left.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View arg0) {
 				month -= 2;
@@ -238,7 +440,7 @@ public class ManagerActivity extends Activity
 				GetWinningList(String.format("%d%02d", year, month));
 			}});
 		
-		btn_left.setOnClickListener(new OnClickListener(){
+		btn_right.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View arg0) {
 				month += 2;

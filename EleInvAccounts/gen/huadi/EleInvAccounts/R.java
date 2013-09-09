@@ -77,10 +77,11 @@ public final class R {
     }
     public static final class id {
         public static final int LinearLayout1=0x7f070027;
+        public static final int LinearLayout2=0x7f070057;
         public static final int TableLayout=0x7f07003e;
         public static final int TableLayout1=0x7f070018;
         public static final int TablePop=0x7f070040;
-        public static final int action_settings=0x7f070053;
+        public static final int action_settings=0x7f07006d;
         /**  Messages IDs 
          */
         public static final int auto_focus=0x7f070000;
@@ -89,12 +90,21 @@ public final class R {
         public static final int btn_3=0x7f07004a;
         public static final int btn_4=0x7f07004c;
         public static final int button1=0x7f070014;
+        public static final int button10=0x7f070063;
+        public static final int button11=0x7f070064;
+        public static final int button12=0x7f070065;
+        public static final int button13=0x7f070066;
+        public static final int button14=0x7f070067;
+        public static final int button15=0x7f070068;
         public static final int button2=0x7f070015;
         public static final int button3=0x7f070016;
         public static final int button4=0x7f07002a;
         public static final int button5=0x7f07002b;
         public static final int button6=0x7f07003a;
         public static final int button7=0x7f07003b;
+        public static final int button77=0x7f070069;
+        public static final int button8=0x7f070061;
+        public static final int button9=0x7f070062;
         public static final int decode=0x7f070001;
         public static final int decode_failed=0x7f070002;
         public static final int decode_succeeded=0x7f070003;
@@ -112,16 +122,23 @@ public final class R {
         public static final int imageButton4=0x7f070023;
         public static final int imageButton5=0x7f070025;
         public static final int imageButton6=0x7f07003c;
-        public static final int imageButton7=0x7f07003d;
-        public static final int imageButton8=0x7f07004e;
-        public static final int imageButton9=0x7f07004f;
+        public static final int imageButton7=0x7f07004e;
+        public static final int imageButton76=0x7f070058;
+        public static final int imageButton77=0x7f07005a;
+        public static final int imageButton8=0x7f07004f;
+        public static final int imageButton9=0x7f070050;
+        public static final int imageButton96=0x7f070051;
+        public static final int imageButton97=0x7f07003d;
         public static final int imageView1=0x7f07000c;
         public static final int imageView2=0x7f07000d;
         public static final int imageView3=0x7f070012;
         public static final int imageView4=0x7f070028;
+        public static final int invoice=0x7f07005b;
+        public static final int invoicetable=0x7f07005d;
         public static final int launch_product_query=0x7f070006;
         public static final int linearLayout1=0x7f070045;
-        public static final int preview_view=0x7f070050;
+        public static final int number=0x7f07005e;
+        public static final int preview_view=0x7f07006a;
         public static final int quit=0x7f070007;
         public static final int restart_preview=0x7f070008;
         public static final int return_scan_result=0x7f070009;
@@ -148,20 +165,29 @@ public final class R {
         public static final int textView15=0x7f070034;
         public static final int textView16=0x7f070036;
         public static final int textView17=0x7f070038;
+        public static final int textView18=0x7f070053;
+        public static final int textView19=0x7f070054;
         public static final int textView2=0x7f070020;
+        public static final int textView20=0x7f070055;
+        public static final int textView21=0x7f070056;
+        public static final int textView22=0x7f070060;
+        public static final int textView23=0x7f07005c;
+        public static final int textView27=0x7f070052;
         public static final int textView3=0x7f070022;
+        public static final int textView37=0x7f070059;
         public static final int textView4=0x7f070024;
         public static final int textView5=0x7f070026;
         public static final int textView6=0x7f07000e;
         public static final int textView7=0x7f07000f;
         public static final int textView8=0x7f070010;
         public static final int textView9=0x7f070011;
+        public static final int textView97=0x7f07005f;
         public static final int text_1=0x7f070047;
         public static final int text_2=0x7f070049;
         public static final int text_3=0x7f07004b;
         public static final int text_4=0x7f07004d;
-        public static final int txtResult=0x7f070052;
-        public static final int viewfinder_view=0x7f070051;
+        public static final int txtResult=0x7f07006c;
+        public static final int viewfinder_view=0x7f07006b;
     }
     public static final class layout {
         public static final int activity_accounts=0x7f030000;

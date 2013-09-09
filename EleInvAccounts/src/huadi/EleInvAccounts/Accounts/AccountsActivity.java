@@ -162,6 +162,35 @@ public class AccountsActivity extends Activity
 			CapturePopView(index);
 		}
 		
+		//Account
+		Cursor accountCursor = db.rawQuery("SELECT * "
+			+ "FROM Account ", null); //要記得''包起來
+		
+		int accountCount = accountCursor.getCount(); //資料筆數
+		String[] account = new String[accountCount];
+		
+		if(accountCount != 0)
+		{
+			accountCursor.moveToFirst();
+			for (int i = 0; i < accountCount; i++)
+			{
+				account[i] = accountCursor.getString(accountCursor.getColumnIndex("account_name"));
+				accountCursor.moveToNext(); //移至資料庫下一筆
+			}
+		}
+		else 
+		{
+			ContentValues accountCV = new ContentValues();
+			accountCV.put("account_name", "test");
+			db.insert("Account", null, accountCV);
+		}
+		
+		//建立一個ArrayAdapter物件，並放置下拉選單的內容
+		ArrayAdapter<String> adapter1 = new ArrayAdapter<String>(AccountsActivity.this, 
+			android.R.layout.simple_spinner_item, account);
+		adapter1.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item); //設定下拉選單的樣式
+		spinner1.setAdapter(adapter1); //mainCategory
+		
 		//mainCategory
 		Cursor mainCateCursor = db.rawQuery("SELECT mainCategory "
 			+ "FROM MainCategory ", null); //要記得''包起來
@@ -188,10 +217,10 @@ public class AccountsActivity extends Activity
 		}
 		
 		//建立一個ArrayAdapter物件，並放置下拉選單的內容
-		ArrayAdapter<String> adapter1 = new ArrayAdapter<String>(AccountsActivity.this, 
+		ArrayAdapter<String> adapter2 = new ArrayAdapter<String>(AccountsActivity.this, 
 			android.R.layout.simple_spinner_item, mainCategory);
-		adapter1.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item); //設定下拉選單的樣式
-		spinner1.setAdapter(adapter1);
+		adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item); //設定下拉選單的樣式
+		spinner2.setAdapter(adapter2); //mainCategory
 		
 		//SubCategory
 		Cursor subCursor = db.rawQuery("SELECT subCategory "
@@ -218,10 +247,10 @@ public class AccountsActivity extends Activity
 			db.insert("SubCategory", null, subCateCV);
 		}
 		
-		ArrayAdapter<String> adapter2 = new ArrayAdapter<String>(AccountsActivity.this, 
+		ArrayAdapter<String> adapter3 = new ArrayAdapter<String>(AccountsActivity.this, 
 			android.R.layout.simple_spinner_item, subCategory);
-		adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item); //設定下拉選單的樣式
-		spinner2.setAdapter(adapter2);
+		adapter3.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item); //設定下拉選單的樣式
+		spinner3.setAdapter(adapter3); //SubCategory
 		
 		
 		btn_income.setOnClickListener(new OnClickListener()

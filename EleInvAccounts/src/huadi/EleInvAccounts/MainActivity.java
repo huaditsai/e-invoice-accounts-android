@@ -61,7 +61,7 @@ public class MainActivity extends Activity
 		
 		setUI(); //設定UI		
 		
-		GetBarCode(getResources().getString(R.string.app_name), "/XXXXXXX", 360, 85);
+		GetBarCode(getResources().getString(R.string.app_name), "/XXXXXXX", 400, 100); //360.85
 		
 //		try
 //		{
@@ -214,8 +214,9 @@ public class MainActivity extends Activity
 	public void GetBarCode(String folderName, String content, int desiredWidth, int desiredHeight)
 	{		
 		String filePath = Environment.getExternalStorageDirectory() + "/" + folderName + "/" + content + ".png";		
-		File path = new File(filePath);
-        if( !path.exists() ) //沒有檔案就產生吧
+		File file = new File(filePath);
+		file.delete(); //TODO 發佈時要記得註解掉
+        if( !file.exists() ) //沒有檔案就產生吧
         	new CodeGenerator(folderName, content, desiredWidth, desiredHeight);
         
 		try //顯示

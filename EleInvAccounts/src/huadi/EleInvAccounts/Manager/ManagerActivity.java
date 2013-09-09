@@ -35,6 +35,9 @@ public class ManagerActivity extends Activity
 	
 	int year, month, day;
 	String invPeriod; //對獎發票期別(yyyMM)
+	
+	Map<String, List<String>> winning; //開獎號碼
+	ManualAward manualAward; //手動對獎
 	//UI宣告
 	ImageButton btn_backfunc, btn_account, btn_manager, btn_social, btn_setting;
 	ImageButton btn_list, btn_analysis, btn_prize, btn_prizelist;
@@ -241,28 +244,60 @@ public class ManagerActivity extends Activity
 			}});
 	}
 	
-	private void setPrizePop(){
+	private void setPrizePop(){ //發票對獎
 		btn_bg.setVisibility(View.VISIBLE);
-		btn_right2.setOnClickListener(new OnClickListener(){
-			@Override
-			public void onClick(View arg0) {
-				text_month2.setText("月份");
-			}});
+		
+		Calendar calendar = Calendar.getInstance();
+		year = calendar.get(Calendar.YEAR) - 1911; //民國
+		month = calendar.get(Calendar.MONTH) + 1; //Calendar.MONTH 從0開始...
+		day = calendar.get(Calendar.DAY_OF_MONTH);
+		if(month % 2 == 1)
+		{
+			if(day < 25)
+				month -= 3; //若現在為9月, 還沒到25號, 只能看56月
+			else 
+				month--; //若現在為9月, 減減來看78月
+		}
+		else
+			month -= 2; //若現在為10月, 減2來看78月
+		
+		invPeriod = String.format("%d 年 %02d - %02d 月", year, month-1, month);
+		text_month2.setText(invPeriod); //月份
 		
 		btn_left2.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View arg0) {
-				text_month2.setText("月份");
+				month -= 2;
+				if(month == 0 && year != 0)
+				{
+					year--;
+					month = 12;
+				}
+				invPeriod = String.format("%d 年 %02d - %02d 月", year, month-1, month);
+				text_month2.setText(invPeriod); //月份
 			}});
 		
-		btn_invoice.setOnClickListener(new OnClickListener(){
+		btn_right2.setOnClickListener(new OnClickListener(){
+			@Override
+			public void onClick(View arg0) {
+				month += 2;
+				if(month == 14 && year != 0)
+				{
+					year++;
+					month = 2;
+				}
+				invPeriod = String.format("%d 年 %02d - %02d 月", year, month-1, month);
+				text_month2.setText(invPeriod); //月份
+			}});
+		
+		btn_invoice.setOnClickListener(new OnClickListener(){ //發票對獎
 			@Override
 			public void onClick(View v) {
 				invoice.setVisibility(View.VISIBLE);
 				number.setVisibility(View.GONE);
 			}});
 		
-		btn_number.setOnClickListener(new OnClickListener(){
+		btn_number.setOnClickListener(new OnClickListener(){ //三碼對獎
 			@Override
 			public void onClick(View v) {
 				invoice.setVisibility(View.GONE);
@@ -337,80 +372,96 @@ public class ManagerActivity extends Activity
 			tr = new TableRow(this);
 		}
 		
-		text_input.setText("輸入的號碼");
-		text_prizeornot.setText("未中獎");
+		//手動對獎
+		try
+		{
+			winning = new WinningList().execute(String.format("%d%02d", year, month), UUID, appID).get();
+			manualAward = new ManualAward();
+			//Log.e("winning", "" + manualAward.Award("516", winning));		
 		
-		btn_0.setOnClickListener(new OnClickListener(){
-			@Override
-			public void onClick(View v) {
-				
-			}});
-		
-		btn_1.setOnClickListener(new OnClickListener(){
-			@Override
-			public void onClick(View v) {
-				
-			}});
-		
-		btn_2.setOnClickListener(new OnClickListener(){
-			@Override
-			public void onClick(View v) {
-				
-			}});
-		
-		btn_3.setOnClickListener(new OnClickListener(){
-			@Override
-			public void onClick(View v) {
-				
-			}});
-		
-		btn_4.setOnClickListener(new OnClickListener(){
-			@Override
-			public void onClick(View v) {
-				
-			}});
-		
-		btn_5.setOnClickListener(new OnClickListener(){
-			@Override
-			public void onClick(View v) {
-				
-			}});
-		
-		btn_6.setOnClickListener(new OnClickListener(){
-			@Override
-			public void onClick(View v) {
-				
-			}});
-		
-		btn_7.setOnClickListener(new OnClickListener(){
-			@Override
-			public void onClick(View v) {
-				
-			}});
-		
-		btn_8.setOnClickListener(new OnClickListener(){
-			@Override
-			public void onClick(View v) {
-				
-			}});
-		
-		btn_9.setOnClickListener(new OnClickListener(){
-			@Override
-			public void onClick(View v) {
-				
-			}});
-		
-		btn_clear.setOnClickListener(new OnClickListener(){
-			@Override
-			public void onClick(View v) {
-				
-			}});
-		
-		btn_backspace.setOnClickListener(new OnClickListener(){
-			@Override
-			public void onClick(View v) {
-				
-			}});
+			text_input.setText("輸入的號碼");
+			text_prizeornot.setText("未中獎");
+			
+			btn_0.setOnClickListener(new OnClickListener(){
+				@Override
+				public void onClick(View v) {
+					AwardInput("0");
+				}});
+			
+			btn_1.setOnClickListener(new OnClickListener(){
+				@Override
+				public void onClick(View v) {
+					AwardInput("1");
+				}});
+			
+			btn_2.setOnClickListener(new OnClickListener(){
+				@Override
+				public void onClick(View v) {
+					AwardInput("2");
+				}});
+			
+			btn_3.setOnClickListener(new OnClickListener(){
+				@Override
+				public void onClick(View v) {
+					AwardInput("3");
+				}});
+			
+			btn_4.setOnClickListener(new OnClickListener(){
+				@Override
+				public void onClick(View v) {
+					AwardInput("4");
+				}});
+			
+			btn_5.setOnClickListener(new OnClickListener(){
+				@Override
+				public void onClick(View v) {
+					AwardInput("5");
+				}});
+			
+			btn_6.setOnClickListener(new OnClickListener(){
+				@Override
+				public void onClick(View v) {
+					AwardInput("6");
+				}});
+			
+			btn_7.setOnClickListener(new OnClickListener(){
+				@Override
+				public void onClick(View v) {
+					AwardInput("7");
+				}});
+			
+			btn_8.setOnClickListener(new OnClickListener(){
+				@Override
+				public void onClick(View v) {
+					AwardInput("8");
+				}});
+			
+			btn_9.setOnClickListener(new OnClickListener(){
+				@Override
+				public void onClick(View v) {
+					AwardInput("9");
+				}});
+			
+			btn_clear.setOnClickListener(new OnClickListener(){
+				@Override
+				public void onClick(View v) {
+					text_input.setText("");
+				}});
+			
+			btn_backspace.setOnClickListener(new OnClickListener(){
+				@Override
+				public void onClick(View v) {
+					String currInput = text_input.getText().toString();
+					if(currInput.length() == 1) //只有一個就清空
+						text_input.setText("");
+					else if(currInput.length() == 2) //兩個就減一, 三個已經對獎了
+						text_input.setText(currInput.substring(0, 1));
+				}});
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
 	}
 	
 	private void setPrizelistPop() 
@@ -429,6 +480,7 @@ public class ManagerActivity extends Activity
 		}
 		else
 			month -= 2; //若現在為10月, 減2來看78月
+		
 		invPeriod = String.format("%d 年 %02d - %02d 月", year, month-1, month);
 		text_month.setText(invPeriod); //月份
 		
@@ -502,7 +554,21 @@ public class ManagerActivity extends Activity
 			text_price3.setText("無此期別資料");
 			text_price4.setText("無此期別資料");
 			e.printStackTrace();
+		}		
+	}
+	
+	public void AwardInput(String InputNumString)
+	{
+		if(!text_input.getText().toString().equals("輸入的號碼")) //為數字
+		{
+			text_input.setText(text_input.getText().toString() + InputNumString);
+			if(text_input.getText().toString().length() == 3)
+			{
+				text_prizeornot.setText(manualAward.Award(text_input.getText().toString(), winning));
+				text_input.setText("輸入的號碼");
+			}
 		}
-		
+		else					
+			text_input.setText(InputNumString);
 	}
 }

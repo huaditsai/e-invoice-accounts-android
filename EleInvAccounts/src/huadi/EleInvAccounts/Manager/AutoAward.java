@@ -10,6 +10,7 @@ import java.util.Map;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 //手動對獎(輸入後三碼)
 public class AutoAward
@@ -46,6 +47,8 @@ public class AutoAward
 				invDate = invDate.substring(0,4) + "-" + invDate.substring(4,6) + "-" + invDate.substring(6,8);
 				String sellerName = InvoiceCursor.getString(InvoiceCursor.getColumnIndex("sellerName"));
 				
+				//Log.e("invNum","" + invNum);
+				
 				String infoString = invDate + "," + invNum + "," + sellerName + "," + invTotalCost;
 				
 				String input = invNum.substring(2, 10); //前兩個英文			
@@ -76,11 +79,11 @@ public class AutoAward
 
 				for (String no : winningList.get("sixthPrizeNo"))
 					if (input.substring(input.length() - 3, input.length()).equals(no)) //末三碼
-						prize.add("增開六獎," + infoString);				
+						prize.add("增開六獎," + infoString);	
 				
 				InvoiceCursor.moveToNext(); //移至資料庫下一筆				
 			}
-
+			//Log.e("prize", "" + prize);
 			winnerMap.put("prize", prize);
 		}
 

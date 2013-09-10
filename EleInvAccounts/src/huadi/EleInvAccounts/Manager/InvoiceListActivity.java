@@ -264,7 +264,7 @@ public class InvoiceListActivity extends Activity
 		text_invoicemonth.setText(invPeriod);
 		text_store.setText(sellerName);
 		text_date.setText(invDate);
-		text_cost.setText(invTotalCost + "NTD");
+		text_cost.setText(invTotalCost + " NTD");
 		
 		TableRow tr2 = new TableRow(this);
 		LinearLayout l2;

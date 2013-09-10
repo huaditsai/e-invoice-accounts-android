@@ -399,25 +399,28 @@ public class ManagerActivity extends Activity
 		final TextView[] number;
 		TextView[] date, store, cost;
 		
-		prize = new TextView[count];
-		number = new TextView[count];
-		date = new TextView[count];
-		store = new TextView[count];
-		cost = new TextView[count];
-		
-		invoicetable.removeAllViews();
-		
-		if(count > 0)
+		if(count != 0)
 		{
 			List<String> prizeInfoList = winningAward.get("prize");
+			
+			prize = new TextView[prizeInfoList.size()];
+			number = new TextView[prizeInfoList.size()];
+			date = new TextView[prizeInfoList.size()];
+			store = new TextView[prizeInfoList.size()];
+			cost = new TextView[prizeInfoList.size()];
+			
+			invoicetable.removeAllViews();
+			
+			
+			//Log.e("prizeInfoList", "" + prizeInfoList);
 			for (int i = 0; i < prizeInfoList.size(); i++)
 			{
 				//prizeName, invDate, invNum, sellerName, invTotalCost
-				String prizeName = prizeInfoList.get(i).split(",")[0]; //獎項
-				String invDate = prizeInfoList.get(i).split(",")[1]; //發票號碼
-				String invNum = prizeInfoList.get(i).split(",")[2] + " NTD"; //金額
-				String sellerName = prizeInfoList.get(i).split(",")[3]; //日期
-				String invTotalCost =prizeInfoList.get(i).split(",")[4]; //消費商店
+				String prizeName = prizeInfoList.get(i).split(",")[0]; //獎項				
+				String invDate = prizeInfoList.get(i).split(",")[1]; //日期
+				String invNum = prizeInfoList.get(i).split(",")[2]; //發票號碼
+				String sellerName = prizeInfoList.get(i).split(",")[3]; //消費商店
+				String invTotalCost =prizeInfoList.get(i).split(",")[4] + " NTD"; //金額
 					
 				l1 = new LinearLayout(this);
 				l1.setOrientation(LinearLayout.HORIZONTAL);
@@ -460,7 +463,8 @@ public class ManagerActivity extends Activity
 				invoicetable.addView(tr);
 				tr = new TableRow(this);
 			}
-		}		
+		}
+		Log.e("eee", "" + 123);
 	}
 
 	private void setPrizelistPop() //開獎號碼列表popView

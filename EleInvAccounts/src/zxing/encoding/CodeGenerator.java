@@ -25,7 +25,7 @@ public class CodeGenerator
 		try
 		{	
 			//生成二維碼圖像 BarcodeFormat.QR_CODE / BarcodeFormat.CODE_39
-			bitmap = EncodeAsBitmap(content, BarcodeFormat.CODE_39, desiredWidth, desiredHeight);
+			bitmap = EncodeAsBitmap(content, BarcodeFormat.CODE_39, desiredWidth, desiredHeight); //長寬筆會影響白邊大小
 			if (null != bitmap)
 			{
 				//將二維碼圖像保存
@@ -67,7 +67,7 @@ public class CodeGenerator
 	
 	private static Bitmap EncodeAsBitmap(String contents, BarcodeFormat format, int desiredWidth, int desiredHeight) throws WriterException
 	{
-		final int WHITE = 0xFFFFFF; //可以指定其他顏色，讓二維碼變成彩色效果(ARGB)
+		final int WHITE = 0xFFFFFFFF; //可以指定其他顏色，讓二維碼變成彩色效果(ARGB)
 		final int BLACK = 0xFF000000;
 
 		Hashtable<EncodeHintType, String> hints = null;
@@ -77,8 +77,8 @@ public class CodeGenerator
 			hints = new Hashtable<EncodeHintType, String>(2);
 			hints.put(EncodeHintType.CHARACTER_SET, encoding);
 		}
-		MultiFormatWriter writer = new MultiFormatWriter();
-		BitMatrix result = writer.encode(contents, format, desiredWidth, desiredHeight, hints);
+		BitMatrix result = new MultiFormatWriter().encode(contents, format, desiredWidth, desiredHeight, hints);
+		
 		int width = result.getWidth();
 		int height = result.getHeight();
 		int[] pixels = new int[width * height];
@@ -88,7 +88,10 @@ public class CodeGenerator
 			int offset = y * width;
 			for (int x = 0; x < width; x++)
 			{
-				pixels[offset + x] = result.get(x, y) ? BLACK : WHITE;
+				if(result.get(x, y))
+					pixels[offset + x] = BLACK;
+				else
+					pixels[offset + x] = WHITE;
 			}
 		}
 

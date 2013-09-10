@@ -24,7 +24,8 @@ public class BarCodeWidget extends AppWidgetProvider
 		
 		views = new RemoteViews(context.getPackageName(), R.layout.widget_main);
 		
-		GetBarCode(context, context.getResources().getString(R.string.app_name), card.getString("cardNo", ""), 400, 100); //360.85 (¼e+144)
+		if(context.getResources().getString(R.string.app_name).length() > 0)
+			GetBarCode(context, context.getResources().getString(R.string.app_name), card.getString("cardNo", ""), 540, 200); //
 		
 		appWidgetManager.updateAppWidget(appWidgetIds, views);
 	}

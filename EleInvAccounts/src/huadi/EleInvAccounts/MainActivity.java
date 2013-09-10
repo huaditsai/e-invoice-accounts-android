@@ -7,6 +7,7 @@ import huadi.EleInvAccounts.Social.SocialActivity;
 
 import java.io.File;
 import java.util.UUID;
+
 import zxing.encoding.CodeGenerator;
 import android.app.Activity;
 import android.content.Context;
@@ -65,7 +66,8 @@ public class MainActivity extends Activity
 		
 		setUI(); //³]©wUI		
 		
-		GetBarCode(getResources().getString(R.string.app_name), card.getString("cardNo", ""), 400, 100); //360.85
+		if(getResources().getString(R.string.app_name).length() > 0 )
+			GetBarCode(getResources().getString(R.string.app_name), card.getString("cardNo", ""), 540, 200); //360.85
 		
 //		try
 //		{

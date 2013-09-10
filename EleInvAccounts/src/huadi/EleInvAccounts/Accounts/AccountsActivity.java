@@ -15,6 +15,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Typeface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -22,6 +23,7 @@ import android.provider.Settings;
 import android.text.TextPaint;
 import android.text.TextUtils.TruncateAt;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.InputMethodManager;
@@ -44,10 +46,14 @@ public class AccountsActivity extends Activity
 	
 	String invNum = "";
 	SQLiteDatabase db = null;
+
+	int year, month;
+	String invPeriod; //對獎發票期別(yyyMM)
+	
 	//UI宣告
-	ImageButton btn_backfunc, btn_account, btn_manager, btn_social, btn_setting;
+	ImageButton btn_backfunc, btn_account, btn_manager, btn_social, btn_setting, btn_left, btn_right;
 	Button btn_addone, btn_scan, btn_import, btn_income, btn_expend, btn_save, btn_cancel, btn_bg;
-	TextView text_total, text_income, text_expenditure, text_balance;
+	TextView text_total, text_income, text_expenditure, text_balance, text_month;
 	TableLayout table;
 	LinearLayout popview;
 	EditText editText1, editText3, editText5, editText6, editText7, editText14;
@@ -94,6 +100,45 @@ public class AccountsActivity extends Activity
 		table = (TableLayout) findViewById(R.id.TableLayout1);
 		popview = (LinearLayout) findViewById(R.id.LinearLayout1);
 		btn_bg = (Button)findViewById(R.id.button8);
+		btn_left = (ImageButton) findViewById(R.id.imageButton6); 
+		btn_right = (ImageButton) findViewById(R.id.imageButton97); 
+		text_month = (TextView) findViewById(R.id.textView77);
+		
+
+		//月份選擇----------------------------------------------------
+		Calendar calendar = Calendar.getInstance();
+		year = calendar.get(Calendar.YEAR) - 1911; //民國
+		month = calendar.get(Calendar.MONTH) +1; //Calendar.MONTH 從0開始...
+		invPeriod = String.format("%d 年 %02d 月", year, month);
+		
+		text_month.setText(invPeriod); //月份
+		btn_left.setOnClickListener(new OnClickListener(){
+			@Override
+			public void onClick(View v) {
+				month -= 1;
+				if(month == 0 && year != 0)
+				{
+					year--;
+					month = 12;
+				}
+				invPeriod = String.format("%d 年 %02d 月", year, month);
+				text_month.setText(invPeriod); //月份
+				GetChargeList(year+1911, month);
+			}});
+		btn_right.setOnClickListener(new OnClickListener(){
+			@Override
+			public void onClick(View v) {
+				month += 1;
+				if(month == 14 && year != 0)
+				{
+					year++;
+					month = 2;
+				}
+				invPeriod = String.format("%d 年 %02d 月", year, month);
+				text_month.setText(invPeriod); //月份				
+				GetChargeList(year+1911, month);
+			}});
+		//月份選擇----------------------------------------------------
 
 		btn_addone.setOnClickListener(new OnClickListener() //手動記帳
 		{
@@ -453,15 +498,18 @@ public class AccountsActivity extends Activity
 			}
 		});
 		//Side menu -----------------------------------------------		
-		
-		GetChargeList();
-	}
-	
-	public void GetChargeList() //一進去的列表
-	{
-		Calendar calendar = Calendar.getInstance();
+
+//		Calendar calendar = Calendar.getInstance();
 		int _year = calendar.get(Calendar.YEAR); //民國
 		int _month = calendar.get(Calendar.MONTH) + 1; //Calendar.MONTH 從0開始
+		GetChargeList(_year, _month);
+	}
+	
+	public void GetChargeList(int _year, int _month) //一進去的列表
+	{
+//		Calendar calendar = Calendar.getInstance();
+//		int _year = calendar.get(Calendar.YEAR); //民國
+//		int _month = calendar.get(Calendar.MONTH) + 1; //Calendar.MONTH 從0開始
 		Cursor invListCursor = db.rawQuery("SELECT money "
 			+ "FROM Charge "
 			+ "WHERE date >= " + String.format("'%d%02d00' ", _year, _month)
@@ -491,7 +539,7 @@ public class AccountsActivity extends Activity
 		text_balance.setText("本月結餘 " + balance);
 
 		TableRow tr = new TableRow(this);
-		LinearLayout l1, l2, l3;
+		LinearLayout l1, l2, l3, l4;
 		TextView[] month, day, item, main, sub, cost, account;
 		
 		Cursor ChargeListCursor = db.rawQuery("SELECT date, accountName, money, item, mainCategory, subCategory "
@@ -532,7 +580,8 @@ public class AccountsActivity extends Activity
 				l2.setOrientation(LinearLayout.VERTICAL);
 				item[i] = new TextView(this);
 				item[i].setText(ChargeListCursor.getString(ChargeListCursor.getColumnIndex("item")));
-				item[i].setMinimumWidth(400);
+				item[i].setTypeface(null, Typeface.BOLD);
+				item[i].setMinimumWidth(430);
 				item[i].setMaxEms(5);
 				item[i].setEllipsize(TruncateAt.END);
 				item[i].setLines(1);
@@ -548,14 +597,16 @@ public class AccountsActivity extends Activity
 				l3.addView(sub[i]);
 				l2.addView(l3);
 				l1.addView(l2);
+				l4 = new LinearLayout(this);
+				l4.setOrientation(LinearLayout.VERTICAL);
 				cost[i] = new TextView(this);
 				cost[i].setText(ChargeListCursor.getInt(ChargeListCursor.getColumnIndex("money")) + "NTD");
-				cost[i].setMinimumWidth(100);
 				cost[i].setPadding(0, 0, 40, 0);
-				l1.addView(cost[i]);
+				l4.addView(cost[i]);
 				account[i] = new TextView(this);
 				account[i].setText(ChargeListCursor.getString(ChargeListCursor.getColumnIndex("accountName")));
-				l1.addView(account[i]);
+				l4.addView(account[i]);
+				l1.addView(l4);
 				tr.addView(l1);
 				table.addView(tr);
 				tr = new TableRow(this);				
@@ -579,7 +630,11 @@ public class AccountsActivity extends Activity
 		editText5.setText("");
 		editText6.setText("");
 		editText7.setText("");
-		GetChargeList();
+		
+		Calendar calendar = Calendar.getInstance();
+		int _year = calendar.get(Calendar.YEAR); //民國
+		int _month = calendar.get(Calendar.MONTH) + 1; //Calendar.MONTH 從0開始
+		GetChargeList(_year, _month);
 	}
 	
 	private void CapturePopView(int _index)

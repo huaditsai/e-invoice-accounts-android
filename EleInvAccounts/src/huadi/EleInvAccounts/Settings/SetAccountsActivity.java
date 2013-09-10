@@ -142,6 +142,16 @@ public class SetAccountsActivity extends Activity
 				startActivity(intent);
 				SetAccountsActivity.this.finish();
 			}});
+		btn_setting.setOnClickListener(new OnClickListener()
+		{
+			@Override
+			public void onClick(View v)
+			{
+				Intent intent = new Intent(SetAccountsActivity.this, SettingsActivity.class);
+				startActivity(intent);
+				SetAccountsActivity.this.finish();
+			}
+		});
 	}
 	
 	public void setNewAccount(){

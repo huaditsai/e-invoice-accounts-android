@@ -112,6 +112,9 @@ public class SettingsActivity extends Activity
 					btn_setcategory.setY(btn_setcategory.getY() + btnMoveNega);
 					text_setcategory.setX(text_setcategory.getX() + btnMoveNega);
 					text_setcategory.setY(text_setcategory.getY() + btnMoveNega);
+					Intent intent = new Intent(SettingsActivity.this, SetCategoryActivity.class);
+					startActivity(intent);
+					SettingsActivity.this.finish();
 				}				
 				return false;
 				}});

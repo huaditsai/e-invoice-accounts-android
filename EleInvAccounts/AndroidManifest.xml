@@ -84,6 +84,9 @@
 		    android:name=".Settings.SetAccountsActivity"
             android:windowSoftInputMode="adjustUnspecified|stateHidden" >
 		</activity>
+		<activity 
+		    android:name=".Settings.SetCategoryActivity"
+            android:windowSoftInputMode="adjustUnspecified|stateHidden" ></activity>
 		
     </application>
 

@@ -30,14 +30,15 @@ public class DBHelper extends SQLiteOpenHelper
 		SQL = "CREATE TABLE IF NOT EXISTS " + tableName[1]	//MainCategory 主分類（食、衣、收入、其他）
 			+ "("
 			+ "_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
-			+ "mainCategory NTEXT"
+			+ "main NTEXT"
 			+ ");";
 		db.execSQL(SQL);
 		
 		SQL = "CREATE TABLE IF NOT EXISTS " + tableName[2]	//SubCategory 次分類
 			+ "("
 			+ "_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
-			+ "subCategory NTEXT"
+			+ "main NTEXT,"
+			+ "sub NTEXT"
 			+ ");";
 		db.execSQL(SQL);
 		

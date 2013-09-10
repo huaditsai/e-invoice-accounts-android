@@ -214,6 +214,7 @@ public class SettingsActivity extends Activity
 	public void setPhone(){
 		//edit_phone.setText("/XXXXXXX");
 		//edit_phonecode.setText("YOUR_VERIFICATION_CODE");
+		edit_phone.setText("/");
 		setphone.setVisibility(View.VISIBLE);
 		btn_bg.setVisibility(View.VISIBLE);
 		
@@ -224,7 +225,7 @@ public class SettingsActivity extends Activity
 				edit_phonecode.getText().toString();	//≈Á√“ΩX	
 				
 				try
-				{					
+				{
 					String CarrierHeadInfo = new CarrierHead(SettingsActivity.this)
 						.execute("3J0002", edit_phone.getText().toString(), UUID, appID, edit_phonecode.getText().toString()).get();
 					

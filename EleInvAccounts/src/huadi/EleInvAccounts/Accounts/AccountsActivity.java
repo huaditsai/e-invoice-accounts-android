@@ -27,6 +27,8 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -226,8 +228,9 @@ public class AccountsActivity extends Activity
 		else 
 		{
 			ContentValues accountCV = new ContentValues();
-			accountCV.put("account_name", "test");
+			accountCV.put("account_name", "User01");
 			db.insert("Account", null, accountCV);
+			account = new String[]{"User01"};
 		}
 		
 		//建立一個ArrayAdapter物件，並放置下拉選單的內容
@@ -237,7 +240,7 @@ public class AccountsActivity extends Activity
 		spinner1.setAdapter(adapter1); //mainCategory
 		
 		//mainCategory
-		Cursor mainCateCursor = db.rawQuery("SELECT mainCategory "
+		Cursor mainCateCursor = db.rawQuery("SELECT main "
 			+ "FROM MainCategory ", null); //要記得''包起來
 		
 		int mainCateCount = mainCateCursor.getCount(); //資料筆數
@@ -248,17 +251,27 @@ public class AccountsActivity extends Activity
 			mainCateCursor.moveToFirst();
 			for (int i = 0; i < mainCateCount; i++)
 			{
-				mainCategory[i] = mainCateCursor.getString(mainCateCursor.getColumnIndex("mainCategory"));
+				mainCategory[i] = mainCateCursor.getString(mainCateCursor.getColumnIndex("main"));
 				mainCateCursor.moveToNext(); //移至資料庫下一筆
 			}
 		}
 		else 
 		{
 			ContentValues mainCateCV = new ContentValues();
-			mainCateCV.put("mainCategory", "食");
+			mainCateCV.put("main", "食");
 			db.insert("MainCategory", null, mainCateCV);
-			mainCateCV.put("mainCategory", "衣");
+			mainCateCV.put("main", "衣");
 			db.insert("MainCategory", null, mainCateCV);
+			
+			ContentValues subCateCV = new ContentValues();
+			subCateCV.put("main", "食");
+			subCateCV.put("sub", "飲料");
+			db.insert("SubCategory", null, subCateCV);
+			subCateCV.put("main", "衣");
+			subCateCV.put("sub", "襯衫");
+			db.insert("SubCategory", null, subCateCV);
+			
+			mainCategory = new String[]{"食", "衣"};
 		}
 		
 		//建立一個ArrayAdapter物件，並放置下拉選單的內容
@@ -267,36 +280,47 @@ public class AccountsActivity extends Activity
 		adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item); //設定下拉選單的樣式
 		spinner2.setAdapter(adapter2); //mainCategory
 		
-		//SubCategory
-		Cursor subCursor = db.rawQuery("SELECT subCategory "
-			+ "FROM SubCategory ", null); //要記得''包起來
-		
-		int subCateCount = subCursor.getCount(); //資料筆數
-		String[] subCategory = new String[subCateCount];
-		
-		if(subCateCount != 0)
+		spinner2.setOnItemSelectedListener(new OnItemSelectedListener() //副分類會跟著主分類選啥
 		{
-			subCursor.moveToFirst();
-			for (int i = 0; i < subCateCount; i++)
+			@Override
+			public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3)
 			{
-				subCategory[i] = subCursor.getString(subCursor.getColumnIndex("subCategory"));
-				subCursor.moveToNext(); //移至資料庫下一筆
+				//SubCategory
+				Cursor subCursor = db.rawQuery("SELECT sub "
+					+ "FROM SubCategory "
+					+ "WHERE main = '" + spinner2.getSelectedItem().toString() + "'", null); //要記得''包起來
+				
+				int subCateCount = subCursor.getCount(); //資料筆數
+				String[] subCategory = new String[subCateCount];
+				
+				if(subCateCount != 0)
+				{
+					subCursor.moveToFirst();
+					for (int i = 0; i < subCateCount; i++)
+					{
+						subCategory[i] = subCursor.getString(subCursor.getColumnIndex("sub"));
+						subCursor.moveToNext(); //移至資料庫下一筆
+					}
+				}
+				else 
+				{
+					ContentValues subCateCV = new ContentValues();
+					subCateCV.put("main", spinner2.getSelectedItem().toString());
+					subCateCV.put("sub", "其他");
+					db.insert("SubCategory", null, subCateCV);
+					subCategory = new String[]{"其他"};
+				}
+				
+				ArrayAdapter<String> adapter3 = new ArrayAdapter<String>(AccountsActivity.this, 
+					android.R.layout.simple_spinner_item, subCategory);
+				adapter3.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item); //設定下拉選單的樣式
+				spinner3.setAdapter(adapter3); //SubCategory
 			}
-		}
-		else 
-		{
-			ContentValues subCateCV = new ContentValues();
-			subCateCV.put("subCategory", "飲料");
-			db.insert("SubCategory", null, subCateCV);
-			subCateCV.put("subCategory", "T-shirt");
-			db.insert("SubCategory", null, subCateCV);
-		}
-		
-		ArrayAdapter<String> adapter3 = new ArrayAdapter<String>(AccountsActivity.this, 
-			android.R.layout.simple_spinner_item, subCategory);
-		adapter3.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item); //設定下拉選單的樣式
-		spinner3.setAdapter(adapter3); //SubCategory
-		
+			@Override
+			public void onNothingSelected(AdapterView<?> arg0)
+			{
+			}
+		});	
 		
 		btn_income.setOnClickListener(new OnClickListener()
 		{

@@ -56,7 +56,7 @@ public class ManagerActivity extends Activity
 	ImageButton btn_right, btn_left, btn_right2, btn_left2;
 	TextView text_month, text_price1, text_price2, text_price3, text_price4;
 	TextView text_month2, text_input, text_prizeornot;
-	Button btn_close, btn_close2, btn_invoice, btn_number;
+	Button btn_close, btn_close2, btn_invoice, btn_number, btn_device;
 	TableLayout invoicetable;
 	Button btn_0, btn_1, btn_2, btn_3, btn_4, btn_5, btn_6, btn_7, btn_8, btn_9, btn_clear, btn_backspace, btn_bg;
 	
@@ -105,6 +105,7 @@ public class ManagerActivity extends Activity
 		text_month2 = (TextView)findViewById(R.id.textView37);
 		btn_invoice = (Button)findViewById(R.id.button1);
 		btn_number = (Button)findViewById(R.id.button2);
+		btn_device = (Button)findViewById(R.id.button17);
 		invoice = (LinearLayout)findViewById(R.id.invoice);
 		number = (LinearLayout)findViewById(R.id.number);
 		invoicetable = (TableLayout)findViewById(R.id.invoicetable);
@@ -361,6 +362,13 @@ public class ManagerActivity extends Activity
 				number.setVisibility(View.VISIBLE);
 				isAuto = false;
 				Manual(); //手動對獎
+			}});
+		
+		btn_device.setOnClickListener(new OnClickListener(){ //載具對獎與發票對獎共用Layout
+			@Override
+			public void onClick(View v) {
+				invoice.setVisibility(View.VISIBLE);
+				number.setVisibility(View.GONE);
 			}});
 		
 		btn_close2.setOnClickListener(new OnClickListener(){
@@ -640,7 +648,7 @@ public class ManagerActivity extends Activity
 		btn_clear.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {
-				text_input.setText("");
+				text_input.setText("請輸入號碼");
 			}});
 		
 		btn_backspace.setOnClickListener(new OnClickListener(){
@@ -648,7 +656,7 @@ public class ManagerActivity extends Activity
 			public void onClick(View v) {
 				String currInput = text_input.getText().toString();
 				if(currInput.length() == 1) //只有一個就清空
-					text_input.setText("");
+					text_input.setText("請輸入號碼");
 				else if(currInput.length() == 2) //兩個就減一, 三個已經對獎了
 					text_input.setText(currInput.substring(0, 1));
 			}});		

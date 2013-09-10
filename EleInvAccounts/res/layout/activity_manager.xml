@@ -517,6 +517,16 @@
                 android:gravity="center" >
 
                 <Button
+                    android:id="@+id/button2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="30dp"
+                    android:layout_margin="5dp"
+                    android:background="@drawable/button_style"
+                    android:text="三碼對獎"
+                    android:textColor="#ffffff"
+                    android:textSize="12sp" />
+
+                <Button
                     android:id="@+id/button1"
                     android:layout_width="wrap_content"
                     android:layout_height="30dp"
@@ -527,14 +537,15 @@
                     android:textSize="12sp" />
 
                 <Button
-                    android:id="@+id/button2"
+                    android:id="@+id/button17"
                     android:layout_width="wrap_content"
                     android:layout_height="30dp"
                     android:layout_margin="5dp"
                     android:background="@drawable/button_style"
-                    android:text="三碼對獎"
+                    android:text="載具對獎"
                     android:textColor="#ffffff"
                     android:textSize="12sp" />
+
             </LinearLayout>
 
             <LinearLayout

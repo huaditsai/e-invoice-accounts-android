@@ -251,28 +251,6 @@ public class SetCategoryActivity extends Activity
 		btn_bg.setVisibility(View.VISIBLE);
 		btn_delete.setVisibility(View.GONE);
 		
-		btn_income.getBackground().setAlpha(60);
-		btn_expend.getBackground().setAlpha(255);
-		
-		btn_income.setOnClickListener(new OnClickListener()
-		{
-			@Override
-			public void onClick(View v)
-			{
-				btn_income.getBackground().setAlpha(255);
-				btn_expend.getBackground().setAlpha(60);
-			}
-		});
-		btn_expend.setOnClickListener(new OnClickListener()
-		{
-			@Override
-			public void onClick(View v)
-			{
-				btn_expend.getBackground().setAlpha(255);
-				btn_income.getBackground().setAlpha(60);
-			}
-		});
-		
 		btn_ok.setText("·s¼W");
 		btn_ok.setOnClickListener(new OnClickListener(){
 			@Override

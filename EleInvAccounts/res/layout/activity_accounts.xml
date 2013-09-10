@@ -187,7 +187,7 @@
             android:layout_height="match_parent"
             android:layout_marginLeft="40dp"
             android:layout_marginRight="50dp"
-            android:paddingBottom="65dp"
+            android:paddingBottom="80dp"
             android:paddingTop="5dp" >
 
             <TableLayout

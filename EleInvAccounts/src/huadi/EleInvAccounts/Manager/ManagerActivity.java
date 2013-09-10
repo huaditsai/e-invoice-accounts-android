@@ -538,19 +538,19 @@ public class ManagerActivity extends Activity
 			
 			for (String no : winning.get("spcPrizeNo")) //特獎號
 				spcPrizeNo += no + "\n";
-			text_price1.setText(spcPrizeNo);
+			text_price1.setText(spcPrizeNo.substring(0, spcPrizeNo.length()-1));
 			
 			for (String no : winning.get("firstPrizeNo")) //頭獎號
 				firstPrizeNo += no + "\n";
-			text_price2.setText(firstPrizeNo);
+			text_price2.setText(firstPrizeNo.substring(0, firstPrizeNo.length()-1));
 			
 			for (String no : winning.get("sixthPrizeNo")) //增開獎號
 				sixthPrizeNo += no + "\n";
-			text_price3.setText(sixthPrizeNo);
+			text_price3.setText(sixthPrizeNo.substring(0, sixthPrizeNo.length()-1));
 			
 			for (String no : winning.get("superPrizeNo")) //特別獎號
 				superPrizeNo += no + "\n";
-			text_price4.setText(superPrizeNo);
+			text_price4.setText(superPrizeNo.substring(0, superPrizeNo.length()-1));
 		}
 		catch (Exception e)
 		{
@@ -574,7 +574,7 @@ public class ManagerActivity extends Activity
 			//e.printStackTrace();
 		}
 		
-		text_input.setText("輸入的號碼");
+		text_input.setText("請輸入號碼");
 		text_prizeornot.setText("未中獎");
 		
 		btn_0.setOnClickListener(new OnClickListener(){
@@ -656,7 +656,7 @@ public class ManagerActivity extends Activity
 	
 	public void AwardInput(String InputNumString) //判斷手動對獎的輸入
 	{
-		if(!text_input.getText().toString().equals("輸入的號碼")) //為數字
+		if(!text_input.getText().toString().equals("請輸入號碼")) //為數字
 		{
 			text_input.setText(text_input.getText().toString() + InputNumString);
 			if(text_input.getText().toString().length() == 3)
@@ -670,7 +670,7 @@ public class ManagerActivity extends Activity
 					//e.printStackTrace();
 					text_prizeornot.setText("無此期別資料");
 				}
-				text_input.setText("輸入的號碼");
+				text_input.setText("請輸入號碼");
 			}
 		}
 		else					

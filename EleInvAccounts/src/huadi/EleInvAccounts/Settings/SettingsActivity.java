@@ -26,7 +26,7 @@ public class SettingsActivity extends Activity
 	ImageButton btn_setaccount, btn_setcategory, btn_setfb, btn_setphone;
 	TextView text_setaccount, text_setcategory, text_setfb, text_setphone;
 	LinearLayout setphone, setfb;
-	Button btn_phoneOK, btn_phoneCancel, btn_fbOK, btn_fbCancel;
+	Button btn_phoneOK, btn_phoneCancel, btn_fbOK, btn_fbCancel, btn_bg;
 	EditText edit_phone, edit_phonecode, edit_fbuser, edit_fbpw;
 	
 	@Override
@@ -66,6 +66,7 @@ public class SettingsActivity extends Activity
 		btn_fbCancel = (Button)findViewById(R.id.button9);
 		edit_fbuser = (EditText)findViewById(R.id.editText3);
 		edit_fbpw = (EditText)findViewById(R.id.editText4);
+		btn_bg = (Button)findViewById(R.id.button1);
 		
 		text_setaccount.setText("設定帳戶");
 		text_setcategory.setText("設定分類");
@@ -88,6 +89,9 @@ public class SettingsActivity extends Activity
 					btn_setaccount.setY(btn_setaccount.getY() + btnMoveNega);
 					text_setaccount.setX(text_setaccount.getX() + btnMoveNega);
 					text_setaccount.setY(text_setaccount.getY() + btnMoveNega);
+					Intent intent = new Intent(SettingsActivity.this, SetAccountsActivity.class);
+					startActivity(intent);
+					SettingsActivity.this.finish();
 				}				
 				return false;
 				}});
@@ -190,6 +194,7 @@ public class SettingsActivity extends Activity
 	
 	public void setPhone(){
 		setphone.setVisibility(View.VISIBLE);
+		btn_bg.setVisibility(View.VISIBLE);
 		
 		btn_phoneOK.setOnClickListener(new OnClickListener(){
 			@Override
@@ -197,17 +202,20 @@ public class SettingsActivity extends Activity
 				edit_phone.getText().toString();	//手機代碼
 				edit_phonecode.getText().toString();	//驗證碼
 				setphone.setVisibility(View.GONE);
+				btn_bg.setVisibility(View.GONE);
 			}});
 		btn_phoneCancel.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {
 				setphone.setVisibility(View.GONE);
+				btn_bg.setVisibility(View.GONE);
 			}});
 		
 	}
 	
 	public void setFb(){
 		setfb.setVisibility(View.VISIBLE);
+		btn_bg.setVisibility(View.VISIBLE);
 		
 		btn_fbOK.setOnClickListener(new OnClickListener(){
 			@Override
@@ -215,11 +223,13 @@ public class SettingsActivity extends Activity
 				edit_fbuser.getText().toString();	//FB帳號
 				edit_fbpw.getText().toString();	//FB密碼
 				setfb.setVisibility(View.GONE);
+				btn_bg.setVisibility(View.GONE);
 			}});
 		btn_fbCancel.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {
 				setfb.setVisibility(View.GONE);
+				btn_bg.setVisibility(View.GONE);
 			}});
 		
 	}

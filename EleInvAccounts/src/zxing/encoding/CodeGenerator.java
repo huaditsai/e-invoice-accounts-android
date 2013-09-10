@@ -3,6 +3,7 @@ package zxing.encoding;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.HashMap;
+import java.util.Hashtable;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
@@ -66,18 +67,18 @@ public class CodeGenerator
 	
 	private static Bitmap EncodeAsBitmap(String contents, BarcodeFormat format, int desiredWidth, int desiredHeight) throws WriterException
 	{
-		final int WHITE = 0x00FFFFFF; //可以指定其他顏色，讓二維碼變成彩色效果(ARGB)
+		final int WHITE = 0xFFFFFF; //可以指定其他顏色，讓二維碼變成彩色效果(ARGB)
 		final int BLACK = 0xFF000000;
 
-		HashMap<EncodeHintType, String> hints = null;
+		Hashtable<EncodeHintType, String> hints = null;
 		String encoding = GuessAppropriateEncoding(contents);
 		if (encoding != null)
 		{
-			hints = new HashMap<EncodeHintType, String>(2);
+			hints = new Hashtable<EncodeHintType, String>(2);
 			hints.put(EncodeHintType.CHARACTER_SET, encoding);
 		}
 		MultiFormatWriter writer = new MultiFormatWriter();
-		BitMatrix result = writer.encode(contents, format, desiredWidth, desiredHeight);//, hints);
+		BitMatrix result = writer.encode(contents, format, desiredWidth, desiredHeight, hints);
 		int width = result.getWidth();
 		int height = result.getHeight();
 		int[] pixels = new int[width * height];

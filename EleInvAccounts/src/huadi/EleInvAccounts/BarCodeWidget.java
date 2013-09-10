@@ -6,6 +6,7 @@ import zxing.encoding.CodeGenerator;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -19,8 +20,12 @@ public class BarCodeWidget extends AppWidgetProvider
 	@Override
 	public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds)
 	{
+		SharedPreferences card = context.getSharedPreferences("CARD", Context.MODE_PRIVATE ); //°¾¦n³]©w
+		
 		views = new RemoteViews(context.getPackageName(), R.layout.widget_main);
-		GetBarCode(context, context.getResources().getString(R.string.app_name), "/XXXXXXX", 400, 100); //360.85 (¼e+144)
+		
+		GetBarCode(context, context.getResources().getString(R.string.app_name), card.getString("cardNo", ""), 400, 100); //360.85 (¼e+144)
+		
 		appWidgetManager.updateAppWidget(appWidgetIds, views);
 	}
 

@@ -387,9 +387,11 @@ public class ManagerActivity extends Activity
 			count = winningAward.size(); 
 		}
 		catch(Exception e)
-		{
+		{			
 			//e.printStackTrace();
 		}
+		
+		invoicetable.removeAllViews();
 		
 		//Log.e("count", "" + count);
 		
@@ -399,7 +401,7 @@ public class ManagerActivity extends Activity
 		final TextView[] number;
 		TextView[] date, store, cost;
 		
-		if(count != 0)
+		if(count > 0)
 		{
 			List<String> prizeInfoList = winningAward.get("prize");
 			
@@ -464,7 +466,7 @@ public class ManagerActivity extends Activity
 				tr = new TableRow(this);
 			}
 		}
-		Log.e("eee", "" + 123);
+		
 	}
 
 	private void setPrizelistPop() //¶}¼ú¸¹½X¦CªípopView

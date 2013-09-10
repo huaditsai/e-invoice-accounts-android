@@ -1,26 +1,38 @@
 package huadi.EleInvAccounts.Settings;
 
+import java.util.Calendar;
+import java.util.concurrent.ExecutionException;
+
 import huadi.EleInvAccounts.MainActivity;
 import huadi.EleInvAccounts.R;
 import huadi.EleInvAccounts.Accounts.AccountsActivity;
+import huadi.EleInvAccounts.Inquiry.CarrierHead;
+import huadi.EleInvAccounts.Inquiry.GetNTP;
 import huadi.EleInvAccounts.Manager.ManagerActivity;
 import huadi.EleInvAccounts.Social.SocialActivity;
+import android.R.integer;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 //設定
 public class SettingsActivity extends Activity
 {
+	String appID, UUID;
+	
 	//UI宣告
 	ImageButton btn_backfunc, btn_account, btn_manager, btn_social, btn_setting;
 	ImageButton btn_setaccount, btn_setcategory, btn_setfb, btn_setphone;
@@ -35,7 +47,11 @@ public class SettingsActivity extends Activity
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_settings);
 		
-		setUI();
+		SharedPreferences ids = getSharedPreferences("IDs", MODE_PRIVATE ); //偏好設定
+		appID = ids.getString("appID", "");
+		UUID = ids.getString("UUID", "");
+		
+		setUI();		
 	}
 
 	private void setUI() {
@@ -196,6 +212,8 @@ public class SettingsActivity extends Activity
 	}
 	
 	public void setPhone(){
+		//edit_phone.setText("/XXXXXXX");
+		//edit_phonecode.setText("YOUR_VERIFICATION_CODE");
 		setphone.setVisibility(View.VISIBLE);
 		btn_bg.setVisibility(View.VISIBLE);
 		
@@ -203,13 +221,39 @@ public class SettingsActivity extends Activity
 			@Override
 			public void onClick(View arg0) {
 				edit_phone.getText().toString();	//手機代碼
-				edit_phonecode.getText().toString();	//驗證碼
-				setphone.setVisibility(View.GONE);
-				btn_bg.setVisibility(View.GONE);
+				edit_phonecode.getText().toString();	//驗證碼	
+				
+				try
+				{					
+					String CarrierHeadInfo = new CarrierHead(SettingsActivity.this)
+						.execute("3J0002", edit_phone.getText().toString(), UUID, appID, edit_phonecode.getText().toString()).get();
+					
+					if(CarrierHeadInfo.equals("200"))
+					{
+						SharedPreferences card = getSharedPreferences("CARD", MODE_PRIVATE ); //偏好設定 
+						card.edit().putString("cardNo", edit_phone.getText().toString()).commit(); //卡片隱碼
+						card.edit().putString("cardEncrypt", edit_phonecode.getText().toString()).commit(); //卡片檢驗碼
+						
+						Toast.makeText(SettingsActivity.this, "成功", Toast.LENGTH_SHORT).show();
+						
+						setphone.setVisibility(View.GONE);
+						btn_bg.setVisibility(View.GONE);
+					}
+					else
+						Toast.makeText(SettingsActivity.this, "條碼/驗證碼 錯誤", Toast.LENGTH_SHORT).show();
+				}
+				catch (Exception e)
+				{
+					setphone.setVisibility(View.GONE);
+					btn_bg.setVisibility(View.GONE);
+				}
+				
 			}});
 		btn_phoneCancel.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {
+				edit_phone.setText("/");
+				edit_phonecode.setText("");
 				setphone.setVisibility(View.GONE);
 				btn_bg.setVisibility(View.GONE);
 			}});

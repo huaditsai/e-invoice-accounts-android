@@ -113,14 +113,14 @@ public class InvDetails extends AsyncTask<String, String, String> // <傳入參數, 
 						}
 					}
 					
-					JSONArray detailObject = jsonObject.getJSONArray("details"); //[]為JSONArray
-					for(int i = 0; i < detailObject.length(); i++)
+					JSONArray detailArray = jsonObject.getJSONArray("details"); //[]為JSONArray
+					for(int i = 0; i < detailArray.length(); i++)
 					{
-						String rowNum = detailObject.getJSONObject(i).getString("rowNum"); //明細編號(1,2,3...)
-						String description = detailObject.getJSONObject(i).getString("description"); //品名
-						String quantity = detailObject.getJSONObject(i).getString("quantity"); //數量
-						String unitPrice = detailObject.getJSONObject(i).getString("unitPrice"); //單價
-						String amount = detailObject.getJSONObject(i).getString("amount"); //小計
+						String rowNum = detailArray.getJSONObject(i).getString("rowNum"); //明細編號(1,2,3...)
+						String description = detailArray.getJSONObject(i).getString("description"); //品名
+						String quantity = detailArray.getJSONObject(i).getString("quantity"); //數量
+						String unitPrice = detailArray.getJSONObject(i).getString("unitPrice"); //單價
+						String amount = detailArray.getJSONObject(i).getString("amount"); //小計
 						
 						ContentValues InvDetailCV = new ContentValues();
 						InvDetailCV.put("invNum", invNum); //發票編號

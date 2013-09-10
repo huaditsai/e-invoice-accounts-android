@@ -58,16 +58,16 @@ public class MainActivity extends Activity
 		ids.edit().putString("UUID", GetUUID()).commit(); //寫入 uuid
 		
 		SharedPreferences card = getSharedPreferences("CARD", MODE_PRIVATE ); //偏好設定 
-		card.edit().putString("cardNo", "/XXXXXXX").commit(); //卡片隱碼
-		card.edit().putString("cardEncrypt", "YOUR_VERIFICATION_CODE").commit(); //卡片檢驗碼
+//		card.edit().putString("cardNo", "").commit(); //卡片隱碼
+//		card.edit().putString("cardEncrypt", "").commit(); //卡片檢驗碼
 		//Log.e("id", GetUUID());
 		
 		//new InvDetails().execute("QRCode","VX20070106","","2013/07/13","g7Y1WPAG8PE1PbEIebrTQg==","01802112",GetUUID(),"9035",appID);
 		
 		setUI(); //設定UI		
 		
-		if(getResources().getString(R.string.app_name).length() > 0 )
-			GetBarCode(getResources().getString(R.string.app_name), card.getString("cardNo", ""), 540, 200); //360.85
+		if(card.getString("cardNo", "").length() > 0 )
+			GetBarCode("EleInvAccounts", card.getString("cardNo", ""), 540, 200); //360.85
 		
 //		try
 //		{

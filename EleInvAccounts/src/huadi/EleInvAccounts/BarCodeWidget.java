@@ -23,9 +23,12 @@ public class BarCodeWidget extends AppWidgetProvider
 		SharedPreferences card = context.getSharedPreferences("CARD", Context.MODE_PRIVATE ); //偏好設定
 		
 		views = new RemoteViews(context.getPackageName(), R.layout.widget_main);
+		views.setTextColor(R.id.weget_textView, Color.BLACK);
 		
-		if(context.getResources().getString(R.string.app_name).length() > 0)
-			GetBarCode(context, context.getResources().getString(R.string.app_name), card.getString("cardNo", ""), 540, 200); //
+		if(card.getString("cardNo", "").length() > 0)
+			GetBarCode(context, "EleInvAccounts", card.getString("cardNo", ""), 540, 200); //
+		else
+			views.setTextViewText(R.id.weget_textView, "未綁定載具條碼");
 		
 		appWidgetManager.updateAppWidget(appWidgetIds, views);
 	}
@@ -44,7 +47,7 @@ public class BarCodeWidget extends AppWidgetProvider
 			views.setImageViewBitmap(R.id.weget_imageView, bitmap);
 			
 			views.setTextViewText(R.id.weget_textView, content);
-			views.setTextColor(R.id.weget_textView, Color.BLACK);
+			
 		}
 		catch (Exception e)
 		{

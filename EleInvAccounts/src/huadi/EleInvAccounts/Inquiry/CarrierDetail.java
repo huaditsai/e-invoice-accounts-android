@@ -80,12 +80,6 @@ public class CarrierDetail extends AsyncTask<String, String, String> // <¶Ç¤J°Ñ¼
 				
 				try
 				{
-//					ContentValues InvoiceCV = new ContentValues();
-//					InvoiceCV.put("invoice_no", params[4]); //µo²¼½s¸¹
-//					InvoiceCV.put("invoice_month", params[5].split("/")[1]); //µo²¼¤ë¥÷
-//					InvoiceCV.put("invoice_cost", params[8]); //®ø¶Oª÷ÃB
-//					db.insert("Invoice", null, InvoiceCV); //·s¼W¤@µ§¦Ü Invoice
-					
 					String invNum =  jsonObject.getString("invNum"); //µo²¼¸¹½X
 					String invDate =  jsonObject.getString("invDate"); //µo²¼¶}¥ß¤é´Á(yyyyMMdd)
 					String sellerName =  jsonObject.getString("sellerName"); //½æ¤è¦WºÙ
@@ -94,15 +88,14 @@ public class CarrierDetail extends AsyncTask<String, String, String> // <¶Ç¤J°Ñ¼
 					
 					String invStatus =  jsonObject.getString("invStatus"); //µo²¼ª¬ºA(¤w½T»{)
 					
-					JSONArray detailObject = jsonObject.getJSONArray("details"); //[]¬°JSONArray
-					for(int i = 0; i < detailObject.length(); i++)
+					JSONArray detailArray = jsonObject.getJSONArray("details"); //[]¬°JSONArray
+					for(int i = 0; i < detailArray.length(); i++)
 					{
-						String rowNum = detailObject.getJSONObject(i).getString("rowNum"); //©ú²Ó½s¸¹(1,2,3...)
-						String description = detailObject.getJSONObject(i).getString("description"); //«~¦W
-						String quantity = detailObject.getJSONObject(i).getString("quantity"); //¼Æ¶q
-						String unitPrice = detailObject.getJSONObject(i).getString("unitPrice"); //³æ»ù
-						String amount = detailObject.getJSONObject(i).getString("amount"); //¤p­p
-						
+						String rowNum = detailArray.getJSONObject(i).getString("rowNum"); //©ú²Ó½s¸¹(1,2,3...)
+						String description = detailArray.getJSONObject(i).getString("description"); //«~¦W
+						String quantity = detailArray.getJSONObject(i).getString("quantity"); //¼Æ¶q
+						String unitPrice = detailArray.getJSONObject(i).getString("unitPrice"); //³æ»ù
+						String amount = detailArray.getJSONObject(i).getString("amount"); //¤p­p						
 					}
 				}
 				catch(Exception e)

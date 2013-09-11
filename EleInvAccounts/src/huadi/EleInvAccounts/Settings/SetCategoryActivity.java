@@ -14,6 +14,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.TextUtils.TruncateAt;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -39,10 +40,11 @@ public class SetCategoryActivity extends Activity
 	//UI宣告
 	ImageButton btn_backfunc, btn_account, btn_manager, btn_social, btn_setting;
 	Button btn_addnewmain, btn_addnewsub, btn_ok, btn_delete, btn_cancel, btn_ok2, btn_delete2, btn_cancel2, btn_bg;
-	LinearLayout layout_main, layout_sub;
+	LinearLayout layout_main, layout_sub, layout_original;
 	EditText edit_main, edit_sub;
 	TableLayout table;
 	Spinner spinner1;
+	TextView text_ori, text_category;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -77,6 +79,9 @@ public class SetCategoryActivity extends Activity
 		btn_ok2 = (Button)findViewById(R.id.button10);
 		btn_delete2 = (Button)findViewById(R.id.button11);
 		btn_cancel2 = (Button)findViewById(R.id.button12);
+		layout_original = (LinearLayout)findViewById(R.id.originalcategory);
+		text_ori = (TextView)findViewById(R.id.textView10);
+		text_category = (TextView)findViewById(R.id.textView12);
 		
 		setCategory();
 		
@@ -205,7 +210,7 @@ public class SetCategoryActivity extends Activity
 		TextView[][] name;
 		
 		
-		for (int m = 0; m < mainCateCount; m++){ //TODO sub
+		for (int m = 0; m < mainCateCount; m++){
 
 			Cursor subCursor = db.rawQuery("SELECT sub "
 				+ "FROM SubCategory "
@@ -241,7 +246,13 @@ public class SetCategoryActivity extends Activity
 					name[m][s].setText(mainCategoryItem[m]); //("主分類");
 					name[m][s].setPadding(0, 0, 20, 0);
 					name[m][s].getPaint().setFakeBoldText(true);
-					l1[m].addView(name[m][s]);		
+					l1[m].addView(name[m][s]);
+					l1[m].setBackgroundColor(Color.rgb(255, 254, 232));
+					DisplayMetrics dm = new DisplayMetrics();	// 建立一個DisplayMetrics物件
+					this.getWindowManager().getDefaultDisplay().getMetrics(dm);	// 取得裝置的資訊
+					int Width = dm.widthPixels;
+					int Height = dm.heightPixels;
+					l1[m].setMinimumWidth(Width);
 					
 					final String item = mainCategoryItem[m];
 					btn[m][s] = new ImageButton(this);
@@ -294,11 +305,12 @@ public class SetCategoryActivity extends Activity
 	}
 	
 	public void setNewMain(){
-
 		layout_main.setVisibility(View.VISIBLE);
+		layout_original.setVisibility(View.GONE);
 		btn_bg.setVisibility(View.VISIBLE);
 		btn_delete.setVisibility(View.GONE);
-		
+
+		text_category.setText("分類名稱");
 		btn_ok.setText("新增");
 		btn_ok.setOnClickListener(new OnClickListener(){
 			@Override
@@ -339,8 +351,12 @@ public class SetCategoryActivity extends Activity
 	public void editMain(final String item){
 
 		layout_main.setVisibility(View.VISIBLE);
+		layout_original.setVisibility(View.VISIBLE);
 		btn_bg.setVisibility(View.VISIBLE);
 		btn_delete.setVisibility(View.VISIBLE);
+		
+		text_ori.setText(item);
+		text_category.setText("修改名稱");
 		
 		btn_ok.setText("修改");
 		btn_ok.setOnClickListener(new OnClickListener(){
@@ -371,6 +387,7 @@ public class SetCategoryActivity extends Activity
 					}
 				}				
 				layout_main.setVisibility(View.GONE);
+				layout_original.setVisibility(View.GONE);
 				btn_bg.setVisibility(View.GONE);
 				edit_main.setText("");
 				setCategory();
@@ -394,6 +411,7 @@ public class SetCategoryActivity extends Activity
 				}
 				
 				layout_main.setVisibility(View.GONE);
+				layout_original.setVisibility(View.GONE);
 				btn_bg.setVisibility(View.GONE);
 				edit_main.setText("");
 				setCategory();
@@ -403,6 +421,7 @@ public class SetCategoryActivity extends Activity
 			@Override
 			public void onClick(View v) {
 				layout_main.setVisibility(View.GONE);
+				layout_original.setVisibility(View.GONE);
 				btn_bg.setVisibility(View.GONE);
 				edit_main.setText("");
 			}});

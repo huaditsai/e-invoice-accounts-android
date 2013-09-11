@@ -182,7 +182,6 @@ public class SettingsActivity extends Activity
 		btn_backfunc.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {
-				// TODO Auto-generated method stub
 				Intent intent = new Intent(SettingsActivity.this, MainActivity.class);
 				startActivity(intent);
 				SettingsActivity.this.finish();
@@ -190,7 +189,6 @@ public class SettingsActivity extends Activity
 		btn_account.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {
-				// TODO Auto-generated method stub
 				Intent intent = new Intent(SettingsActivity.this, AccountsActivity.class);
 				startActivity(intent);
 				SettingsActivity.this.finish();
@@ -198,7 +196,6 @@ public class SettingsActivity extends Activity
 		btn_manager.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {
-				// TODO Auto-generated method stub
 				Intent intent = new Intent(SettingsActivity.this, ManagerActivity.class);
 				startActivity(intent);
 				SettingsActivity.this.finish();
@@ -206,7 +203,6 @@ public class SettingsActivity extends Activity
 		btn_social.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {
-				// TODO Auto-generated method stub
 				Intent intent = new Intent(SettingsActivity.this, SocialActivity.class);
 				startActivity(intent);
 				SettingsActivity.this.finish();
@@ -214,7 +210,7 @@ public class SettingsActivity extends Activity
 	}
 	
 	public void setPhone(){
-		edit_phone.setText("/XXXXXXX");
+		edit_phone.setText("/XXXXXXX"); // TODO µo§G®É§R°£
 		edit_phonecode.setText("YOUR_VERIFICATION_CODE");
 		//edit_phone.setText("/");
 		setphone.setVisibility(View.VISIBLE);

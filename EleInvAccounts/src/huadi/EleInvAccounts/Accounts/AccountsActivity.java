@@ -186,7 +186,6 @@ public class AccountsActivity extends Activity
 					isCapture = true;
 					Intent intent = new Intent(AccountsActivity.this, CaptureActivity.class);
 					startActivity(intent);
-
 				}
 				else
 				{
@@ -220,7 +219,6 @@ public class AccountsActivity extends Activity
 					isCapture = true;
 					try
 					{
-						
 //						Map<String, List<String>> head = new CarrierHead().execute("3J0002", cardNo, "N", UUID, appID, cardEncrypt).get();
 //						
 //						for (int i = 0; i < head.get("invNum").size(); i++)
@@ -623,7 +621,7 @@ public class AccountsActivity extends Activity
 		GetChargeList(_year, _month);
 	}
 	
-	public void GetChargeList(int _year, int _month) //一進去的列表
+	public void GetChargeList(final int _year, final int _month) //一進去的列表
 	{
 //		Calendar calendar = Calendar.getInstance();
 //		int _year = calendar.get(Calendar.YEAR); //民國
@@ -660,7 +658,7 @@ public class AccountsActivity extends Activity
 		LinearLayout l1, l2, l3, l4;
 		TextView[] month, day, item, main, sub, cost, account;
 		
-		final Cursor ChargeListCursor = db.rawQuery("SELECT date, accountName, money, item, mainCategory, subCategory "
+		final Cursor ChargeListCursor = db.rawQuery("SELECT date, accountName, money, mainCategory, subCategory, item, store, invNum, remark "
 			+ "FROM Charge "
 			+ "WHERE date >= " + String.format("'%d%02d00' ", _year, _month)
 			+ "AND date <= " + String.format("'%d%02d31' ", _year, _month)
@@ -681,7 +679,17 @@ public class AccountsActivity extends Activity
 		{
 			ChargeListCursor.moveToFirst(); //移至資料庫第一筆
 			for (int i = 0; i < ChargeListCount; i++)
-			{				
+			{
+				final String date = ChargeListCursor.getString(ChargeListCursor.getColumnIndex("date"));
+				final String accountName = ChargeListCursor.getString(ChargeListCursor.getColumnIndex("accountName"));
+				final String money = ChargeListCursor.getString(ChargeListCursor.getColumnIndex("money"));
+				final String mainCategory = ChargeListCursor.getString(ChargeListCursor.getColumnIndex("mainCategory"));
+				final String subCategory = ChargeListCursor.getString(ChargeListCursor.getColumnIndex("subCategory"));
+				final String itemName = ChargeListCursor.getString(ChargeListCursor.getColumnIndex("item"));
+				final String store = ChargeListCursor.getString(ChargeListCursor.getColumnIndex("store"));
+				final String invNum = ChargeListCursor.getString(ChargeListCursor.getColumnIndex("invNum"));
+				final String remark = ChargeListCursor.getString(ChargeListCursor.getColumnIndex("remark"));
+				
 				l1 = new LinearLayout(this);
 				l1.setOrientation(LinearLayout.HORIZONTAL);
 				if(i%2==0){
@@ -694,51 +702,81 @@ public class AccountsActivity extends Activity
 						btn_bg.setVisibility(View.VISIBLE);
 						btn_delete.setVisibility(View.VISIBLE);
 						
-//						editText1 //金額
-//						spinner1 //帳本
-//						editText14 //發票編號
-//						editText3 //項目
-//						spinner2 //分類
-//						spinner3 //分類2
-//						editText5 //日期
-//						editText6 //商店
-//						editText7 //備註
+						editText1.setText(money); //金額
+						
+						ArrayAdapter<String> accountAdap = (ArrayAdapter<String>) spinner1.getAdapter(); //帳本
+						spinner1.setSelection(accountAdap.getPosition(accountName), true);
+
+						editText14.setText(invNum); //發票編號
+						editText3.setText(itemName); //項目
+						
+						ArrayAdapter<String> mainCategoryAdap = (ArrayAdapter<String>) spinner2.getAdapter(); //分類
+						spinner2.setSelection(mainCategoryAdap.getPosition(mainCategory), true);
+						
+						if(spinner2.isSelected())
+						{
+							ArrayAdapter<String> subCategoryAdap = (ArrayAdapter<String>) spinner3.getAdapter(); //分類
+							spinner3.setSelection(subCategoryAdap.getPosition(subCategory), true);
+						}
+
+						editText5.setText(date); //日期
+						editText6.setText(store); //商店
+						editText7.setText(remark); //備註
 						
 						btn_save.setText("修改");
 						btn_save.setOnClickListener(new OnClickListener(){
 							@Override
 							public void onClick(View v) {
+								if(editText5.getText().toString().length() > 0 && editText1.getText().toString().length() > 0
+									&& editText3.getText().toString().length() > 0 )
+								{
+									
+								}
+								else if(editText1.getText().toString().length() < 1 )
+									Toast.makeText(AccountsActivity.this, "金額 不得為空", Toast.LENGTH_SHORT).show();
+								else if(editText5.getText().toString().length() < 1 )
+									Toast.makeText(AccountsActivity.this, "日期 不得為空", Toast.LENGTH_SHORT).show();				
+								else if(editText3.getText().toString().length() < 1 )
+									Toast.makeText(AccountsActivity.this, "項目 不得為空", Toast.LENGTH_SHORT).show();
+								
 								InitPopView();
+								GetChargeList(_year, _month);
 								btn_save.setText("新增");
 							}});
 						btn_delete.setOnClickListener(new OnClickListener(){
 							@Override
 							public void onClick(View v) {
+								db.delete("Charge", "item = '" + itemName + "' "
+									+ "AND invNum = '" + invNum + "' "
+									+ "AND remark = '" + remark + "' "
+									+ "AND date = '" + date + "' ", null);
 								InitPopView();
+								GetChargeList(_year, _month);
 								btn_save.setText("新增");
 							}});
 						btn_cancel.setOnClickListener(new OnClickListener(){
 							@Override
 							public void onClick(View v) {
 								InitPopView();
+								GetChargeList(_year, _month);
 								btn_save.setText("新增");
 							}});
 					}});
 				month[i] = new TextView(this);
-				month[i].setText(ChargeListCursor.getString(ChargeListCursor.getColumnIndex("date")).substring(4,6));
+				month[i].setText(date.substring(4,6));
 				month[i].setTextSize(20);
 				month[i].setPadding(30, 0, 0, 0);
 				TextPaint tp = month[i].getPaint();
 				tp.setFakeBoldText(true);
 				l1.addView(month[i]);
 				day[i] = new TextView(this);
-				day[i].setText(" / " + ChargeListCursor.getString(ChargeListCursor.getColumnIndex("date")).substring(6,8));
+				day[i].setText(" / " + date.substring(6,8));
 				day[i].setPadding(0, 0, 20, 0);
 				l1.addView(day[i]);
 				l2 = new LinearLayout(this);
 				l2.setOrientation(LinearLayout.VERTICAL);
 				item[i] = new TextView(this);
-				item[i].setText(ChargeListCursor.getString(ChargeListCursor.getColumnIndex("item")));
+				item[i].setText(itemName);
 				item[i].setTypeface(null, Typeface.BOLD);
 				DisplayMetrics dm = new DisplayMetrics();	// 建立一個DisplayMetrics物件
 				this.getWindowManager().getDefaultDisplay().getMetrics(dm);	// 取得裝置的資訊
@@ -753,10 +791,10 @@ public class AccountsActivity extends Activity
 				l3 = new LinearLayout(this);
 				l3.setOrientation(LinearLayout.HORIZONTAL);
 				main[i] = new TextView(this);
-				main[i].setText(ChargeListCursor.getString(ChargeListCursor.getColumnIndex("mainCategory")) + " - ");
+				main[i].setText(mainCategory + " - ");
 				l3.addView(main[i]);
 				sub[i] = new TextView(this);
-				sub[i].setText(ChargeListCursor.getString(ChargeListCursor.getColumnIndex("subCategory")));
+				sub[i].setText(subCategory);
 				sub[i].setPadding(0, 0, 40, 0);
 				l3.addView(sub[i]);
 				l2.addView(l3);
@@ -764,7 +802,7 @@ public class AccountsActivity extends Activity
 				l4 = new LinearLayout(this);
 				l4.setOrientation(LinearLayout.VERTICAL);
 				cost[i] = new TextView(this);
-				cost[i].setText(ChargeListCursor.getInt(ChargeListCursor.getColumnIndex("money")) + "NTD");
+				cost[i].setText(money + "NTD");
 				cost[i].setPadding(0, 0, 40, 0);
 				if((cost[i].getText().toString()).contains("-")){
 					cost[i].setTextColor(Color.RED);
@@ -773,7 +811,7 @@ public class AccountsActivity extends Activity
 				}
 				l4.addView(cost[i]);
 				account[i] = new TextView(this);
-				account[i].setText(ChargeListCursor.getString(ChargeListCursor.getColumnIndex("accountName")));
+				account[i].setText(accountName);
 				l4.addView(account[i]);
 				l1.addView(l4);
 				tr.addView(l1);

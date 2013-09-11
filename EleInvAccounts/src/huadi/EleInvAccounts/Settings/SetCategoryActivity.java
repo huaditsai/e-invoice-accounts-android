@@ -282,7 +282,8 @@ public class SetCategoryActivity extends Activity
 					name[m][s].setPadding(50, 0, 20, 0);
 					l2[s].addView(name[m][s]);
 
-					final String item = subCategory[s];
+					final String itemMain = mainCategoryItem[m];
+					final String itemSub = subCategory[s];
 					btn[m][s] = new ImageButton(this);
 					btn[m][s].setBackgroundColor(Color.TRANSPARENT);
 					btn[m][s].setMinimumWidth(810);
@@ -291,7 +292,7 @@ public class SetCategoryActivity extends Activity
 	
 						@Override
 						public void onClick(View arg0) {
-							editSub(item);
+							editSub(itemMain, itemSub);
 						}});
 					
 					rl.addView(l2[s]);
@@ -470,18 +471,18 @@ public class SetCategoryActivity extends Activity
 			}});
 	}
 	
-	public void editSub(final String item)
+	public void editSub(final String mainItem, final String subItem)
 	{
-		edit_sub.setText(item);
-		Cursor subCursor = db.rawQuery("SELECT main "
-			+ "FROM SubCategory "
-			+ "WHERE sub = '" + item + "'", null); //要記得''包起來
-		
-		//final int subCateCount = subCursor.getCount(); //資料筆數=0就點不到啦!
-		subCursor.moveToFirst();
-		String mainString = subCursor.getString(subCursor.getColumnIndex("main"));
+		edit_sub.setText(subItem);
+//		Cursor subCursor = db.rawQuery("SELECT main "
+//			+ "FROM SubCategory "
+//			+ "WHERE sub = '" + subItem + "'", null); //要記得''包起來
+//		
+//		//final int subCateCount = subCursor.getCount(); //資料筆數=0就點不到啦!
+//		subCursor.moveToFirst();
+//		String mainString = subCursor.getString(subCursor.getColumnIndex("main"));
 		ArrayAdapter<String> myAdap = (ArrayAdapter<String>) spinner1.getAdapter();
-		spinner1.setSelection(myAdap.getPosition(mainString), true);
+		spinner1.setSelection(myAdap.getPosition(mainItem), true);
 		
 		layout_sub.setVisibility(View.VISIBLE);
 		btn_bg.setVisibility(View.VISIBLE);
@@ -494,11 +495,19 @@ public class SetCategoryActivity extends Activity
 			public void onClick(View v) 
 			{
 				if(edit_sub.getText().toString().length() > 0)
-				{		
-					ContentValues subCateCV = new ContentValues();
-					subCateCV.put("main", spinner1.getSelectedItem().toString());
-					subCateCV.put("sub", edit_sub.getText().toString());
-					db.update("SubCategory", subCateCV, "sub = '" + item + "'", null);
+				{
+					Cursor subCursor = db.rawQuery("SELECT main "
+						+ "FROM SubCategory "
+						+ "WHERE main = '" + mainItem + "'" 
+						+ "AND sub = '" + subItem + "'", null); //要記得''包起來
+					
+					if(subCursor.getCount() <= 0)
+					{
+						ContentValues subCateCV = new ContentValues();
+						subCateCV.put("main", spinner1.getSelectedItem().toString());
+						subCateCV.put("sub", edit_sub.getText().toString());
+						db.update("SubCategory", subCateCV,"main = '" + mainItem + "'" + "AND sub = '" + subItem + "'", null);
+					}
 				}
 				
 				layout_sub.setVisibility(View.GONE);
@@ -511,7 +520,7 @@ public class SetCategoryActivity extends Activity
 		btn_delete2.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {
-				db.delete("SubCategory", "sub = '" + item + "'", null);
+				db.delete("SubCategory", "main = '" + mainItem + "'" + "AND sub = '" + subItem + "'", null);
 				layout_sub.setVisibility(View.GONE);
 				btn_bg.setVisibility(View.GONE);
 				edit_sub.setText("");

@@ -2,10 +2,6 @@ package huadi.EleInvAccounts.Accounts;
 
 import huadi.EleInvAccounts.R;
 import huadi.EleInvAccounts.Inquiry.InvDetails;
-import huadi.EleInvAccounts.R.id;
-import huadi.EleInvAccounts.R.layout;
-import huadi.EleInvAccounts.R.raw;
-
 import java.io.IOException;
 import java.util.Vector;
 
@@ -14,7 +10,6 @@ import zxing.decoding.CaptureActivityHandler;
 import zxing.decoding.InactivityTimer;
 import zxing.view.ViewfinderView;
 import android.app.Activity;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.AssetFileDescriptor;
 import android.graphics.Bitmap;
@@ -235,11 +230,11 @@ public class CaptureActivity extends Activity implements Callback
 			Toast.makeText(CaptureActivity.this, "非發票條碼", Toast.LENGTH_LONG).show();
 		}
 		
-		Intent intent = new Intent(CaptureActivity.this, AccountsActivity.class);
-		intent.putExtra("isCapture", true);
-		intent.putExtra("invNum", invNum);
-		startActivity(intent);
-		finish();
+		//Intent intent = new Intent(CaptureActivity.this, AccountsActivity.class);
+		//intent.putExtra("isCapture", true);
+		//intent.putExtra("invNum", invNum);
+		//startActivity(intent);
+		//finish();
 	}
 
 	private void initBeepSound() //掃到了就叫一聲

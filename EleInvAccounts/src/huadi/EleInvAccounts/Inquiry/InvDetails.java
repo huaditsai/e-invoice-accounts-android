@@ -1,6 +1,7 @@
 package huadi.EleInvAccounts.Inquiry;
 
 import huadi.EleInvAccounts.DBHelper;
+import huadi.EleInvAccounts.Accounts.AccountsActivity;
 
 import java.text.MessageFormat;
 
@@ -14,18 +15,26 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.Toast;
 
-public class InvDetails extends AsyncTask<String, String, String> // <肚把计, 矪瞶い穝ざ把计, 矪瞶肚把计>
+public class InvDetails extends AsyncTask<String, Integer, String> // <肚把计, 矪瞶い穝ざ把计, 矪瞶肚把计>
 {
 	//筿祇布灿
 	private DBHelper dbHelper;
 	private SQLiteDatabase db;
+	
+	private ProgressDialog dialog;
+	Context mContext;
+	String mInvNum = "";
 	
 	private final String detailUrl = "https://www.einvoice.nat.gov.tw/PB2CAPIVAN/invapp/InvApp?"
 		+ "version=0.2"
@@ -45,6 +54,8 @@ public class InvDetails extends AsyncTask<String, String, String> // <肚把计, 
 	{
 		dbHelper = new DBHelper(context);
 		db = dbHelper.getWritableDatabase(); //琵db糶
+		mContext = context;
+		dialog = new ProgressDialog(context);
 	}
 	
 	@Override
@@ -52,6 +63,8 @@ public class InvDetails extends AsyncTask<String, String, String> // <肚把计, 
 	{
 		if (params.length < 0)
 			return null;
+		
+		publishProgress(0); //秈
 		
 		String url = MessageFormat.format(detailUrl, params[0], params[1], params[2], params[3], params[4]
 													, params[5], params[6], params[7], params[8]);
@@ -68,11 +81,13 @@ public class InvDetails extends AsyncTask<String, String, String> // <肚把计, 
 
 			HttpResponse httpResponse = null;
 			httpResponse = httpClient.execute(get);
+			
+			publishProgress(10); //秈
 
 			if (httpResponse.getStatusLine().getStatusCode() == 200)//耞呼隔硈钡琌Θ
 			{
 				strResult = EntityUtils.toString(httpResponse.getEntity()); //ъㄓ戈
-//				Log.e("strResult", strResult);
+				Log.e("strResult", strResult);
 			
 				JSONObject jsonObject = new JSONObject(strResult); //{}JSONObject
 				
@@ -80,9 +95,12 @@ public class InvDetails extends AsyncTask<String, String, String> // <肚把计, 
 				String code =  jsonObject.getString("code"); //癟莱絏
 				String msg =  jsonObject.getString("msg"); //╰参莱癟
 				
+				publishProgress(30); //秈
+				
 				try
-				{					
+				{			
 					String invNum =  jsonObject.getString("invNum"); //祇布腹絏
+					mInvNum = invNum;
 					String invDate =  jsonObject.getString("invDate"); //祇布秨ミら戳(yyyyMMdd)
 					String sellerName =  jsonObject.getString("sellerName"); //芥よ嘿
 					String invStatus =  jsonObject.getString("invStatus"); //祇布篈(絋粄)
@@ -95,6 +113,8 @@ public class InvDetails extends AsyncTask<String, String, String> // <肚把计, 
 					InvoiceCV.put("sellerName", sellerName); //芥よ嘿
 					InvoiceCV.put("invStatus", invStatus); //祇布篈(絋粄)
 					InvoiceCV.put("invPeriod", invPeriod); //癸贱祇布戳(チ瓣る)
+					
+					publishProgress(50); //秈
 					
 					Cursor InvoiceCursor = db.rawQuery("SELECT invNum "
 						+ "FROM Invoice "
@@ -112,7 +132,9 @@ public class InvDetails extends AsyncTask<String, String, String> // <肚把计, 
 							InvoiceCursor.moveToNext(); //簿戈畐掸
 						}
 					}
-					
+
+					publishProgress(70); //秈
+
 					JSONArray detailArray = jsonObject.getJSONArray("details"); //[]JSONArray
 					for(int i = 0; i < detailArray.length(); i++)
 					{
@@ -129,6 +151,8 @@ public class InvDetails extends AsyncTask<String, String, String> // <肚把计, 
 						InvDetailCV.put("quantity", quantity); //计秖
 						InvDetailCV.put("unitPrice", unitPrice); //虫基
 						InvDetailCV.put("amount", amount); //癘
+						
+						publishProgress(70 + i); //秈
 						
 						Cursor invDetailCursor = db.rawQuery("SELECT invNum, rowNum "
 							+ "FROM InvDetail "
@@ -152,6 +176,8 @@ public class InvDetails extends AsyncTask<String, String, String> // <肚把计, 
 							}
 						}
 					}
+					
+					publishProgress(90); //秈
 				}
 				catch(Exception e)
 				{
@@ -162,22 +188,46 @@ public class InvDetails extends AsyncTask<String, String, String> // <肚把计, 
 		}
 		catch (Exception e)
 		{
+			//Toast.makeText(mContext, "呼隔硈絬钵盽", Toast.LENGTH_LONG).show(); ╭ぃㄓ...
 			Log.e("InvDetails", e.toString());
 		}
+		finally
+		{
+			publishProgress(100); //秈
+		}		
 		
 		return null;
 	}
+	
+	@Override
+	protected void onPreExecute() 
+	{
+		super.onPreExecute();
+        dialog.setMessage("Loading...");
+        dialog.setCancelable(false);
+        dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        dialog.show();
+    }
 
+	@Override
+	protected void onProgressUpdate(Integer... progress)
+	{
+		super.onProgressUpdate(progress);
+		dialog.setProgress(progress[0]); //厨秈
+	}
+	
 	@Override
 	protected void onPostExecute(String result)
 	{
 		super.onPostExecute(result);
-	}
-
-	@Override
-	protected void onProgressUpdate(String... params)
-	{
-		super.onProgressUpdate(params);
+		if (dialog.isShowing())
+			dialog.dismiss();
+		
+		Intent intent = new Intent(mContext, AccountsActivity.class);
+		intent.putExtra("isCapture", true);
+		intent.putExtra("invNum", mInvNum);
+		mContext.startActivity(intent);
+		((Activity)mContext).finish();
 	}
 	
 }

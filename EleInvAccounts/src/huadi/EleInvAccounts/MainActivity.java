@@ -62,7 +62,7 @@ public class MainActivity extends Activity
 //		card.edit().putString("cardEncrypt", "").commit(); //卡片檢驗碼
 		//Log.e("id", GetUUID());
 		
-		//new InvDetails().execute("QRCode","VX20070106","","2013/07/13","g7Y1WPAG8PE1PbEIebrTQg==","01802112",GetUUID(),"9035",appID);
+//		new InvDetails(this).execute("QRCode","VX20070106","","2013/07/13","g7Y1WPAG8PE1PbEIebrTQg==","01802112",GetUUID(),"9035",appID, "40");
 		
 		setUI(); //設定UI		
 		

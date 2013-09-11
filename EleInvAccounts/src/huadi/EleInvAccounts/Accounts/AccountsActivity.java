@@ -58,11 +58,9 @@ public class AccountsActivity extends Activity
 	String appID, UUID, cardNo, cardEncrypt;
 	
 	boolean isCapture = false;
-	boolean isCarrierImport = false;
 	int index = 0;
-	boolean isCapturePopView = false;
 	
-	String invNum = "";
+	String mInvNum = "";
 	SQLiteDatabase db = null;
 
 	int year, month;
@@ -87,7 +85,7 @@ public class AccountsActivity extends Activity
 		
 		Intent intent = getIntent(); 
 		isCapture = intent.getBooleanExtra("isCapture", false);
-		invNum = intent.getStringExtra("invNum");
+		mInvNum = intent.getStringExtra("invNum");
 		
 		SharedPreferences ids = getSharedPreferences("IDs", MODE_PRIVATE ); //偏好設定
 		appID = ids.getString("appID", "");
@@ -278,8 +276,10 @@ public class AccountsActivity extends Activity
 		index = 0;
 		if(isCapture)
 		{
-			isCapturePopView = true;
-			CapturePopView(index);
+			if(mInvNum.length() > 0)
+				CapturePopView(index);
+			else
+				Toast.makeText(this, "資料擷取失敗, \n請檢查網路狀態", Toast.LENGTH_LONG).show();
 		}
 		
 		//Account
@@ -536,7 +536,7 @@ public class AccountsActivity extends Activity
 			
 							InitPopView();
 							
-							if(isCapturePopView) //發票掃完會逐一跳出
+							if(isCapture) //發票掃完會逐一跳出
 							{
 								index++;
 								CapturePopView(index);
@@ -608,7 +608,7 @@ public class AccountsActivity extends Activity
 			@Override
 			public void onClick(View v)
 			{
-				if(isCapturePopView) //發票掃完會逐一跳出
+				if(isCapture) //發票掃完會逐一跳出
 				{
 					index++;
 					CapturePopView(index);
@@ -985,12 +985,12 @@ public class AccountsActivity extends Activity
 	{
 		_invDetailCursor = db.rawQuery("SELECT invNum, description, amount "
 			+ "FROM InvDetail "
-			+ "WHERE invNum = '" + invNum + "' ", null); //要記得''包起來
+			+ "WHERE invNum = '" + mInvNum + "' ", null); //要記得''包起來
 		
 		_count = _invDetailCursor.getCount(); //資料筆數	
 		
 		
-		if(isCapturePopView) //若是掃QR code
+		if(isCapture) //若是掃QR code
 		{
 			//發票應該都是支出
 			isIncome = false;
@@ -999,41 +999,7 @@ public class AccountsActivity extends Activity
 			
 			btn_delete.setVisibility(View.GONE);
 			
-			if(_count == 0) //當網路慢, 更新ui會比爬資料快
-			{
-//				Intent intent = new Intent(AccountsActivity.this, AccountsActivity.class);
-//				intent.putExtra("isCapture", true);
-//				intent.putExtra("invNum", invNum);
-//				startActivity(intent);
-//				finish();
-				final Dialog dialog = ProgressDialog.show(AccountsActivity.this, "讀取中", "請稍等待...", true);
-			        new Thread(new Runnable(){
-			            @Override
-			            public void run() {
-			                try{			                    
-			                	do
-			            		{
-			                		Thread.sleep(200);
-			            			_invDetailCursor = db.rawQuery("SELECT invNum, description, amount "
-			            				+ "FROM InvDetail "
-			            				+ "WHERE invNum = '" + invNum + "' ", null); //要記得''包起來
-			            			
-			            			_count = _invDetailCursor.getCount(); //資料筆數	
-			            		}
-			            		while (_count == 0);
-			                	Log.e("count3",""+_count);
-			                }
-			                catch(Exception e){
-			                    //e.printStackTrace();
-			                }
-			                finally{
-								dialog.dismiss();
-			                }
-			            } 
-			       }).start();
-			}
-			
-			Log.e("count",""+_count);
+			//Log.e("count",""+_count);
 			if(_count != 0)
 			{
 				popview.setVisibility(View.VISIBLE);
@@ -1056,7 +1022,7 @@ public class AccountsActivity extends Activity
 			
 			Cursor invCursor = db.rawQuery("SELECT invDate, sellerName "
 				+ "FROM Invoice "
-				+ "WHERE invNum = '" + invNum + "' ", null); //要記得''包起來
+				+ "WHERE invNum = '" + mInvNum + "' ", null); //要記得''包起來
 			
 			int count2 = invCursor.getCount(); //資料筆數
 			//Log.e("count2",""+count2);
@@ -1072,7 +1038,7 @@ public class AccountsActivity extends Activity
 			}
 			
 			if(index + 1 >= _count)
-				isCapturePopView = false;
+				isCapture = false;
 		}
 	}
 	

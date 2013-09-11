@@ -112,7 +112,7 @@ public class CarrierHead extends AsyncTask<String, String, Map<String, List<Stri
 						String month = invDateObject.getString("month"); //m
 						String date = invDateObject.getString("date"); //d
 						
-						String invDateString = String.format("%d%02d%02d", Integer.parseInt(year)+1911, Integer.parseInt(month), Integer.parseInt(date));
+						String invDateString = String.format("%d/%02d/%02d", Integer.parseInt(year)+1911, Integer.parseInt(month), Integer.parseInt(date));
 						invDateList.add(invDateString);
 //							String day = invDateObject.getString("day"); //星期1234
 //							String hours = invDateObject.getString("hours"); //
@@ -127,7 +127,7 @@ public class CarrierHead extends AsyncTask<String, String, Map<String, List<Stri
 				}
 				catch(Exception e)
 				{
-					Log.e("JSONObject Exception","版本, " + v + "回應碼, " + code + "訊息, " + msg);
+					Log.e("JSONObject CarrierHead","版本, " + v + "回應碼, " + code + "訊息, " + msg);
 				}
 			}
 				
@@ -135,7 +135,7 @@ public class CarrierHead extends AsyncTask<String, String, Map<String, List<Stri
 		}
 		catch (Exception e)
 		{
-			Log.e("CarrierDetail", e.toString());
+			Log.e("CarrierHead", e.toString());
 		}
 		
 		return map;

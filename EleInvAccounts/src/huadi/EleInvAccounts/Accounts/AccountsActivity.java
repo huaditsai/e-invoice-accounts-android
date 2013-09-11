@@ -58,9 +58,14 @@ public class AccountsActivity extends Activity
 	String appID, UUID, cardNo, cardEncrypt;
 	
 	boolean isCapture = false;
-	int index = 0;
-	
 	String mInvNum = "";
+	int detailIndex = 0;
+	
+	boolean isCarrier = false;
+	String[] mInvNumArray = new String[]{};
+	int invIndex = 0;
+	
+	
 	SQLiteDatabase db = null;
 
 	int year, month;
@@ -100,7 +105,7 @@ public class AccountsActivity extends Activity
 		DBHelper dbHelper = new DBHelper(this);
 		db = dbHelper.getWritableDatabase();
 
-		setUI();		
+		setUI();
 	}
 
 	private void setUI()
@@ -209,29 +214,63 @@ public class AccountsActivity extends Activity
 			}
 		});
 		
-		btn_import.setOnClickListener(new OnClickListener() //載具匯入
+//		if(cardNo.length() > 0 && cardEncrypt.length() > 0) //外觀看不出差異...
+//			btn_import.setEnabled(true);
+//		else
+//			btn_import.setEnabled(false);
+			
+		btn_import.setOnClickListener(new OnClickListener() //TODO 載具匯入
 		{
 			@Override
 			public void onClick(View v)
 			{
 				if(IsInternet())
 				{
-					isCapture = true;
-					try
+					if(cardNo.length() > 0 && cardEncrypt.length() > 0)
 					{
-						Map<String, List<String>> head = new CarrierHead().execute("3J0002", cardNo, "N", UUID, appID, cardEncrypt).get();
-						
-						for (int i = 0; i < head.get("invNum").size(); i++)
+						isCarrier = true;
+						invIndex = 0;
+						detailIndex = 0;
+						try
 						{
-							new CarrierDetail(AccountsActivity.this)
-							.execute("3J0002", cardNo, head.get("invNum").get(i), head.get("invDate").get(i), UUID, appID, cardEncrypt);							
+							Map<String, List<String>> head = new CarrierHead().execute("3J0002", cardNo, "N", UUID, appID, cardEncrypt).get();
+							mInvNumArray = new String[head.get("invNum").size()];
+							
+							for (int i = 0; i < head.get("invNum").size(); i++)
+							{
+								mInvNumArray[i] = head.get("invNum").get(i);
+								new CarrierDetail(AccountsActivity.this)
+								.execute("3J0002", cardNo, mInvNumArray[i], head.get("invDate").get(i), UUID, appID, cardEncrypt);
+								
+								//Log.e("ee", cardNo + "," + head.get("invNum").get(i)+ "," + head.get("invDate").get(i)+ "," +UUID+ "," +appID+ "," +cardEncrypt);
+							}
+							setUI(); //更新記帳列表
+							CarrierPopView(invIndex, detailIndex);
+						}
+						catch (Exception e)
+						{
+							Toast.makeText(AccountsActivity.this, "資料擷取失敗, \n請檢查網路狀態", Toast.LENGTH_LONG).show();
 						}
 					}
-					catch (Exception e)
-					{
-						// TODO 自動產生的 catch 區塊
-						e.printStackTrace();
-					}
+					else
+						new AlertDialog.Builder(AccountsActivity.this)
+						.setTitle("需要綁定手機條碼")
+						.setMessage("前往綁定手機條碼?")
+						.setPositiveButton("確定", new DialogInterface.OnClickListener()
+						{
+							@Override
+							public void onClick(DialogInterface dialog, int which)
+							{
+								Intent intent = new Intent(AccountsActivity.this, SettingsActivity.class);
+								startActivity(intent);
+								AccountsActivity.this.finish();
+							}									
+						})
+						.setNegativeButton("取消", new DialogInterface.OnClickListener()	{
+							@Override
+							public void onClick(DialogInterface dialog, int which){														
+							}
+						}).show();
 
 				}
 				else
@@ -272,12 +311,13 @@ public class AccountsActivity extends Activity
 		isIncome = false;
 		btn_income.getBackground().setAlpha(60);
 		btn_expend.getBackground().setAlpha(255);
-				
-		index = 0;
+		
+		
 		if(isCapture)
 		{
+			detailIndex = 0;
 			if(mInvNum.length() > 0)
-				CapturePopView(index);
+				CapturePopView(detailIndex);
 			else
 				Toast.makeText(this, "資料擷取失敗, \n請檢查網路狀態", Toast.LENGTH_LONG).show();
 		}
@@ -476,7 +516,7 @@ public class AccountsActivity extends Activity
 								}
 							}
 							
-							if(!isCapture) //手動發票記帳(傳統發票), 若為 發票, 就要存到Invoice,InvDetail
+							if(!isCapture && !isCarrier) //手動發票記帳(傳統發票), 若為 發票, 就要存到Invoice,InvDetail
 							{					
 								int month = Integer.parseInt(date.substring(4, 6)) % 2 == 1?Integer.parseInt(date.substring(4, 6)) + 1 
 									: Integer.parseInt(date.substring(4, 6)); //雙數月
@@ -538,9 +578,15 @@ public class AccountsActivity extends Activity
 							
 							if(isCapture) //發票掃完會逐一跳出
 							{
-								index++;
-								CapturePopView(index);
-								//Log.e("index", "" + index);
+								detailIndex++;
+								CapturePopView(detailIndex);
+								//Log.e("detailIndex", "" + detailIndex);
+							}
+							if(isCarrier) //發票掃完會逐一跳出
+							{
+								detailIndex++;
+								CarrierPopView(invIndex, detailIndex);
+								//Log.e("detailIndex", "" + detailIndex);
 							}
 						}
 						else
@@ -610,9 +656,14 @@ public class AccountsActivity extends Activity
 			{
 				if(isCapture) //發票掃完會逐一跳出
 				{
-					index++;
-					CapturePopView(index);
-					//Log.e("index", "" + index);
+					detailIndex++;
+					CapturePopView(detailIndex);
+					//Log.e("detailIndex", "" + detailIndex);
+				}
+				else if(isCarrier)
+				{
+					detailIndex++;
+					CarrierPopView(invIndex, detailIndex);
 				}
 				else
 				{
@@ -678,7 +729,7 @@ public class AccountsActivity extends Activity
 		int _month = calendar.get(Calendar.MONTH) + 1; //Calendar.MONTH 從0開始
 		GetChargeList(_year, _month);
 	}
-	
+
 	public void GetChargeList(final int _year, final int _month) //一進去的列表
 	{
 //		Calendar calendar = Calendar.getInstance();
@@ -753,7 +804,7 @@ public class AccountsActivity extends Activity
 				if(i%2==0){
 					l1.setBackgroundColor(Color.rgb(255, 254, 232));
 				}
-				l1.setOnClickListener(new OnClickListener(){	//TODO POPVIEW 資料綁定
+				l1.setOnClickListener(new OnClickListener(){	//POPVIEW 資料綁定
 					@Override
 					public void onClick(View arg0) {
 						popview.setVisibility(View.VISIBLE);
@@ -877,7 +928,7 @@ public class AccountsActivity extends Activity
 								
 								
 							}});
-						btn_delete.setOnClickListener(new OnClickListener(){
+						btn_delete.setOnClickListener(new OnClickListener(){ //刪除
 							@Override
 							public void onClick(View v) {
 								db.delete("Charge", "item = '" + itemName + "' "
@@ -959,8 +1010,8 @@ public class AccountsActivity extends Activity
 	
 	private void InitPopView()
 	{
-		InputMethodManager imm = ((InputMethodManager)getSystemService(INPUT_METHOD_SERVICE)); //隱藏 keyboard
-		imm.hideSoftInputFromWindow(AccountsActivity.this.getCurrentFocus().getWindowToken(),InputMethodManager.HIDE_NOT_ALWAYS);
+		//InputMethodManager imm = ((InputMethodManager)getSystemService(INPUT_METHOD_SERVICE)); //隱藏 keyboard
+		//imm.hideSoftInputFromWindow(AccountsActivity.this.getCurrentFocus().getWindowToken(),InputMethodManager.HIDE_NOT_ALWAYS);
 		popview.setVisibility(View.GONE);
 		btn_bg.setVisibility(View.GONE);
 		btn_delete.setVisibility(View.GONE);
@@ -979,16 +1030,13 @@ public class AccountsActivity extends Activity
 		GetChargeList(_year, _month);
 	}
 	
-	Cursor _invDetailCursor;
-	int _count;
-	private void CapturePopView(int _index)
+	private void CapturePopView(int _detailIndex)
 	{
-		_invDetailCursor = db.rawQuery("SELECT invNum, description, amount "
+		Cursor invDetailCursor = db.rawQuery("SELECT invNum, description, amount "
 			+ "FROM InvDetail "
 			+ "WHERE invNum = '" + mInvNum + "' ", null); //要記得''包起來
 		
-		_count = _invDetailCursor.getCount(); //資料筆數	
-		
+		int count = invDetailCursor.getCount(); //資料筆數			
 		
 		if(isCapture) //若是掃QR code
 		{
@@ -1000,13 +1048,13 @@ public class AccountsActivity extends Activity
 			btn_delete.setVisibility(View.GONE);
 			
 			//Log.e("count",""+_count);
-			if(_count != 0)
+			if(count != 0)
 			{
 				popview.setVisibility(View.VISIBLE);
 				btn_bg.setVisibility(View.VISIBLE);				
 
-				_invDetailCursor.moveToPosition(_index);
-				int amount = _invDetailCursor.getInt(_invDetailCursor.getColumnIndex("amount"));
+				invDetailCursor.moveToPosition(_detailIndex);
+				int amount = invDetailCursor.getInt(invDetailCursor.getColumnIndex("amount"));
 				if(amount < 0) //若(發票)小計<0, 支出就變收入
 				{
 					amount = -amount;
@@ -1015,8 +1063,8 @@ public class AccountsActivity extends Activity
 					btn_income.getBackground().setAlpha(255);
 				} 
 				editText1.setText("" + amount);
-				editText14.setText(_invDetailCursor.getString(_invDetailCursor.getColumnIndex("invNum")));
-				editText3.setText(_invDetailCursor.getString(_invDetailCursor.getColumnIndex("description")));
+				editText14.setText(invDetailCursor.getString(invDetailCursor.getColumnIndex("invNum")));
+				editText3.setText(invDetailCursor.getString(invDetailCursor.getColumnIndex("description")));
 				//invDetailCursor.moveToNext();				
 			}
 			
@@ -1037,9 +1085,72 @@ public class AccountsActivity extends Activity
 				}
 			}
 			
-			if(index + 1 >= _count)
+			if(detailIndex + 1 >= count)
 				isCapture = false;
 		}
+	}
+	
+	private void CarrierPopView(int _invIndex, int _detailIndex)
+	{
+		Cursor invDetailCursor = db.rawQuery("SELECT invNum, description, amount "
+			+ "FROM InvDetail "
+			+ "WHERE invNum = '" + mInvNumArray[_invIndex] + "' ", null); //要記得''包起來
+		
+		int count = invDetailCursor.getCount(); //資料筆數			
+		
+		if(isCarrier) //若是掃QR code
+		{
+			//發票應該都是支出
+			isIncome = false;
+			btn_expend.getBackground().setAlpha(255);
+			btn_income.getBackground().setAlpha(60);			
+			
+			btn_delete.setVisibility(View.GONE);
+			
+//			Log.e("count",""+count);
+			if(count != 0)
+			{
+				popview.setVisibility(View.VISIBLE);
+				btn_bg.setVisibility(View.VISIBLE);				
+
+				invDetailCursor.moveToPosition(_detailIndex);
+				int amount = invDetailCursor.getInt(invDetailCursor.getColumnIndex("amount"));
+				if(amount < 0) //若(發票)小計<0, 支出就變收入
+				{
+					amount = -amount;
+					isIncome = true;
+					btn_expend.getBackground().setAlpha(60);
+					btn_income.getBackground().setAlpha(255);
+				} 
+				editText1.setText("" + amount);
+				editText14.setText(invDetailCursor.getString(invDetailCursor.getColumnIndex("invNum")));
+				editText3.setText(invDetailCursor.getString(invDetailCursor.getColumnIndex("description")));
+				//invDetailCursor.moveToNext();				
+			}
+			
+			Cursor invCursor = db.rawQuery("SELECT invDate, sellerName "
+				+ "FROM Invoice "
+				+ "WHERE invNum = '" + mInvNumArray[_invIndex] + "' ", null); //要記得''包起來
+			
+			int count2 = invCursor.getCount(); //資料筆數
+			//Log.e("count2",""+count2);
+			if(count2 != 0)
+			{
+				invCursor.moveToFirst();
+				for (int i = 0; i < count2; i++)
+				{			
+					editText5.setText(invCursor.getString(invCursor.getColumnIndex("invDate")));
+					editText6.setText(invCursor.getString(invCursor.getColumnIndex("sellerName")));
+					invCursor.moveToNext();
+				}
+			}
+			
+			if(detailIndex + 1 >= count)
+				invIndex++;
+			if(invIndex + 1 >= mInvNumArray.length)
+				isCarrier = false;
+		}
+		
 	}
 	
 	private boolean IsInternet()

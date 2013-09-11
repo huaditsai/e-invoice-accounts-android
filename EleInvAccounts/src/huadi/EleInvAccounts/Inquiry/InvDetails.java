@@ -34,6 +34,7 @@ public class InvDetails extends AsyncTask<String, Integer, String> // <傳入參數,
 	
 	private ProgressDialog dialog;
 	Context mContext;
+	
 	String mInvNum = "";
 	
 	private final String detailUrl = "https://www.einvoice.nat.gov.tw/PB2CAPIVAN/invapp/InvApp?"
@@ -54,6 +55,7 @@ public class InvDetails extends AsyncTask<String, Integer, String> // <傳入參數,
 	{
 		dbHelper = new DBHelper(context);
 		db = dbHelper.getWritableDatabase(); //讓db可寫入
+		
 		mContext = context;
 		dialog = new ProgressDialog(context);
 	}
@@ -87,7 +89,7 @@ public class InvDetails extends AsyncTask<String, Integer, String> // <傳入參數,
 			if (httpResponse.getStatusLine().getStatusCode() == 200)//判斷網路連接是否成功
 			{
 				strResult = EntityUtils.toString(httpResponse.getEntity()); //抓下來的資料
-				Log.e("strResult", strResult);
+//				Log.e("strResult", strResult);
 			
 				JSONObject jsonObject = new JSONObject(strResult); //{}為JSONObject
 				
@@ -221,7 +223,7 @@ public class InvDetails extends AsyncTask<String, Integer, String> // <傳入參數,
 	{
 		super.onPostExecute(result);
 		if (dialog.isShowing())
-			dialog.dismiss();
+			dialog.dismiss(); //停止
 		
 		Intent intent = new Intent(mContext, AccountsActivity.class);
 		intent.putExtra("isCapture", true);

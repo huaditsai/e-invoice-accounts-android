@@ -430,7 +430,7 @@ public class ManagerActivity extends Activity
 		int count = 0; //¤¤¼úµ§¼Æ
 		try
 		{
-			winning = new WinningList().execute(String.format("%d%02d", year, month), UUID, appID).get();
+			winning = new WinningList(this).execute(String.format("%d%02d", year, month), UUID, appID).get();
 			autoAward = new AutoAward(ManagerActivity.this);
 
 			winningAward = autoAward.Award(String.format("%d%02d", year, month), winning);
@@ -582,7 +582,7 @@ public class ManagerActivity extends Activity
 	{
 		try
 		{
-			Map<String, List<String>> winning = new WinningList().execute(_invPeriod, UUID, appID).get();
+			Map<String, List<String>> winning = new WinningList(this).execute(_invPeriod, UUID, appID).get();
 			
 			String spcPrizeNo = "", firstPrizeNo = "", sixthPrizeNo = "", superPrizeNo = "";
 			
@@ -615,7 +615,7 @@ public class ManagerActivity extends Activity
 	{
 		try
 		{
-			winning = new WinningList().execute(String.format("%d%02d", year, month), UUID, appID).get();
+			winning = new WinningList(this).execute(String.format("%d%02d", year, month), UUID, appID).get();
 			manualAward = new ManualAward();
 			//Log.e("winning", "" + manualAward.Award("516", winning));		
 		}

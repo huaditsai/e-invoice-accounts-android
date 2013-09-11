@@ -14,6 +14,7 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -21,11 +22,14 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.util.Log;
 
-public class CarrierDetail extends AsyncTask<String, String, String> // <¶Ç¤J°Ñ¼Æ, ³B²z¤¤§ó·s¤¶­±°Ñ¼Æ, ³B²z«á¶Ç¥X°Ñ¼Æ>
+public class CarrierDetail extends AsyncTask<String, Integer, String> // <¶Ç¤J°Ñ¼Æ, ³B²z¤¤§ó·s¤¶­±°Ñ¼Æ, ³B²z«á¶Ç¥X°Ñ¼Æ>
 {
 	//¸ü¨ã©ú²Ó
 	private DBHelper dbHelper;
 	private SQLiteDatabase db;
+	
+	private ProgressDialog dialog;
+	Context mContext;
 	
 	private final String detailUrl = "https://www.einvoice.nat.gov.tw/PB2CAPIVAN/invServ/InvServ?"
 		+ "version=0.1"
@@ -46,6 +50,9 @@ public class CarrierDetail extends AsyncTask<String, String, String> // <¶Ç¤J°Ñ¼
 	{
 		dbHelper = new DBHelper(context);
 		db = dbHelper.getWritableDatabase(); //Åýdb¥i¼g¤J
+		
+		mContext = context;
+		dialog = new ProgressDialog(context);
 	}
 	
 	@Override
@@ -53,6 +60,8 @@ public class CarrierDetail extends AsyncTask<String, String, String> // <¶Ç¤J°Ñ¼
 	{
 		if (params.length < 0)
 			return null;
+		
+		publishProgress(0); //¶i«×
 		
 		String nowTime = "" + (System.currentTimeMillis() / 1000); //new GetNTP().execute("").get();
 		String timeStamp = "" + (Integer.parseInt(nowTime) + 100);
@@ -72,11 +81,13 @@ public class CarrierDetail extends AsyncTask<String, String, String> // <¶Ç¤J°Ñ¼
 
 			HttpResponse httpResponse = null;
 			httpResponse = httpClient.execute(get);
+			
+			publishProgress(10); //¶i«×
 
 			if (httpResponse.getStatusLine().getStatusCode() == 200)//§PÂ_ºô¸ô³s±µ¬O§_¦¨¥\
 			{
 				strResult = EntityUtils.toString(httpResponse.getEntity()); //§ì¤U¨Óªº¸ê®Æ
-				Log.e("strResult", strResult);
+//				Log.e("CarrierDetail", strResult);
 			
 				JSONObject jsonObject = new JSONObject(strResult); //{}¬°JSONObject
 				
@@ -84,10 +95,12 @@ public class CarrierDetail extends AsyncTask<String, String, String> // <¶Ç¤J°Ñ¼
 				String code =  jsonObject.getString("code"); //°T®§¦^À³½X
 				String msg =  jsonObject.getString("msg"); //¨t²Î¦^À³°T®§
 				
+				publishProgress(30); //¶i«×
+				
 				try
 				{
 					String invNum =  jsonObject.getString("invNum"); //µo²¼¸¹½X
-					String invDate =  jsonObject.getString("invDate"); //µo²¼¶}¥ß¤é´Á(yyyyMMdd)
+					String invDate = params[3].replace("/", ""); //jsonObject.getString("invDate"); //µo²¼¶}¥ß¤é´Á(yyyyMMdd) ¤å¥óÄF¤H°Õ¡I
 					String sellerName =  jsonObject.getString("sellerName"); //½æ¤è¦WºÙ					
 					String totalAmount =  jsonObject.getString("amount"); //Á`ª÷ÃB					
 					String invStatus =  jsonObject.getString("invStatus"); //µo²¼ª¬ºA(¤w½T»{)
@@ -103,6 +116,8 @@ public class CarrierDetail extends AsyncTask<String, String, String> // <¶Ç¤J°Ñ¼
 					InvoiceCV.put("sellerName", sellerName); //½æ¤è¦WºÙ
 					InvoiceCV.put("invStatus", invStatus); //µo²¼ª¬ºA(¤w½T»{)
 					InvoiceCV.put("invPeriod", invPeriod); //¹ï¼úµo²¼´Á§O(¥Á°ê¦~¤ë)
+					
+					publishProgress(50); //¶i«×
 					
 					Cursor InvoiceCursor = db.rawQuery("SELECT invNum "
 						+ "FROM Invoice "
@@ -121,6 +136,8 @@ public class CarrierDetail extends AsyncTask<String, String, String> // <¶Ç¤J°Ñ¼
 						}
 					}
 					
+					publishProgress(70); //¶i«×
+					
 					JSONArray detailArray = jsonObject.getJSONArray("details"); //[]¬°JSONArray
 					for(int i = 0; i < detailArray.length(); i++)
 					{
@@ -137,6 +154,8 @@ public class CarrierDetail extends AsyncTask<String, String, String> // <¶Ç¤J°Ñ¼
 						InvDetailCV.put("quantity", quantity); //¼Æ¶q
 						InvDetailCV.put("unitPrice", unitPrice); //³æ»ù
 						InvDetailCV.put("amount", amount); //¤p°O
+						
+						publishProgress(70 + i); //¶i«×
 						
 						Cursor invDetailCursor = db.rawQuery("SELECT invNum, rowNum "
 							+ "FROM InvDetail "
@@ -160,10 +179,11 @@ public class CarrierDetail extends AsyncTask<String, String, String> // <¶Ç¤J°Ñ¼
 							}
 						}
 					}
+					publishProgress(90); //¶i«×
 				}
 				catch(Exception e)
 				{
-					Log.e("JSONObject Exception","ª©¥», " + v + "¦^À³½X, " + code + "°T®§, " + msg);
+					Log.e("JSONObject CarrierDetail","ª©¥», " + v + "¦^À³½X, " + code + "°T®§, " + msg);
 				}			
 				
 			}			
@@ -172,20 +192,38 @@ public class CarrierDetail extends AsyncTask<String, String, String> // <¶Ç¤J°Ñ¼
 		{
 			Log.e("CarrierDetail", e.toString());
 		}
+		finally
+		{
+			publishProgress(100); //¶i«×
+		}
 		
 		return null;
 	}
-
+	
+	@Override
+	protected void onPreExecute() 
+	{
+		super.onPreExecute();
+        dialog.setMessage("Loading...");
+        dialog.setCancelable(false);
+        dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        dialog.show();
+    }
+	
+	@Override
+	protected void onProgressUpdate(Integer... progress)
+	{
+		super.onProgressUpdate(progress);
+		dialog.setProgress(progress[0]); //¦^³ø¶i«×
+	}
+	
 	@Override
 	protected void onPostExecute(String result)
 	{
 		super.onPostExecute(result);
+		if (dialog.isShowing())
+			dialog.dismiss(); //°±¤î
 	}
 
-	@Override
-	protected void onProgressUpdate(String... params)
-	{
-		super.onProgressUpdate(params);
-	}
 	
 }

@@ -212,7 +212,7 @@ public class SettingsActivity extends Activity
 	public void setPhone(){
 		//edit_phone.setText("/XXXXXXX"); // TODO µo§G®É§R°£
 		//edit_phonecode.setText("YOUR_VERIFICATION_CODE");
-		//edit_phone.setText("/");
+		edit_phone.setText("/");
 		setphone.setVisibility(View.VISIBLE);
 		btn_bg.setVisibility(View.VISIBLE);
 		

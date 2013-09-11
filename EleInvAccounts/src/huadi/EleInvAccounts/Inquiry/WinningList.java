@@ -15,13 +15,18 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
 
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
 //開獎號碼
-public class WinningList extends AsyncTask<String, String, Map<String, List<String>>> // <傳入參數, 處理中更新介面參數, 處理後傳出參數>
+public class WinningList extends AsyncTask<String, Integer, Map<String, List<String>>> // <傳入參數, 處理中更新介面參數, 處理後傳出參數>
 {
 	Map<String, List<String>> map = new HashMap<String, List<String>>();
+	
+	private ProgressDialog dialog;
+	Context mContext;
 	
 	private final String detailUrl = "https://www.einvoice.nat.gov.tw/PB2CAPIVAN/invapp/InvApp?"
 		+ "version=0.2"
@@ -30,11 +35,19 @@ public class WinningList extends AsyncTask<String, String, Map<String, List<Stri
 		+ "&UUID={1}"
 		+ "&appID={2}";
 	
+	public WinningList(Context context)
+	{
+		mContext = context;
+		dialog = new ProgressDialog(context);
+	}
+	
 	@Override
 	protected Map<String, List<String>> doInBackground(String... params)
 	{
 		if (params.length < 0)
 			return null;
+		
+		publishProgress(0); //進度
 		
 		String url = MessageFormat.format(detailUrl, params[0], params[1], params[2]);
 		
@@ -49,6 +62,8 @@ public class WinningList extends AsyncTask<String, String, Map<String, List<Stri
 
 			HttpResponse httpResponse = null;
 			httpResponse = httpClient.execute(get);
+			
+			publishProgress(10); //進度
 
 			if (httpResponse.getStatusLine().getStatusCode() == 200)//判斷網路連接是否成功
 			{
@@ -62,6 +77,8 @@ public class WinningList extends AsyncTask<String, String, Map<String, List<Stri
 				String msg =  jsonObject.getString("msg"); //系統回應訊息
 				//Log.e("JSONObject Exception","版本" + v + ", 回應碼 " + code + ", 訊息" + msg);
 				
+				publishProgress(30); //進度
+				
 				try
 				{					
 					//String invoYm =  jsonObject.getString("invoYm"); //查詢開獎期別(民國年月)
@@ -73,7 +90,9 @@ public class WinningList extends AsyncTask<String, String, Map<String, List<Stri
 					spcPrizeNo.add(jsonObject.getString("spcPrizeNo"));
 					for (int i = 2; i <= 3; i++)
 						if(jsonObject.getString("spcPrizeNo" + i).length() > 1)
-							spcPrizeNo.add(jsonObject.getString("spcPrizeNo" + i));					
+							spcPrizeNo.add(jsonObject.getString("spcPrizeNo" + i));	
+					
+					publishProgress(50); //進度
 					
 					List<String> firstPrizeNo = new ArrayList<String>(); //頭獎號碼(至少3組)
 					for (int i = 1; i <= 10; i++)					
@@ -84,6 +103,8 @@ public class WinningList extends AsyncTask<String, String, Map<String, List<Stri
 					for (int i = 1; i <= 3; i++)
 						if(jsonObject.getString("sixthPrizeNo" + i).length() > 1)
 							sixthPrizeNo.add(jsonObject.getString("sixthPrizeNo" + i));
+					
+					publishProgress(70); //進度
 					
 					List<String> PrizeAmt = new ArrayList<String>(); //金額					
 					PrizeAmt.add(jsonObject.getString("superPrizeAmt")); //千萬特獎金額
@@ -100,6 +121,8 @@ public class WinningList extends AsyncTask<String, String, Map<String, List<Stri
 					map.put("firstPrizeNo", firstPrizeNo);
 					map.put("sixthPrizeNo", sixthPrizeNo);
 					map.put("PrizeAmt", PrizeAmt);
+					
+					publishProgress(90); //進度
 				}
 				catch(Exception e)
 				{
@@ -112,20 +135,38 @@ public class WinningList extends AsyncTask<String, String, Map<String, List<Stri
 		{
 			Log.e("WinningList", e.toString());
 		}
+		finally
+		{
+			publishProgress(100); //進度
+		}
 		
 		return map;
 	}
 
 	@Override
+	protected void onPreExecute() 
+	{
+		super.onPreExecute();
+        dialog.setMessage("Loading...");
+        dialog.setCancelable(false);
+        dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        dialog.show();
+    }
+	
+	@Override
+	protected void onProgressUpdate(Integer... progress)
+	{
+		super.onProgressUpdate(progress);
+		dialog.setProgress(progress[0]); //回報進度
+	}
+	
+	@Override
 	protected void onPostExecute( Map<String, List<String>> result)
 	{
 		super.onPostExecute(result);
+		if (dialog.isShowing())
+			dialog.dismiss(); //停止
 	}
 
-	@Override
-	protected void onProgressUpdate(String... params)
-	{
-		super.onProgressUpdate(params);
-	}
 	
 }

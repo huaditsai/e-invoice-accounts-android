@@ -217,6 +217,7 @@ public class AccountsActivity extends Activity
 					isCapture = true;
 					try
 					{
+						
 //						Map<String, List<String>> head = new CarrierHead().execute("3J0002", cardNo, "N", UUID, appID, cardEncrypt).get();
 //						
 //						for (int i = 0; i < head.get("invNum").size(); i++)
@@ -680,6 +681,9 @@ public class AccountsActivity extends Activity
 			{				
 				l1 = new LinearLayout(this);
 				l1.setOrientation(LinearLayout.HORIZONTAL);
+				if(i%2==0){
+					l1.setBackgroundColor(Color.rgb(255, 254, 232));
+				}
 				l1.setOnClickListener(new OnClickListener(){	//TODO POPVIEW ¸ê®Æ¸j©w
 					@Override
 					public void onClick(View arg0) {
@@ -720,6 +724,7 @@ public class AccountsActivity extends Activity
 				month[i] = new TextView(this);
 				month[i].setText(ChargeListCursor.getString(ChargeListCursor.getColumnIndex("date")).substring(4,6));
 				month[i].setTextSize(20);
+				month[i].setPadding(30, 0, 0, 0);
 				TextPaint tp = month[i].getPaint();
 				tp.setFakeBoldText(true);
 				l1.addView(month[i]);
@@ -732,7 +737,7 @@ public class AccountsActivity extends Activity
 				item[i] = new TextView(this);
 				item[i].setText(ChargeListCursor.getString(ChargeListCursor.getColumnIndex("item")));
 				item[i].setTypeface(null, Typeface.BOLD);
-//				item[i].setMinimumWidth(430);
+				item[i].setMinimumWidth(300);
 				item[i].setMaxEms(7);
 				item[i].setEllipsize(TruncateAt.END);
 				item[i].setLines(1);
@@ -753,6 +758,11 @@ public class AccountsActivity extends Activity
 				cost[i] = new TextView(this);
 				cost[i].setText(ChargeListCursor.getInt(ChargeListCursor.getColumnIndex("money")) + "NTD");
 				cost[i].setPadding(0, 0, 40, 0);
+				if((cost[i].getText().toString()).contains("-")){
+					cost[i].setTextColor(Color.RED);
+				}else{
+					cost[i].setTextColor(Color.GREEN);
+				}
 				l4.addView(cost[i]);
 				account[i] = new TextView(this);
 				account[i].setText(ChargeListCursor.getString(ChargeListCursor.getColumnIndex("accountName")));

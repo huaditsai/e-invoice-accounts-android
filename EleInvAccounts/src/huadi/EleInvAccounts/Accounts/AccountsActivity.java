@@ -31,6 +31,7 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.text.TextPaint;
 import android.text.TextUtils.TruncateAt;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -183,6 +184,8 @@ public class AccountsActivity extends Activity
 				if(IsInternet())
 				{
 					isCapture = true;
+					Intent intent = new Intent(AccountsActivity.this, CaptureActivity.class);
+					startActivity(intent);
 
 				}
 				else
@@ -737,7 +740,12 @@ public class AccountsActivity extends Activity
 				item[i] = new TextView(this);
 				item[i].setText(ChargeListCursor.getString(ChargeListCursor.getColumnIndex("item")));
 				item[i].setTypeface(null, Typeface.BOLD);
-				item[i].setMinimumWidth(300);
+				DisplayMetrics dm = new DisplayMetrics();	// 建立一個DisplayMetrics物件
+				this.getWindowManager().getDefaultDisplay().getMetrics(dm);	// 取得裝置的資訊
+				int Width = dm.widthPixels;
+				int Height = dm.heightPixels;
+				item[i].setMinimumWidth(Width/3);
+//				item[i].setMinimumWidth(300);
 				item[i].setMaxEms(7);
 				item[i].setEllipsize(TruncateAt.END);
 				item[i].setLines(1);

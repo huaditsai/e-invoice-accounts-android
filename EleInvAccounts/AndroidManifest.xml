@@ -51,22 +51,26 @@
         <activity
             android:name="huadi.EleInvAccounts.Manager.ManagerActivity"
             android:screenOrientation="portrait"
-            android:configChanges="orientation|keyboardHidden">
+            android:configChanges="orientation|keyboardHidden"
+            android:windowSoftInputMode="adjustUnspecified|stateHidden" >
         </activity>
         <activity
             android:name="huadi.EleInvAccounts.Settings.SettingsActivity"
             android:screenOrientation="portrait"
-            android:configChanges="orientation|keyboardHidden">
+            android:configChanges="orientation|keyboardHidden"
+            android:windowSoftInputMode="adjustUnspecified|stateHidden" >
         </activity>
         <activity
             android:name="huadi.EleInvAccounts.Social.SocialActivity"
             android:screenOrientation="portrait"
-            android:configChanges="orientation|keyboardHidden">
+            android:configChanges="orientation|keyboardHidden"
+            android:windowSoftInputMode="adjustUnspecified|stateHidden" >
         </activity>
         <activity 
             android:name=".Manager.InvoiceListActivity"
             android:screenOrientation="portrait"
-            android:configChanges="orientation|keyboardHidden">            
+            android:configChanges="orientation|keyboardHidden"
+            android:windowSoftInputMode="adjustUnspecified|stateHidden" >            
         </activity>
         
         <!-- Broadcast Receiver that will process App Widget updates -->
@@ -82,11 +86,16 @@
 		</receiver>
 		<activity 
 		    android:name=".Settings.SetAccountsActivity"
-            android:windowSoftInputMode="adjustUnspecified|stateHidden" >
+		    android:screenOrientation="portrait"
+            android:configChanges="orientation|keyboardHidden"
+            android:windowSoftInputMode="adjustUnspecified|stateHidden"  >
 		</activity>
 		<activity 
 		    android:name=".Settings.SetCategoryActivity"
-            android:windowSoftInputMode="adjustUnspecified|stateHidden" ></activity>
+		    android:screenOrientation="portrait"
+            android:configChanges="orientation|keyboardHidden" 
+            android:windowSoftInputMode="adjustUnspecified|stateHidden" >		    
+		</activity>
 		
     </application>
 

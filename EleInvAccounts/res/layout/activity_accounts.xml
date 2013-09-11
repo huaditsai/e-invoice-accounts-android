@@ -445,8 +445,6 @@
                             android:layout_weight="1"
                             android:width="100dp" 
                             android:inputType="number">
-
-                            <requestFocus />
                         </EditText>
 
                     </LinearLayout>

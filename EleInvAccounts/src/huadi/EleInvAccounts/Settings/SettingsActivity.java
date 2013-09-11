@@ -210,8 +210,8 @@ public class SettingsActivity extends Activity
 	}
 	
 	public void setPhone(){
-		edit_phone.setText("/XXXXXXX"); // TODO 發佈時刪除
-		edit_phonecode.setText("YOUR_VERIFICATION_CODE");
+		//edit_phone.setText("/XXXXXXX"); // TODO 發佈時刪除
+		//edit_phonecode.setText("YOUR_VERIFICATION_CODE");
 		//edit_phone.setText("/");
 		setphone.setVisibility(View.VISIBLE);
 		btn_bg.setVisibility(View.VISIBLE);

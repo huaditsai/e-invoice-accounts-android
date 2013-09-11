@@ -221,13 +221,13 @@ public class AccountsActivity extends Activity
 					isCapture = true;
 					try
 					{
-//						Map<String, List<String>> head = new CarrierHead().execute("3J0002", cardNo, "N", UUID, appID, cardEncrypt).get();
-//						
-//						for (int i = 0; i < head.get("invNum").size(); i++)
-//						{
-//							new CarrierDetail(AccountsActivity.this)
-//							.execute("3J0002", cardNo, head.get("invNum").get(i), head.get("invDate").get(i), UUID, appID, cardEncrypt);							
-//						}						
+						Map<String, List<String>> head = new CarrierHead().execute("3J0002", cardNo, "N", UUID, appID, cardEncrypt).get();
+						
+						for (int i = 0; i < head.get("invNum").size(); i++)
+						{
+							new CarrierDetail(AccountsActivity.this)
+							.execute("3J0002", cardNo, head.get("invNum").get(i), head.get("invDate").get(i), UUID, appID, cardEncrypt);							
+						}
 					}
 					catch (Exception e)
 					{

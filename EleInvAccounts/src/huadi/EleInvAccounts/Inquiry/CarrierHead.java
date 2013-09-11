@@ -3,7 +3,11 @@ package huadi.EleInvAccounts.Inquiry;
 import huadi.EleInvAccounts.DBHelper;
 
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -20,11 +24,11 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.util.Log;
 
-public class CarrierHead extends AsyncTask<String, String, String> // <傳入參數, 處理中更新介面參數, 處理後傳出參數>
+public class CarrierHead extends AsyncTask<String, String, Map<String, List<String>>> // <傳入參數, 處理中更新介面參數, 處理後傳出參數>
 {
 	//載具明細
-	private DBHelper dbHelper;
-	private SQLiteDatabase db;
+	
+	Map<String, List<String>> map = new HashMap<String, List<String>>();
 	
 	private final String detailUrl = "https://www.einvoice.nat.gov.tw/PB2CAPIVAN/invServ/InvServ?"
 		+ "version=0.1"
@@ -39,15 +43,9 @@ public class CarrierHead extends AsyncTask<String, String, String> // <傳入參數,
 		+ "&uuid={7}" //UUID
 		+ "&appID={8}" 
 		+ "&cardEncrypt={9}"; //卡片檢驗碼(手機條碼驗證碼)
-
-	public CarrierHead(Context context)
-	{
-		dbHelper = new DBHelper(context);
-		db = dbHelper.getWritableDatabase(); //讓db可寫入
-	}
 	
 	@Override
-	protected String doInBackground(String... params)
+	protected Map<String, List<String>> doInBackground(String... params)
 	{
 		if (params.length < 0)
 			return null;
@@ -78,61 +76,73 @@ public class CarrierHead extends AsyncTask<String, String, String> // <傳入參數,
 			if (httpResponse.getStatusLine().getStatusCode() == 200)//判斷網路連接是否成功
 			{
 				strResult = EntityUtils.toString(httpResponse.getEntity()); //抓下來的資料
-				Log.e("strResult", strResult);
+				//Log.e("strResult", strResult);
 			
 				JSONObject jsonObject = new JSONObject(strResult); //{}為JSONObject
 				
 				String v =  jsonObject.getString("v"); //版本號碼
+				
+				List<String> codeList = new ArrayList<String>();
 				String code =  jsonObject.getString("code"); //訊息回應碼
-				String msg =  jsonObject.getString("msg"); //系統回應訊息
-				String onlyWinningInv =  jsonObject.getString("onlyWinningInv"); //僅回傳中獎資訊 (Y/N)
+				codeList.add(code);
+				map.put("code", codeList);
 				
-				if(params[6] == "code")
-					strResult = code;
+				String msg =  jsonObject.getString("msg"); //系統回應訊息				
+				String onlyWinningInv =  jsonObject.getString("onlyWinningInv"); //僅回傳中獎資訊 (Y/N)				
+								
+				try
+				{
+					List<String> invNumList = new ArrayList<String>();
+					List<String> invDateList = new ArrayList<String>();
+					JSONArray detailArray = jsonObject.getJSONArray("details"); //[]為JSONArray
+					for(int i = 0; i < detailArray.length(); i++)
+					{
+//							String rowNum = detailArray.getJSONObject(i).getString("rowNum"); //明細編號(1,2,3...)
+						String invNum =  detailArray.getJSONObject(i).getString("invNum"); //發票號碼
+						invNumList.add(invNum);
+//							String cardType =  detailArray.getJSONObject(i).getString("cardType"); //卡別
+//							String cardNo =  detailArray.getJSONObject(i).getString("cardNo"); //卡片（載具）隱碼						
+//							String sellerName =  detailArray.getJSONObject(i).getString("sellerName"); //賣方名稱
+//							String invStatus =  detailArray.getJSONObject(i).getString("invStatus"); //2
+//							String invDonatable =  detailArray.getJSONObject(i).getString("invDonatable"); //發票是否捐贈
+						
+						
+						JSONObject invDateObject =  detailArray.getJSONObject(i).getJSONObject("invDate"); //發票開立時間
+						String year = invDateObject.getString("year"); //yyy
+						String month = invDateObject.getString("month"); //m
+						String date = invDateObject.getString("date"); //d
+						
+						String invDateString = String.format("%d%02d%02d", Integer.parseInt(year)+1911, Integer.parseInt(month), Integer.parseInt(date));
+						invDateList.add(invDateString);
+//							String day = invDateObject.getString("day"); //星期1234
+//							String hours = invDateObject.getString("hours"); //
+//							String minutes = invDateObject.getString("minutes"); //
+//							String seconds = invDateObject.getString("seconds"); //
+//							String time = invDateObject.getString("time"); //時間戳記
+//							String timezoneOffset = invDateObject.getString("timezoneOffset"); //時區
+					}
+					
+					map.put("invNum", invNumList);
+					map.put("invDate", invDateList);
+				}
+				catch(Exception e)
+				{
+					Log.e("JSONObject Exception","版本, " + v + "回應碼, " + code + "訊息, " + msg);
+				}
+			}
 				
-//				try
-//				{
-//					JSONArray detailArray = jsonObject.getJSONArray("details"); //[]為JSONArray
-//					for(int i = 0; i < detailArray.length(); i++)
-//					{
-//						String rowNum = detailArray.getJSONObject(i).getString("rowNum"); //明細編號(1,2,3...)
-//							String invNum =  detailArray.getJSONObject(i).getString("invNum"); //發票號碼
-//						String cardType =  detailArray.getJSONObject(i).getString("cardType"); //卡別
-//						String cardNo =  detailArray.getJSONObject(i).getString("cardNo"); //卡片（載具）隱碼						
-//						String sellerName =  detailArray.getJSONObject(i).getString("sellerName"); //賣方名稱
-//						String invStatus =  detailArray.getJSONObject(i).getString("invStatus"); //2
-//						String invDonatable =  detailArray.getJSONObject(i).getString("invDonatable"); //發票是否捐贈
-//						
-//						
-//						JSONObject invDateObject =  detailArray.getJSONObject(i).getJSONObject("invDate"); //發票開立時間
-//							String year = invDateObject.getString("year"); //yyy
-//							String month = invDateObject.getString("month"); //m
-//							String date = invDateObject.getString("date"); //d
-//						String day = invDateObject.getString("day"); //星期1234
-//						String hours = invDateObject.getString("hours"); //
-//						String minutes = invDateObject.getString("minutes"); //
-//						String seconds = invDateObject.getString("seconds"); //
-//						String time = invDateObject.getString("time"); //時間戳記
-//						String timezoneOffset = invDateObject.getString("timezoneOffset"); //時區
-//					}
-//				}
-//				catch(Exception e)
-//				{
-//					Log.e("JSONObject Exception","版本, " + v + "回應碼, " + code + "訊息, " + msg);
-//				}			
-				
-			}			
+						
 		}
 		catch (Exception e)
 		{
 			Log.e("CarrierDetail", e.toString());
 		}
 		
-		return strResult;
+		return map;
 	}
 
 	@Override
-	protected void onPostExecute(String result)
+	protected void onPostExecute(Map<String, List<String>> result)
 	{
 		super.onPostExecute(result);
 	}

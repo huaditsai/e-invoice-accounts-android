@@ -1,6 +1,8 @@
 package huadi.EleInvAccounts.Settings;
 
 import java.util.Calendar;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 import huadi.EleInvAccounts.MainActivity;
@@ -212,9 +214,9 @@ public class SettingsActivity extends Activity
 	}
 	
 	public void setPhone(){
-		//edit_phone.setText("/XXXXXXX");
-		//edit_phonecode.setText("YOUR_VERIFICATION_CODE");
-		edit_phone.setText("/");
+		edit_phone.setText("/XXXXXXX");
+		edit_phonecode.setText("YOUR_VERIFICATION_CODE");
+		//edit_phone.setText("/");
 		setphone.setVisibility(View.VISIBLE);
 		btn_bg.setVisibility(View.VISIBLE);
 		
@@ -226,10 +228,10 @@ public class SettingsActivity extends Activity
 				
 				try
 				{
-					String CarrierHeadInfo = new CarrierHead(SettingsActivity.this)
-						.execute("3J0002","Y", edit_phone.getText().toString(), UUID, appID, edit_phonecode.getText().toString(), "code").get();
+					Map<String, List<String>> CarrierHeadInfo = new CarrierHead()
+						.execute("3J0002", edit_phone.getText().toString(), "Y", UUID, appID, edit_phonecode.getText().toString()).get();
 					
-					if(CarrierHeadInfo.equals("200"))
+					if(CarrierHeadInfo.get("code").get(0).equals("200"))
 					{
 						SharedPreferences card = getSharedPreferences("CARD", MODE_PRIVATE ); //偏好設定 
 						card.edit().putString("cardNo", edit_phone.getText().toString()).commit(); //卡片隱碼

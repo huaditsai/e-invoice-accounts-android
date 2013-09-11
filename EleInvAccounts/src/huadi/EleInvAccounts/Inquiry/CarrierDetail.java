@@ -14,7 +14,9 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -52,8 +54,12 @@ public class CarrierDetail extends AsyncTask<String, String, String> // <¶Ç¤J°Ñ¼
 		if (params.length < 0)
 			return null;
 		
-		String url = MessageFormat.format(detailUrl, params[0], params[1], params[2], params[3], params[4]
-													, params[5], params[6], params[7], params[8]);
+		String nowTime = "" + (System.currentTimeMillis() / 1000); //new GetNTP().execute("").get();
+		String timeStamp = "" + (Integer.parseInt(nowTime) + 100);
+		String expTimeStamp = "" + (Integer.parseInt(timeStamp) + 100000);
+		
+		String url = MessageFormat.format(detailUrl, params[0], params[1], expTimeStamp, timeStamp, params[2]
+													, params[3], params[4], params[5], params[6]);
 		
 		HttpGet get = new HttpGet(url);
 		String strResult = "";
@@ -82,11 +88,38 @@ public class CarrierDetail extends AsyncTask<String, String, String> // <¶Ç¤J°Ñ¼
 				{
 					String invNum =  jsonObject.getString("invNum"); //µo²¼¸¹½X
 					String invDate =  jsonObject.getString("invDate"); //µo²¼¶}¥ß¤é´Á(yyyyMMdd)
-					String sellerName =  jsonObject.getString("sellerName"); //½æ¤è¦WºÙ
-					
-					String totalAmount =  jsonObject.getString("amount"); //Á`ª÷ÃB
-					
+					String sellerName =  jsonObject.getString("sellerName"); //½æ¤è¦WºÙ					
+					String totalAmount =  jsonObject.getString("amount"); //Á`ª÷ÃB					
 					String invStatus =  jsonObject.getString("invStatus"); //µo²¼ª¬ºA(¤w½T»{)
+					int month = Integer.parseInt(invDate.substring(4,6));
+					if(month % 2 == 1)
+						month++;
+					String invPeriod = String.format("%d%02d", Integer.parseInt(invDate.substring(0,4))-1911, month);
+					
+					ContentValues InvoiceCV = new ContentValues();
+					InvoiceCV.put("invNum", invNum); //µo²¼½s¸¹
+					InvoiceCV.put("invTotalCost", totalAmount); //®ø¶Oª÷ÃB
+					InvoiceCV.put("invDate", invDate); //µo²¼¶}¥ß¤é´Á(yyyyMMdd)
+					InvoiceCV.put("sellerName", sellerName); //½æ¤è¦WºÙ
+					InvoiceCV.put("invStatus", invStatus); //µo²¼ª¬ºA(¤w½T»{)
+					InvoiceCV.put("invPeriod", invPeriod); //¹ï¼úµo²¼´Á§O(¥Á°ê¦~¤ë)
+					
+					Cursor InvoiceCursor = db.rawQuery("SELECT invNum "
+						+ "FROM Invoice "
+						+ "WHERE invNum = '" + invNum + "'", null); //­n°O±o''¥]°_¨Ó
+					
+					int count = InvoiceCursor.getCount(); //¸ê®Æµ§¼Æ
+					if(count == 0)
+						db.insert("Invoice", null, InvoiceCV); //·s¼W¤@µ§¦Ü Invoice
+					else
+					{
+						InvoiceCursor.moveToFirst();
+						for (int i = 0; i < count; i++)
+						{
+							db.update("Invoice", InvoiceCV, "invNum = '" + invNum + "'", null);
+							InvoiceCursor.moveToNext(); //²¾¦Ü¸ê®Æ®w¤U¤@µ§
+						}
+					}
 					
 					JSONArray detailArray = jsonObject.getJSONArray("details"); //[]¬°JSONArray
 					for(int i = 0; i < detailArray.length(); i++)
@@ -95,7 +128,37 @@ public class CarrierDetail extends AsyncTask<String, String, String> // <¶Ç¤J°Ñ¼
 						String description = detailArray.getJSONObject(i).getString("description"); //«~¦W
 						String quantity = detailArray.getJSONObject(i).getString("quantity"); //¼Æ¶q
 						String unitPrice = detailArray.getJSONObject(i).getString("unitPrice"); //³æ»ù
-						String amount = detailArray.getJSONObject(i).getString("amount"); //¤p­p						
+						String amount = detailArray.getJSONObject(i).getString("amount"); //¤p­p	
+						
+						ContentValues InvDetailCV = new ContentValues();
+						InvDetailCV.put("invNum", invNum); //µo²¼½s¸¹
+						InvDetailCV.put("rowNum", rowNum); //©ú²Ó½s¸¹(1,2,3...)
+						InvDetailCV.put("description", description); //«~¦W
+						InvDetailCV.put("quantity", quantity); //¼Æ¶q
+						InvDetailCV.put("unitPrice", unitPrice); //³æ»ù
+						InvDetailCV.put("amount", amount); //¤p°O
+						
+						Cursor invDetailCursor = db.rawQuery("SELECT invNum, rowNum "
+							+ "FROM InvDetail "
+							+ "WHERE invNum = '" + invNum + "' "
+							+ "AND rowNum = '" + rowNum + "' ", null); //­n°O±o''¥]°_¨Ó
+						
+						int count2 = invDetailCursor.getCount(); //¸ê®Æµ§¼Æ
+						if(count2 == 0)
+						{
+							db.insert("InvDetail", null, InvDetailCV); //·s¼W¤@µ§¦Ü InvDetail
+//							Log.e("db.insert", "" + count2 + ", " + rowNum);
+						}
+						else
+						{
+							invDetailCursor.moveToFirst();
+							for (int j = 0; j < count2; j++)
+							{								
+								db.update("InvDetail", InvDetailCV, "invNum = '" + invNum + "'" + "AND rowNum = '" + rowNum + "' ", null);
+								invDetailCursor.moveToNext(); //²¾¦Ü¸ê®Æ®w¤U¤@µ§
+//								Log.e("db.update", "" + count2 + ", " + rowNum);
+							}
+						}
 					}
 				}
 				catch(Exception e)

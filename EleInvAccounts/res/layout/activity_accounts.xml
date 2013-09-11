@@ -601,7 +601,7 @@
             <Button
                 android:id="@+id/button6"
                 style="?android:attr/buttonStyleSmall"
-                android:layout_width="120dp"
+                android:layout_width="80dp"
                 android:layout_height="30dp"
                 android:background="@color/transparent"
                 android:text="新增"
@@ -609,9 +609,19 @@
                 android:textSize="12sp" />
 
             <Button
+                android:id="@+id/button9"
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="80dp"
+                android:layout_height="30dp"
+                android:background="@color/transparent"
+                android:text="刪除"
+                android:textColor="#ffffff"
+                android:textSize="12sp" />
+
+            <Button
                 android:id="@+id/button7"
                 style="?android:attr/buttonStyleSmall"
-                android:layout_width="120dp"
+                android:layout_width="80dp"
                 android:layout_height="30dp"
                 android:background="@color/transparent"
                 android:text="取消"

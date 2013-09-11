@@ -78,7 +78,9 @@ public class SetAccountsActivity extends Activity
 			name[i] = new TextView(this);
 			name[i].setText("¿ú¥]");
 			name[i].setPadding(0, 0, 20, 0);
-			name[i].setMinWidth(500);
+			name[i].setMaxEms(7);
+			name[i].setEllipsize(TruncateAt.END);
+//			name[i].setMinWidth(500);
 			l1.addView(name[i]);
 			
 			money[i] = new TextView(this);

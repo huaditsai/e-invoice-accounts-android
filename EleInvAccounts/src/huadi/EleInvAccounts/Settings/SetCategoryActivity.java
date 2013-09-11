@@ -38,7 +38,7 @@ public class SetCategoryActivity extends Activity
 	String[] mainCategoryItem;
 	//UI宣告
 	ImageButton btn_backfunc, btn_account, btn_manager, btn_social, btn_setting;
-	Button btn_main, btn_sub, btn_addnew, btn_income, btn_expend, btn_ok, btn_delete, btn_cancel, btn_ok2, btn_delete2, btn_cancel2, btn_bg;
+	Button btn_addnewmain, btn_addnewsub, btn_ok, btn_delete, btn_cancel, btn_ok2, btn_delete2, btn_cancel2, btn_bg;
 	LinearLayout layout_main, layout_sub;
 	EditText edit_main, edit_sub;
 	TableLayout table;
@@ -62,11 +62,8 @@ public class SetCategoryActivity extends Activity
 		btn_manager = (ImageButton)findViewById(R.id.imageButton3);
 		btn_social = (ImageButton)findViewById(R.id.imageButton4);
 		btn_setting = (ImageButton)findViewById(R.id.imageButton5);
-		btn_main = (Button)findViewById(R.id.button7);
-		btn_sub = (Button)findViewById(R.id.button6);
-		btn_addnew = (Button)findViewById(R.id.button1);
-		btn_income = (Button)findViewById(R.id.button4);
-		btn_expend = (Button)findViewById(R.id.button5);
+		btn_addnewmain = (Button)findViewById(R.id.button1);
+		btn_addnewsub = (Button)findViewById(R.id.button6);
 		btn_bg = (Button)findViewById(R.id.button2);
 		layout_main = (LinearLayout)findViewById(R.id.LinearLayout1);
 		layout_sub = (LinearLayout)findViewById(R.id.LinearLayout2);
@@ -81,23 +78,7 @@ public class SetCategoryActivity extends Activity
 		btn_delete2 = (Button)findViewById(R.id.button11);
 		btn_cancel2 = (Button)findViewById(R.id.button12);
 		
-		
-		setMain();
-		
-		btn_main.setEnabled(false);
-		btn_main.getBackground().setAlpha(60);
-		btn_sub.getBackground().setAlpha(255);
-		btn_main.setOnClickListener(new OnClickListener(){
-			@Override
-			public void onClick(View arg0) {
-				setMain();			
-			}});
-		
-		btn_sub.setOnClickListener(new OnClickListener(){
-			@Override
-			public void onClick(View arg0) {
-				setSub();				
-			}});
+		setCategory();
 		
 		//side---------------------------------------------
 		btn_backfunc.setOnClickListener(new OnClickListener(){
@@ -144,7 +125,7 @@ public class SetCategoryActivity extends Activity
 		});//side------------------------------------------------------
 	}
 	
-	public void setMain()
+	public void setCategory()
 	{
 		Cursor mainCateCursor = db.rawQuery("SELECT main "
 			+ "FROM MainCategory ", null); //要記得''包起來
@@ -191,18 +172,27 @@ public class SetCategoryActivity extends Activity
 			
 			mainCategoryItem = new String[]{"食", "衣"};
 		}
-				
-		btn_main.setEnabled(false);
-		btn_sub.setEnabled(true);
-		btn_main.getBackground().setAlpha(60);
-		btn_sub.getBackground().setAlpha(255);
+			
+			
+//			setCategory(); //以防主分類為空
+			ArrayAdapter<String> adapter = new ArrayAdapter<String>(SetCategoryActivity.this, 
+				android.R.layout.simple_spinner_item, mainCategoryItem);
+			adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item); //設定下拉選單的樣式
+			spinner1.setAdapter(adapter); //mainCategory下拉
+			
+			btn_addnewsub.setText("新增次分類");		
+			btn_addnewsub.setOnClickListener(new OnClickListener(){
+				@Override
+				public void onClick(View arg0) {
+					setNewSub();
+				}});
 		
-		btn_addnew.setText("新增主分類");		
-		btn_addnew.setOnClickListener(new OnClickListener(){
-			@Override
-			public void onClick(View arg0) {
-				setNewMain();				
-			}});
+			btn_addnewmain.setText("新增主分類");		
+			btn_addnewmain.setOnClickListener(new OnClickListener(){
+				@Override
+				public void onClick(View arg0) {
+					setNewMain();				
+				}});
 		
 		//主分類清單
 		table.removeAllViews();
@@ -212,41 +202,176 @@ public class SetCategoryActivity extends Activity
 		TableRow tr = new TableRow(this);
 		RelativeLayout rl;
 		LinearLayout l1;
-		ImageButton[] btn;
-		TextView[] name;
+		ImageButton[][] btn;
+		TextView[][] name;
 		
-		name = new TextView[mainCateCount];
-		btn = new ImageButton[mainCateCount];
 		
-		for (int i = 0; i < mainCateCount; i++){
-			rl = new RelativeLayout(this);
-			
-			l1 = new LinearLayout(this);
-			l1.setOrientation(LinearLayout.HORIZONTAL);
-			name[i] = new TextView(this);
-			name[i].setText(mainCategoryItem[i]); //("主分類");
-			name[i].setPadding(0, 0, 20, 0);
-			name[i].setMinWidth(500);
-			l1.addView(name[i]);
-			
-			final String item = mainCategoryItem[i];
-			btn[i] = new ImageButton(this);
-			btn[i].setBackgroundColor(Color.TRANSPARENT);
-			btn[i].setMinimumWidth(810);
-			btn[i].setMinimumHeight(100);
-			btn[i].setOnClickListener(new OnClickListener(){
-				@Override
-				public void onClick(View arg0) {
-					editMain(item);
-				}});
+		for (int m = 0; m < mainCateCount; m++){
 
-			rl.addView(l1);
-			rl.addView(btn[i]);
-			tr.addView(rl);
+			rl = new RelativeLayout(this);
+
+			Cursor subCursor = db.rawQuery("SELECT sub "
+				+ "FROM SubCategory "
+				+ "WHERE main = '" + mainCategoryItem[m] + "'", null); //要記得''包起來
+				
+				int subCateCount = subCursor.getCount()+1; //資料筆數
+				Log.e("subCateCount", subCateCount+"");
+				
+			String[] subCategory = new String[subCateCount];
+			
+			if(subCateCount != 0)
+			{
+				subCursor.moveToFirst();
+				for (int i = 1; i < subCateCount; i++)
+				{
+					subCategory[i] = subCursor.getString(subCursor.getColumnIndex("sub"));
+//					Log.e("sub", subCategory[i]);
+					subCursor.moveToNext(); //移至資料庫下一筆
+				}
+			}
+
+			name = new TextView[mainCateCount][subCateCount];
+			btn = new ImageButton[mainCateCount][subCateCount];
+			
+			for(int s = 0; s < subCateCount; s++){
+				
+				if(s==0){
+					Log.e("main", m+":"+s);
+					l1 = new LinearLayout(this);
+					l1.setOrientation(LinearLayout.HORIZONTAL);
+					name[m][s] = new TextView(this);
+					name[m][s].setText(mainCategoryItem[m]); //("主分類");
+					name[m][s].setPadding(0, 0, 20, 0);
+					name[m][s].getPaint().setFakeBoldText(true);
+					l1.addView(name[m][s]);		
+
+					final String item = mainCategoryItem[m];
+					btn[m][s] = new ImageButton(this);
+					btn[m][s].setBackgroundColor(Color.TRANSPARENT);
+					btn[m][s].setMinimumWidth(810);
+					btn[m][s].setMinimumHeight(80);
+					btn[m][s].setOnClickListener(new OnClickListener(){
+						@Override
+						public void onClick(View arg0) {
+							editMain(item);
+						}});
+					
+					rl.addView(l1);
+					rl.addView(btn[m][s]);
+					tr.addView(rl);
+				}else if(s!=0){
+					Log.e("sub", m+":"+s+":"+subCategory[s]); //TODO 次分類SHOW不出來
+					rl = new RelativeLayout(this);
+					
+					l1 = new LinearLayout(this);
+					l1.setOrientation(LinearLayout.HORIZONTAL);
+
+					name[m][s] = new TextView(this);
+					name[m][s].setText(subCategory[s]); //次分類
+					name[m][s].setPadding(50, 0, 20, 0);
+					l1.addView(name[m][s]);
+					Log.e("sub", "1"); 
+					
+					final String item = subCategory[s];
+//					Log.e("sub2", subCategory[s]);
+					btn[m][s] = new ImageButton(this);
+					btn[m][s].setBackgroundColor(Color.TRANSPARENT);
+					btn[m][s].setMinimumWidth(810);
+					btn[m][s].setMinimumHeight(50);
+					btn[m][s].setOnClickListener(new OnClickListener(){
+
+						@Override
+						public void onClick(View arg0) {
+							editSub(item);
+						}});
+					Log.e("sub", "2");
+
+					rl.addView(l1);
+					rl.addView(btn[m][s]);
+					tr.addView(rl);		
+					Log.e("sub", "3");
+				}
+			}
 			table.addView(tr);
 			tr = new TableRow(this);
 		}
 	}
+
+//	public void setSub()
+//	{
+//		Cursor subCursor = db.rawQuery("SELECT sub "
+//			+ "FROM SubCategory ", null); //要記得''包起來
+//		
+//		int subCateCount = subCursor.getCount(); //資料筆數
+//		String[] subCategory = new String[subCateCount];
+//		
+//		if(subCateCount != 0)
+//		{
+//			subCursor.moveToFirst();
+//			for (int i = 0; i < subCateCount; i++)
+//			{
+//				subCategory[i] = subCursor.getString(subCursor.getColumnIndex("sub"));
+//				subCursor.moveToNext(); //移至資料庫下一筆
+//			}
+//		}
+//		
+//		setCategory(); //以防主分類為空
+//		ArrayAdapter<String> adapter = new ArrayAdapter<String>(SetCategoryActivity.this, 
+//			android.R.layout.simple_spinner_item, mainCategoryItem);
+//		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item); //設定下拉選單的樣式
+//		spinner1.setAdapter(adapter); //mainCategory下拉
+//		
+//		btn_addnew.setText("新增次分類");		
+//		btn_addnew.setOnClickListener(new OnClickListener(){
+//			@Override
+//			public void onClick(View arg0) {
+//				setNewSub();
+//			}});
+//		
+//
+//		//次分類清單
+//		table.removeAllViews();
+//		//int count = 3; //次分類總數
+//		
+//		TableRow tr = new TableRow(this);
+//		RelativeLayout rl;
+//		LinearLayout l1;
+//		ImageButton[] btn;
+//		TextView[] name;
+//		
+//		name = new TextView[subCateCount];
+//		btn = new ImageButton[subCateCount];
+//		
+//		for (int i = 0; i < subCateCount; i++){
+//			rl = new RelativeLayout(this);
+//			
+//			l1 = new LinearLayout(this);
+//			l1.setOrientation(LinearLayout.HORIZONTAL);
+//			name[i] = new TextView(this);
+//			name[i].setText(subCategory[i]); //次分類
+//			name[i].setPadding(0, 0, 20, 0);
+//			name[i].setMinWidth(500);
+//			l1.addView(name[i]);
+//			
+//			final String item = subCategory[i];
+//			btn[i] = new ImageButton(this);
+//			btn[i].setBackgroundColor(Color.TRANSPARENT);
+//			btn[i].setMinimumWidth(810);
+//			btn[i].setMinimumHeight(100);
+//			btn[i].setOnClickListener(new OnClickListener(){
+//
+//				@Override
+//				public void onClick(View arg0) {
+//					editSub(item);
+//				}});
+//
+//			rl.addView(l1);
+//			rl.addView(btn[i]);
+//			tr.addView(rl);
+//			table.addView(tr);
+//			tr = new TableRow(this);
+//		}
+//	}
 	
 	public void setNewMain(){
 
@@ -278,7 +403,7 @@ public class SetCategoryActivity extends Activity
 				layout_main.setVisibility(View.GONE);
 				btn_bg.setVisibility(View.GONE);
 				edit_main.setText("");
-				setMain();
+				setCategory();
 			}
 		});
 		
@@ -328,7 +453,7 @@ public class SetCategoryActivity extends Activity
 				layout_main.setVisibility(View.GONE);
 				btn_bg.setVisibility(View.GONE);
 				edit_main.setText("");
-				setMain();
+				setCategory();
 			}});
 		
 		btn_delete.setOnClickListener(new OnClickListener(){
@@ -351,7 +476,7 @@ public class SetCategoryActivity extends Activity
 				layout_main.setVisibility(View.GONE);
 				btn_bg.setVisibility(View.GONE);
 				edit_main.setText("");
-				setMain();
+				setCategory();
 			}});
 		
 		btn_cancel.setOnClickListener(new OnClickListener(){
@@ -361,87 +486,6 @@ public class SetCategoryActivity extends Activity
 				btn_bg.setVisibility(View.GONE);
 				edit_main.setText("");
 			}});
-	}
-
-	public void setSub()
-	{
-		Cursor subCursor = db.rawQuery("SELECT sub "
-			+ "FROM SubCategory ", null); //要記得''包起來
-		
-		int subCateCount = subCursor.getCount(); //資料筆數
-		String[] subCategory = new String[subCateCount];
-		
-		if(subCateCount != 0)
-		{
-			subCursor.moveToFirst();
-			for (int i = 0; i < subCateCount; i++)
-			{
-				subCategory[i] = subCursor.getString(subCursor.getColumnIndex("sub"));
-				subCursor.moveToNext(); //移至資料庫下一筆
-			}
-		}
-		
-		setMain(); //以防主分類為空
-		ArrayAdapter<String> adapter = new ArrayAdapter<String>(SetCategoryActivity.this, 
-			android.R.layout.simple_spinner_item, mainCategoryItem);
-		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item); //設定下拉選單的樣式
-		spinner1.setAdapter(adapter); //mainCategory下拉
-		
-		btn_sub.setEnabled(false);
-		btn_main.setEnabled(true);
-		btn_sub.getBackground().setAlpha(60);
-		btn_main.getBackground().setAlpha(255);
-		
-		btn_addnew.setText("新增次分類");		
-		btn_addnew.setOnClickListener(new OnClickListener(){
-			@Override
-			public void onClick(View arg0) {
-				setNewSub();
-			}});
-		
-
-		//次分類清單
-		table.removeAllViews();
-		//int count = 3; //次分類總數
-		
-		TableRow tr = new TableRow(this);
-		RelativeLayout rl;
-		LinearLayout l1;
-		ImageButton[] btn;
-		TextView[] name;
-		
-		name = new TextView[subCateCount];
-		btn = new ImageButton[subCateCount];
-		
-		for (int i = 0; i < subCateCount; i++){
-			rl = new RelativeLayout(this);
-			
-			l1 = new LinearLayout(this);
-			l1.setOrientation(LinearLayout.HORIZONTAL);
-			name[i] = new TextView(this);
-			name[i].setText(subCategory[i]); //次分類
-			name[i].setPadding(0, 0, 20, 0);
-			name[i].setMinWidth(500);
-			l1.addView(name[i]);
-			
-			final String item = subCategory[i];
-			btn[i] = new ImageButton(this);
-			btn[i].setBackgroundColor(Color.TRANSPARENT);
-			btn[i].setMinimumWidth(810);
-			btn[i].setMinimumHeight(100);
-			btn[i].setOnClickListener(new OnClickListener(){
-
-				@Override
-				public void onClick(View arg0) {
-					editSub(item);
-				}});
-
-			rl.addView(l1);
-			rl.addView(btn[i]);
-			tr.addView(rl);
-			table.addView(tr);
-			tr = new TableRow(this);
-		}
 	}
 	
 	public void setNewSub(){
@@ -475,7 +519,7 @@ public class SetCategoryActivity extends Activity
 				layout_sub.setVisibility(View.GONE);
 				btn_bg.setVisibility(View.GONE);
 				edit_sub.setText("");
-				setSub();
+				setCategory();
 			}});
 		
 		btn_cancel2.setOnClickListener(new OnClickListener(){
@@ -521,7 +565,7 @@ public class SetCategoryActivity extends Activity
 				layout_sub.setVisibility(View.GONE);
 				btn_bg.setVisibility(View.GONE);
 				edit_sub.setText("");
-				setSub();
+				setCategory();
 			}
 		});
 		
@@ -532,7 +576,7 @@ public class SetCategoryActivity extends Activity
 				layout_sub.setVisibility(View.GONE);
 				btn_bg.setVisibility(View.GONE);
 				edit_sub.setText("");
-				setSub();
+				setCategory();
 			}});
 		
 		btn_cancel2.setOnClickListener(new OnClickListener(){

@@ -67,7 +67,7 @@ public class AccountsActivity extends Activity
 	
 	//UI宣告
 	ImageButton btn_backfunc, btn_account, btn_manager, btn_social, btn_setting, btn_left, btn_right;
-	Button btn_addone, btn_scan, btn_import, btn_income, btn_expend, btn_save, btn_cancel, btn_bg;
+	Button btn_addone, btn_scan, btn_import, btn_income, btn_expend, btn_save, btn_delete, btn_cancel, btn_bg;
 	TextView text_total, text_income, text_expenditure, text_balance, text_month;
 	TableLayout table;
 	LinearLayout popview;
@@ -115,6 +115,7 @@ public class AccountsActivity extends Activity
 		btn_income = (Button) findViewById(R.id.button4);
 		btn_expend = (Button) findViewById(R.id.button5);
 		btn_save = (Button) findViewById(R.id.button6);
+		btn_delete = (Button) findViewById(R.id.button9);
 		btn_cancel = (Button) findViewById(R.id.button7);
 		text_total = (TextView) findViewById(R.id.textView6);
 		text_income = (TextView) findViewById(R.id.textView7);
@@ -171,6 +172,7 @@ public class AccountsActivity extends Activity
 				isCapture = false;
 				popview.setVisibility(View.VISIBLE);
 				btn_bg.setVisibility(View.VISIBLE);
+				btn_delete.setVisibility(View.GONE);
 			}
 		});
 		btn_scan.setOnClickListener(new OnClickListener() //條碼掃描
@@ -215,14 +217,13 @@ public class AccountsActivity extends Activity
 					isCapture = true;
 					try
 					{
-						Map<String, List<String>> head = new CarrierHead()
-						.execute("3J0002", cardNo, "N", UUID, appID, cardEncrypt).get();
-						
-						for (int i = 0; i < head.get("invNum").size(); i++)
-						{
-							new CarrierDetail(AccountsActivity.this)
-							.execute("3J0002", cardNo, head.get("invNum").get(i), head.get("invDate").get(i), UUID, appID, cardEncrypt);							
-						}						
+//						Map<String, List<String>> head = new CarrierHead().execute("3J0002", cardNo, "N", UUID, appID, cardEncrypt).get();
+//						
+//						for (int i = 0; i < head.get("invNum").size(); i++)
+//						{
+//							new CarrierDetail(AccountsActivity.this)
+//							.execute("3J0002", cardNo, head.get("invNum").get(i), head.get("invDate").get(i), UUID, appID, cardEncrypt);							
+//						}						
 					}
 					catch (Exception e)
 					{
@@ -255,7 +256,7 @@ public class AccountsActivity extends Activity
 
 		//popview ---------------------------------
 		
-		editText1 = (EditText)findViewById(R.id.editText1);
+		editText1 = (EditText)findViewById(R.id.editText1); //金額
 		spinner1 = (Spinner)findViewById(R.id.spinner1); //帳本
 		editText14 = (EditText)findViewById(R.id.editText14); //發票編號
 		editText3 = (EditText)findViewById(R.id.editText3); //項目
@@ -655,7 +656,7 @@ public class AccountsActivity extends Activity
 		LinearLayout l1, l2, l3, l4;
 		TextView[] month, day, item, main, sub, cost, account;
 		
-		Cursor ChargeListCursor = db.rawQuery("SELECT date, accountName, money, item, mainCategory, subCategory "
+		final Cursor ChargeListCursor = db.rawQuery("SELECT date, accountName, money, item, mainCategory, subCategory "
 			+ "FROM Charge "
 			+ "WHERE date >= " + String.format("'%d%02d00' ", _year, _month)
 			+ "AND date <= " + String.format("'%d%02d31' ", _year, _month)
@@ -679,6 +680,43 @@ public class AccountsActivity extends Activity
 			{				
 				l1 = new LinearLayout(this);
 				l1.setOrientation(LinearLayout.HORIZONTAL);
+				l1.setOnClickListener(new OnClickListener(){	//TODO POPVIEW 資料綁定
+					@Override
+					public void onClick(View arg0) {
+						popview.setVisibility(View.VISIBLE);
+						btn_bg.setVisibility(View.VISIBLE);
+						btn_delete.setVisibility(View.VISIBLE);
+						
+//						editText1 //金額
+//						spinner1 //帳本
+//						editText14 //發票編號
+//						editText3 //項目
+//						spinner2 //分類
+//						spinner3 //分類2
+//						editText5 //日期
+//						editText6 //商店
+//						editText7 //備註
+						
+						btn_save.setText("修改");
+						btn_save.setOnClickListener(new OnClickListener(){
+							@Override
+							public void onClick(View v) {
+								InitPopView();
+								btn_save.setText("新增");
+							}});
+						btn_delete.setOnClickListener(new OnClickListener(){
+							@Override
+							public void onClick(View v) {
+								InitPopView();
+								btn_save.setText("新增");
+							}});
+						btn_cancel.setOnClickListener(new OnClickListener(){
+							@Override
+							public void onClick(View v) {
+								InitPopView();
+								btn_save.setText("新增");
+							}});
+					}});
 				month[i] = new TextView(this);
 				month[i].setText(ChargeListCursor.getString(ChargeListCursor.getColumnIndex("date")).substring(4,6));
 				month[i].setTextSize(20);
@@ -694,8 +732,8 @@ public class AccountsActivity extends Activity
 				item[i] = new TextView(this);
 				item[i].setText(ChargeListCursor.getString(ChargeListCursor.getColumnIndex("item")));
 				item[i].setTypeface(null, Typeface.BOLD);
-				item[i].setMinimumWidth(430);
-				item[i].setMaxEms(5);
+//				item[i].setMinimumWidth(430);
+				item[i].setMaxEms(7);
 				item[i].setEllipsize(TruncateAt.END);
 				item[i].setLines(1);
 				l2.addView(item[i]);
@@ -735,6 +773,7 @@ public class AccountsActivity extends Activity
 		imm.hideSoftInputFromWindow(AccountsActivity.this.getCurrentFocus().getWindowToken(),InputMethodManager.HIDE_NOT_ALWAYS);
 		popview.setVisibility(View.GONE);
 		btn_bg.setVisibility(View.GONE);
+		btn_delete.setVisibility(View.GONE);
 		editText1.setText("");
 //		editText2.setText("");
 		editText14.setText("");
@@ -768,6 +807,7 @@ public class AccountsActivity extends Activity
 			btn_expend.getBackground().setAlpha(255);
 			btn_income.getBackground().setAlpha(60);			
 			
+			btn_delete.setVisibility(View.GONE);
 			
 			if(_count == 0) //當網路慢, 更新ui會比爬資料快
 			{

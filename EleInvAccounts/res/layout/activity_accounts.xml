@@ -487,6 +487,8 @@
                     android:id="@+id/editText14"
                     android:layout_width="150dp"
                     android:layout_height="wrap_content"
+                    android:maxLength="10"
+                    android:singleLine="true"
                     android:layout_weight="1" />
             </LinearLayout>
 
@@ -551,6 +553,7 @@
                     android:layout_weight="1"
                     android:hint="(西元)年月日 yyyyMMdd"
                     android:maxLength="8"
+                    android:singleLine="true"
                     android:inputType="date" />
             </LinearLayout>
 

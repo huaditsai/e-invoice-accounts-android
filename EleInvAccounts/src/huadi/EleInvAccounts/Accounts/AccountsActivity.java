@@ -4,6 +4,8 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import huadi.EleInvAccounts.DBHelper;
 import huadi.EleInvAccounts.MainActivity;
@@ -418,122 +420,177 @@ public class AccountsActivity extends Activity
 			@Override
 			public void onClick(View v)
 			{
-				if(editText5.getText().toString().length() > 0 && editText1.getText().toString().length() > 0
-					&& editText3.getText().toString().length() > 0 )
+				if(editText5.getText().toString().length() > 0 && editText1.getText().toString().length() > 0 && editText3.getText().toString().length() > 0 )
 				{
-				
-					String date = editText5.getText().toString(); // TODO 要規定為yyyyMMdd
-	//				String accountName = editText2.getText().toString();
-					String accountName = spinner1.getSelectedItem().toString();				
-					int money = Integer.parseInt(editText1.getText().toString()); // TODO 要規定必填, 數字
-	//					String mainCategory = editText4.getText().toString();
-	//					String subCategory = editText4.getText().toString();
-					String mainCategory = spinner2.getSelectedItem().toString();
-					String subCategory = spinner3.getSelectedItem().toString();
-					String item = editText3.getText().toString(); // TODO 要規定必填
-					String sellerName = editText6.getText().toString();
-					String invNum = editText14.getText().toString();
-					String remark = editText7.getText().toString();
-					
-					if(isIncome) //收入為正
-						money = money > 0 ? money : -money;
-					else
-						money = money > 0 ? -money : money;
-					
-					ContentValues accountCV = new ContentValues();
-					accountCV.put("date", date); //日期(yyyyMMdd)
-					accountCV.put("accountName", accountName); //記帳帳本
-					accountCV.put("money", money); //項目所花的金額
-					accountCV.put("mainCategory", mainCategory); //
-					accountCV.put("subCategory", subCategory); //
-					accountCV.put("item", item); //項目
-					accountCV.put("store", sellerName); //商店名稱
-					accountCV.put("invNum", invNum); //發票編號
-					accountCV.put("remark", remark); //備註
-					
-					Cursor accountCursor = db.rawQuery("SELECT invNum "
-						+ "FROM Charge "
-						+ "WHERE item = '" + item + "' "
-						+ "AND invNum = '" + invNum + "' ", null); //要記得''包起來
-					
-					int count = accountCursor.getCount(); //資料筆數
-					if(count == 0)
-						db.insert("Charge", null, accountCV); //新增一筆至 Invoice
-					else
+					if(editText14.getText().toString().length() > 0) //發票
 					{
-						accountCursor.moveToFirst();
-						for (int i = 0; i < count; i++)
+						Pattern p = Pattern.compile("^[a-zA-Z]{2}[0-9]{8}"); //驗證發票 2英文+8數字
+						Matcher m = p.matcher(editText14.getText().toString());
+						if(m.find())
 						{
-							db.update("Charge", accountCV, "invNum = '" + invNum + "'" + "AND item = '" + item + "' ", null);
-							accountCursor.moveToNext(); //移至資料庫下一筆
-						}
-					}
-					
-					if(!isCapture && invNum.length() > 0) //手動發票記帳(傳統發票), 若為 發票, 就要存到Invoice,InvDetail
-					{					
-						int month = Integer.parseInt(date.substring(4, 6)) % 2 == 1?Integer.parseInt(date.substring(4, 6)) + 1 
-							: Integer.parseInt(date.substring(4, 6)); //雙數月
-						String invPeriod = String.format("%d%02d", Integer.parseInt(date.substring(0, 4))-1911, month);//yyyMM
-						ContentValues invoiceCV = new ContentValues();
-						invoiceCV.put("invNum", invNum); //發票編號
-						invoiceCV.put("invTotalCost", -money); //消費金額
-						invoiceCV.put("invDate", date); //發票開立日期(yyyyMMdd)
-						invoiceCV.put("sellerName", sellerName); //賣方名稱
-						invoiceCV.put("invStatus", ""); //發票狀態(已確認)
-						invoiceCV.put("invPeriod", invPeriod); //對獎發票期別(民國年月)
-						
-						//Log.e("invPeriod", invNum + ", " + invPeriod);
-						
-						Cursor invoiceCursor = db.rawQuery("SELECT invNum "
-							+ "FROM Invoice "
-							+ "WHERE invNum = '" + invNum + "'", null); //要記得''包起來
-						
-						int invCount = invoiceCursor.getCount(); //資料筆數
-						if(invCount == 0)
-							db.insert("Invoice", null, invoiceCV); //新增一筆至 Invoice
-						else
-						{
-							invoiceCursor.moveToFirst();
-							for (int i = 0; i < invCount; i++)
+							String date = editText5.getText().toString(); // TODO 要規定為yyyyMMdd
+			//				String accountName = editText2.getText().toString();
+							String accountName = spinner1.getSelectedItem().toString();				
+							int money = Integer.parseInt(editText1.getText().toString());
+			//					String mainCategory = editText4.getText().toString();
+			//					String subCategory = editText4.getText().toString();
+							String mainCategory = spinner2.getSelectedItem().toString();
+							String subCategory = spinner3.getSelectedItem().toString();
+							String item = editText3.getText().toString();
+							String sellerName = editText6.getText().toString();
+							String invNum = editText14.getText().toString().toUpperCase(); //發票號碼轉大寫
+							String remark = editText7.getText().toString();
+							
+							if(isIncome) //收入為正
+								money = money > 0 ? money : -money;
+							else
+								money = money > 0 ? -money : money;
+							
+							ContentValues accountCV = new ContentValues();
+							accountCV.put("date", date); //日期(yyyyMMdd)
+							accountCV.put("accountName", accountName); //記帳帳本
+							accountCV.put("money", money); //項目所花的金額
+							accountCV.put("mainCategory", mainCategory); //
+							accountCV.put("subCategory", subCategory); //
+							accountCV.put("item", item); //項目
+							accountCV.put("store", sellerName); //商店名稱
+							accountCV.put("invNum", invNum); //發票編號
+							accountCV.put("remark", remark); //備註
+							
+							Cursor accountCursor = db.rawQuery("SELECT invNum "
+								+ "FROM Charge "
+								+ "WHERE item = '" + item + "' "
+								+ "AND invNum = '" + invNum + "' ", null); //要記得''包起來
+							
+							int count = accountCursor.getCount(); //資料筆數
+							if(count == 0)
+								db.insert("Charge", null, accountCV); //新增一筆至 Invoice
+							else
 							{
-								db.update("Invoice", invoiceCV, "invNum = '" + invNum + "'", null);
-								invoiceCursor.moveToNext(); //移至資料庫下一筆
+								accountCursor.moveToFirst();
+								for (int i = 0; i < count; i++)
+								{
+									db.update("Charge", accountCV, "invNum = '" + invNum + "'" + "AND item = '" + item + "' ", null);
+									accountCursor.moveToNext(); //移至資料庫下一筆
+								}
+							}
+							
+							if(!isCapture) //手動發票記帳(傳統發票), 若為 發票, 就要存到Invoice,InvDetail
+							{					
+								int month = Integer.parseInt(date.substring(4, 6)) % 2 == 1?Integer.parseInt(date.substring(4, 6)) + 1 
+									: Integer.parseInt(date.substring(4, 6)); //雙數月
+								String invPeriod = String.format("%d%02d", Integer.parseInt(date.substring(0, 4))-1911, month);//yyyMM
+								ContentValues invoiceCV = new ContentValues();
+								invoiceCV.put("invNum", invNum); //發票編號
+								invoiceCV.put("invTotalCost", -money); //消費金額
+								invoiceCV.put("invDate", date); //發票開立日期(yyyyMMdd)
+								invoiceCV.put("sellerName", sellerName); //賣方名稱
+								invoiceCV.put("invStatus", ""); //發票狀態(已確認)
+								invoiceCV.put("invPeriod", invPeriod); //對獎發票期別(民國年月)
+								
+								//Log.e("invPeriod", invNum + ", " + invPeriod);
+								
+								Cursor invoiceCursor = db.rawQuery("SELECT invNum "
+									+ "FROM Invoice "
+									+ "WHERE invNum = '" + invNum + "'", null); //要記得''包起來
+								
+								int invCount = invoiceCursor.getCount(); //資料筆數
+								if(invCount == 0)
+									db.insert("Invoice", null, invoiceCV); //新增一筆至 Invoice
+								else
+								{
+									invoiceCursor.moveToFirst();
+									for (int i = 0; i < invCount; i++)
+									{
+										db.update("Invoice", invoiceCV, "invNum = '" + invNum + "'", null);
+										invoiceCursor.moveToNext(); //移至資料庫下一筆
+									}
+								}
+								
+								ContentValues invDetailCV = new ContentValues();
+								invDetailCV.put("invNum", invNum); //發票編號
+								invDetailCV.put("rowNum", "1"); //明細編號(1,2,3...)
+								invDetailCV.put("description", item); //品名
+								invDetailCV.put("quantity", "1"); //數量
+								invDetailCV.put("unitPrice", -money); //單價
+								invDetailCV.put("amount", -money); //小記
+								
+								Cursor invDetailCursor = db.rawQuery("SELECT invNum, rowNum "
+									+ "FROM InvDetail "
+									+ "WHERE invNum = '" + invNum + "' ", null); //要記得''包起來
+								
+								int invDetailcount = invDetailCursor.getCount(); //資料筆數
+								if(invDetailcount == 0)
+									db.insert("InvDetail", null, invDetailCV); //新增一筆至 InvDetail
+								else
+								{
+									invDetailCursor.moveToFirst();
+									for (int j = 0; j < invDetailcount; j++)
+									{								
+										db.update("InvDetail", invDetailCV, "invNum = '" + invNum + "'", null);
+										invDetailCursor.moveToNext(); //移至資料庫下一筆
+									}
+								}
+							}
+			
+							InitPopView();
+							
+							if(isCapturePopView) //發票掃完會逐一跳出
+							{
+								index++;
+								CapturePopView(index);
+								//Log.e("index", "" + index);
 							}
 						}
+						else
+							Toast.makeText(AccountsActivity.this, "發票號碼錯誤", Toast.LENGTH_SHORT).show();
+					}
+					else  //不為發票
+					{
+						String date = editText5.getText().toString(); // TODO 要規定為yyyyMMdd
+						String accountName = spinner1.getSelectedItem().toString();				
+						int money = Integer.parseInt(editText1.getText().toString());
+						String mainCategory = spinner2.getSelectedItem().toString();
+						String subCategory = spinner3.getSelectedItem().toString();
+						String item = editText3.getText().toString();
+						String sellerName = editText6.getText().toString();
+						String invNum = ""; //發票號碼轉大寫
+						String remark = editText7.getText().toString();
 						
-						ContentValues invDetailCV = new ContentValues();
-						invDetailCV.put("invNum", invNum); //發票編號
-						invDetailCV.put("rowNum", "1"); //明細編號(1,2,3...)
-						invDetailCV.put("description", item); //品名
-						invDetailCV.put("quantity", "1"); //數量
-						invDetailCV.put("unitPrice", -money); //單價
-						invDetailCV.put("amount", -money); //小記
+						if(isIncome) //收入為正
+							money = money > 0 ? money : -money;
+						else
+							money = money > 0 ? -money : money;
 						
-						Cursor invDetailCursor = db.rawQuery("SELECT invNum, rowNum "
-							+ "FROM InvDetail "
-							+ "WHERE invNum = '" + invNum + "' ", null); //要記得''包起來
+						ContentValues accountCV = new ContentValues();
+						accountCV.put("date", date); //日期(yyyyMMdd)
+						accountCV.put("accountName", accountName); //記帳帳本
+						accountCV.put("money", money); //項目所花的金額
+						accountCV.put("mainCategory", mainCategory); //
+						accountCV.put("subCategory", subCategory); //
+						accountCV.put("item", item); //項目
+						accountCV.put("store", sellerName); //商店名稱
+						accountCV.put("invNum", invNum); //發票編號
+						accountCV.put("remark", remark); //備註
 						
-						int invDetailcount = invDetailCursor.getCount(); //資料筆數
-						if(invDetailcount == 0)
-							db.insert("InvDetail", null, invDetailCV); //新增一筆至 InvDetail
+						Cursor accountCursor = db.rawQuery("SELECT invNum "
+							+ "FROM Charge "
+							+ "WHERE item = '" + item + "' "
+							+ "AND invNum = '" + invNum + "' ", null); //要記得''包起來
+						
+						int count = accountCursor.getCount(); //資料筆數
+						if(count == 0)
+							db.insert("Charge", null, accountCV); //新增一筆至 Invoice
 						else
 						{
-							invDetailCursor.moveToFirst();
-							for (int j = 0; j < invDetailcount; j++)
-							{								
-								db.update("InvDetail", invDetailCV, "invNum = '" + invNum + "'", null);
-								invDetailCursor.moveToNext(); //移至資料庫下一筆
+							accountCursor.moveToFirst();
+							for (int i = 0; i < count; i++)
+							{
+								db.update("Charge", accountCV, "invNum = '" + invNum + "'" + "AND item = '" + item + "' ", null);
+								accountCursor.moveToNext(); //移至資料庫下一筆
 							}
 						}
-					}
-	
-					InitPopView();
-					
-					if(isCapturePopView) //發票掃完會逐一跳出
-					{
-						index++;
-						CapturePopView(index);
-						//Log.e("index", "" + index);
+						InitPopView();
 					}
 				}
 				else if(editText1.getText().toString().length() < 1 )
@@ -730,7 +787,85 @@ public class AccountsActivity extends Activity
 								if(editText5.getText().toString().length() > 0 && editText1.getText().toString().length() > 0
 									&& editText3.getText().toString().length() > 0 )
 								{
-									
+									if(editText14.getText().toString().length() > 0) //當為發票時
+									{
+										Pattern p = Pattern.compile("^[a-zA-Z]{2}[0-9]{8}"); //驗證發票 2英文+8數字
+										Matcher m = p.matcher(editText14.getText().toString());
+										if(m.find())
+										{
+											String date = editText5.getText().toString(); // TODO 要規定為yyyyMMdd
+											String accountName = spinner1.getSelectedItem().toString();				
+											int money = Integer.parseInt(editText1.getText().toString());
+
+											String mainCategory = spinner2.getSelectedItem().toString();
+											String subCategory = spinner3.getSelectedItem().toString();
+											String item = editText3.getText().toString();
+											String sellerName = editText6.getText().toString();
+											String invNum = editText14.getText().toString().toUpperCase(); //發票號碼轉大寫
+											String remark = editText7.getText().toString();
+											
+											if(isIncome) //收入為正
+												money = money > 0 ? money : -money;
+											else
+												money = money > 0 ? -money : money;
+											
+											ContentValues accountCV = new ContentValues();
+											accountCV.put("date", date); //日期(yyyyMMdd)
+											accountCV.put("accountName", accountName); //記帳帳本
+											accountCV.put("money", money); //項目所花的金額
+											accountCV.put("mainCategory", mainCategory); //
+											accountCV.put("subCategory", subCategory); //
+											accountCV.put("item", item); //項目
+											accountCV.put("store", sellerName); //商店名稱
+											accountCV.put("invNum", invNum); //發票編號
+											accountCV.put("remark", remark); //備註
+											
+											db.update("Charge", accountCV, "item = '" + item + "' "
+												+ "AND invNum = '" + invNum + "' ", null);	
+											
+											InitPopView();
+											GetChargeList(_year, _month);
+											btn_save.setText("新增");
+										}
+										else
+											Toast.makeText(AccountsActivity.this, "發票號碼錯誤", Toast.LENGTH_SHORT).show();
+									}
+									else //不為發票
+									{
+										String date = editText5.getText().toString(); // TODO 要規定為yyyyMMdd
+										String accountName = spinner1.getSelectedItem().toString();				
+										int money = Integer.parseInt(editText1.getText().toString());
+
+										String mainCategory = spinner2.getSelectedItem().toString();
+										String subCategory = spinner3.getSelectedItem().toString();
+										String item = editText3.getText().toString();
+										String sellerName = editText6.getText().toString();
+										String invNum = ""; //發票號碼轉大寫
+										String remark = editText7.getText().toString();
+										
+										if(isIncome) //收入為正
+											money = money > 0 ? money : -money;
+										else
+											money = money > 0 ? -money : money;
+										
+										ContentValues accountCV = new ContentValues();
+										accountCV.put("date", date); //日期(yyyyMMdd)
+										accountCV.put("accountName", accountName); //記帳帳本
+										accountCV.put("money", money); //項目所花的金額
+										accountCV.put("mainCategory", mainCategory); //
+										accountCV.put("subCategory", subCategory); //
+										accountCV.put("item", item); //項目
+										accountCV.put("store", sellerName); //商店名稱
+										accountCV.put("invNum", invNum); //發票編號
+										accountCV.put("remark", remark); //備註
+										
+										db.update("Charge", accountCV, "item = '" + item + "' "
+											+ "AND invNum = '" + invNum + "' ", null);	
+										
+										InitPopView();
+										GetChargeList(_year, _month);
+										btn_save.setText("新增");
+									}
 								}
 								else if(editText1.getText().toString().length() < 1 )
 									Toast.makeText(AccountsActivity.this, "金額 不得為空", Toast.LENGTH_SHORT).show();
@@ -739,9 +874,7 @@ public class AccountsActivity extends Activity
 								else if(editText3.getText().toString().length() < 1 )
 									Toast.makeText(AccountsActivity.this, "項目 不得為空", Toast.LENGTH_SHORT).show();
 								
-								InitPopView();
-								GetChargeList(_year, _month);
-								btn_save.setText("新增");
+								
 							}});
 						btn_delete.setOnClickListener(new OnClickListener(){
 							@Override

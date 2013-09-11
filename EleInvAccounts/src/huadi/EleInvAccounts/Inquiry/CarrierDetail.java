@@ -35,10 +35,10 @@ public class CarrierDetail extends AsyncTask<String, String, String> // <¶Ç¤J°Ñ¼
 		+ "&invNum={4}" //µo²¼¸¹½X
 		+ "&invDate={5}" //µo²¼¶}¥ß¤é´Á (yyyy/MM/dd)
 		+ "&uuid={6}" //UUID
-		+ "&sellerName={7}" //¶}¥ß½æ¤è¦WºÙ(«D¥²¶ñ)
-		+ "&amount={8}" //ª÷ÃB(«D¥²¶ñ)
-		+ "&appID={9}" 
-		+ "&cardEncrypt={10}"; //¥d¤ùÀËÅç½X(¤â¾÷±ø½XÅçÃÒ½X)
+		+ "&sellerName=" //¶}¥ß½æ¤è¦WºÙ(«D¥²¶ñ)
+		+ "&amount=" //ª÷ÃB(«D¥²¶ñ)
+		+ "&appID={7}" 
+		+ "&cardEncrypt={8}"; //¥d¤ùÀËÅç½X(¤â¾÷±ø½XÅçÃÒ½X)
 
 	public CarrierDetail(Context context)
 	{
@@ -53,7 +53,7 @@ public class CarrierDetail extends AsyncTask<String, String, String> // <¶Ç¤J°Ñ¼
 			return null;
 		
 		String url = MessageFormat.format(detailUrl, params[0], params[1], params[2], params[3], params[4]
-													, params[5], params[6], params[7], params[8], params[9], params[10]);
+													, params[5], params[6], params[7], params[8]);
 		
 		HttpGet get = new HttpGet(url);
 		String strResult = "";

@@ -10,6 +10,8 @@ import huadi.EleInvAccounts.Settings.SettingsActivity;
 import huadi.EleInvAccounts.Social.SocialActivity;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -467,11 +469,20 @@ public class AccountsActivity extends Activity
 			@Override
 			public void onClick(View v)
 			{
-				//掃完qrCode時, 會先進db
-				//db.delete("Invoice", "invNum = '" + invNum + "'", null);
-				//db.delete("InvDetail", "invNum = '" + invNum + "'", null);
-				
-				InitPopView();
+				if(isCapturePopView) //發票掃完會逐一跳出
+				{
+					index++;
+					CapturePopView(index);
+					//Log.e("index", "" + index);
+				}
+				else
+				{
+					//掃完qrCode時, 會先進db
+					//db.delete("Invoice", "invNum = '" + invNum + "'", null);
+					//db.delete("InvDetail", "invNum = '" + invNum + "'", null);
+					
+					InitPopView();
+				}
 			}
 		});
 		//popview ---------------------------------
@@ -661,15 +672,15 @@ public class AccountsActivity extends Activity
 		GetChargeList(_year, _month);
 	}
 	
+	Cursor _invDetailCursor;
+	int _count;
 	private void CapturePopView(int _index)
 	{
-		Cursor invDetailCursor = db.rawQuery("SELECT invNum, description, amount "
+		_invDetailCursor = db.rawQuery("SELECT invNum, description, amount "
 			+ "FROM InvDetail "
 			+ "WHERE invNum = '" + invNum + "' ", null); //要記得''包起來
 		
-		int count = invDetailCursor.getCount(); //資料筆數
-		if(index >= count)
-			isCapturePopView = false;
+		_count = _invDetailCursor.getCount(); //資料筆數		
 		
 		if(isCapturePopView) //若是掃QR code
 		{
@@ -680,21 +691,41 @@ public class AccountsActivity extends Activity
 			popview.setVisibility(View.VISIBLE);
 			btn_bg.setVisibility(View.VISIBLE);
 			
-			if(count == 0) //當網路慢, 更新ui會比爬資料快
+			if(_count == 0) //當網路慢, 更新ui會比爬資料快
 			{
-				Intent intent = new Intent(AccountsActivity.this, AccountsActivity.class);
-				intent.putExtra("isCapture", true);
-				intent.putExtra("invNum", invNum);
-				startActivity(intent);
-				finish();
+//				Intent intent = new Intent(AccountsActivity.this, AccountsActivity.class);
+//				intent.putExtra("isCapture", true);
+//				intent.putExtra("invNum", invNum);
+//				startActivity(intent);
+//				finish();
+				final Dialog dialog = ProgressDialog.show(AccountsActivity.this, "讀取中", "請稍等待...", true);
+			        new Thread(new Runnable(){
+			            @Override
+			            public void run() {
+			                try{
+			                    Thread.sleep(3000);
+			                    _invDetailCursor = db.rawQuery("SELECT invNum, description, amount "
+			            			+ "FROM InvDetail "
+			            			+ "WHERE invNum = '" + invNum + "' ", null); //要記得''包起來
+			                    _count = _invDetailCursor.getCount(); //資料筆數	
+			                }
+			                catch(Exception e){
+			                    e.printStackTrace();
+			                }
+			                finally{
+								dialog.dismiss();
+			                }
+			            } 
+			       }).start();
 			}
+			
 			//Log.e("count",""+count);
-			if(count != 0)
+			if(_count != 0)
 			{
-				if (_index < count)
+				if (_index < _count)
 				{
-					invDetailCursor.moveToPosition(_index);
-					int amount = invDetailCursor.getInt(invDetailCursor.getColumnIndex("amount"));
+					_invDetailCursor.moveToPosition(_index);
+					int amount = _invDetailCursor.getInt(_invDetailCursor.getColumnIndex("amount"));
 					if(amount < 0) //若(發票)小計<0, 支出就變收入
 					{
 						amount = -amount;
@@ -703,8 +734,8 @@ public class AccountsActivity extends Activity
 						btn_income.getBackground().setAlpha(255);
 					} 
 					editText1.setText("" + amount);
-					editText14.setText(invDetailCursor.getString(invDetailCursor.getColumnIndex("invNum")));
-					editText3.setText(invDetailCursor.getString(invDetailCursor.getColumnIndex("description")));
+					editText14.setText(_invDetailCursor.getString(_invDetailCursor.getColumnIndex("invNum")));
+					editText3.setText(_invDetailCursor.getString(_invDetailCursor.getColumnIndex("description")));
 					//invDetailCursor.moveToNext();
 				}
 			}
@@ -725,6 +756,9 @@ public class AccountsActivity extends Activity
 					invCursor.moveToNext();
 				}
 			}
+			
+			if(index + 1 >= _count)
+				isCapturePopView = false;
 		}
 	}
 	

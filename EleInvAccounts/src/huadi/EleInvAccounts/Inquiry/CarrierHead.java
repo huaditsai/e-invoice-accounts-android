@@ -64,7 +64,7 @@ public class CarrierHead extends AsyncTask<String, String, String> // <傳入參數,
 			String endDate = calendar.get(Calendar.YEAR) + "/" + (calendar.get(Calendar.MONTH) + 1) + "/30";
 			
 			String url = MessageFormat.format(detailUrl, params[0], params[1], expTimeStamp, timeStamp, startDate
-														, endDate, "Y", params[2], params[3], params[4]);
+														, endDate, params[2], params[3], params[4], params[5]);
 			
 			HttpGet get = new HttpGet(url);
 			
@@ -87,7 +87,8 @@ public class CarrierHead extends AsyncTask<String, String, String> // <傳入參數,
 				String msg =  jsonObject.getString("msg"); //系統回應訊息
 				String onlyWinningInv =  jsonObject.getString("onlyWinningInv"); //僅回傳中獎資訊 (Y/N)
 				
-				strResult = code;
+				if(params[6] == "code")
+					strResult = code;
 				
 //				try
 //				{
@@ -95,19 +96,19 @@ public class CarrierHead extends AsyncTask<String, String, String> // <傳入參數,
 //					for(int i = 0; i < detailArray.length(); i++)
 //					{
 //						String rowNum = detailArray.getJSONObject(i).getString("rowNum"); //明細編號(1,2,3...)
-//						String invNum =  detailArray.getJSONObject(i).getString("invNum"); //發票號碼
+//							String invNum =  detailArray.getJSONObject(i).getString("invNum"); //發票號碼
 //						String cardType =  detailArray.getJSONObject(i).getString("cardType"); //卡別
 //						String cardNo =  detailArray.getJSONObject(i).getString("cardNo"); //卡片（載具）隱碼						
 //						String sellerName =  detailArray.getJSONObject(i).getString("sellerName"); //賣方名稱
-//						String invStatus =  detailArray.getJSONObject(i).getString("invStatus"); //發票狀態(已確認)
+//						String invStatus =  detailArray.getJSONObject(i).getString("invStatus"); //2
 //						String invDonatable =  detailArray.getJSONObject(i).getString("invDonatable"); //發票是否捐贈
 //						
 //						
-//						JSONObject invDateObject =  detailArray.getJSONObject(i).getJSONObject("invDate"); //發票開立						
-//						String year = invDateObject.getString("year"); //
-//						String month = invDateObject.getString("month"); //數量
-//						String date = invDateObject.getString("date"); //日
-//						String day = invDateObject.getString("day"); //星期
+//						JSONObject invDateObject =  detailArray.getJSONObject(i).getJSONObject("invDate"); //發票開立時間
+//							String year = invDateObject.getString("year"); //yyy
+//							String month = invDateObject.getString("month"); //m
+//							String date = invDateObject.getString("date"); //d
+//						String day = invDateObject.getString("day"); //星期1234
 //						String hours = invDateObject.getString("hours"); //
 //						String minutes = invDateObject.getString("minutes"); //
 //						String seconds = invDateObject.getString("seconds"); //

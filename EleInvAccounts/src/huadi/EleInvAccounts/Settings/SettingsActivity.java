@@ -227,7 +227,7 @@ public class SettingsActivity extends Activity
 				try
 				{
 					String CarrierHeadInfo = new CarrierHead(SettingsActivity.this)
-						.execute("3J0002", edit_phone.getText().toString(), UUID, appID, edit_phonecode.getText().toString()).get();
+						.execute("3J0002","Y", edit_phone.getText().toString(), UUID, appID, edit_phonecode.getText().toString(), "code").get();
 					
 					if(CarrierHeadInfo.equals("200"))
 					{

@@ -24,6 +24,7 @@ import android.widget.RelativeLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 //設定
 public class SetAccountsActivity extends Activity
@@ -50,7 +51,7 @@ public class SetAccountsActivity extends Activity
 		setUI();
 	}
 
-	private void setUI() 
+	private void setUI()
 	{
 		btn_backfunc = (ImageButton)findViewById(R.id.imageButton1);
 		btn_account = (ImageButton)findViewById(R.id.imageButton2);
@@ -67,85 +68,8 @@ public class SetAccountsActivity extends Activity
 		edit_money = (EditText)findViewById(R.id.editText2);
 		table = (TableLayout)findViewById(R.id.TableLayout);
 		
-		Cursor accountCursor = db.rawQuery("SELECT * "
-			+ "FROM Account ", null); //要記得''包起來
 		
-		int accountCount = accountCursor.getCount(); //資料筆數
-		
-		if(accountCount == 0)		 
-		{
-			ContentValues accountCV = new ContentValues();
-			accountCV.put("account_name", "wallet01");
-			accountCV.put("money", "1000");
-			db.insert("Account", null, accountCV);
-			
-			Cursor Cursor = db.rawQuery("SELECT * "
-				+ "FROM Account ", null); //要記得''包起來
-			accountCount = Cursor.getCount();
-		}
-		
-		
-		//帳戶清單
-		table.removeAllViews();
-		//int count = 3; //帳戶總數
-		
-		TableRow tr = new TableRow(this);
-		RelativeLayout rl;
-		LinearLayout l1;
-		ImageButton[] btn;
-		TextView[] name, money;
-		
-		name = new TextView[accountCount];
-		money = new TextView[accountCount];
-		btn = new ImageButton[accountCount];
-		if(accountCount != 0)
-		{
-			accountCursor.moveToFirst();
-			for (int i = 0; i < accountCount; i++)
-			{
-				rl = new RelativeLayout(this);
-				
-				l1 = new LinearLayout(this);
-				l1.setOrientation(LinearLayout.HORIZONTAL);
-				name[i] = new TextView(this);
-				name[i].setText(accountCursor.getString(accountCursor.getColumnIndex("account_name"))); //"錢包");
-				name[i].setPadding(0, 0, 20, 0);
-				name[i].setMaxEms(7);
-				name[i].setEllipsize(TruncateAt.END);
-	//			name[i].setMinWidth(500);
-				l1.addView(name[i]);
-				
-				money[i] = new TextView(this);
-				money[i].setText(accountCursor.getString(accountCursor.getColumnIndex("money")));
-				money[i].setPadding(0, 0, 20, 0);
-				l1.addView(money[i]);
-				
-				btn[i] = new ImageButton(this);
-				btn[i].setBackgroundColor(Color.TRANSPARENT);
-				btn[i].setMinimumWidth(810);
-				btn[i].setMinimumHeight(100);
-				btn[i].setOnClickListener(new OnClickListener(){
-	
-					@Override
-					public void onClick(View arg0) {
-						editAccount();
-					}});
-	
-				rl.addView(l1);
-				rl.addView(btn[i]);
-				tr.addView(rl);
-				table.addView(tr);
-				tr = new TableRow(this);
-				
-				accountCursor.moveToNext();
-			}
-		}
-		
-		btn_addnew.setOnClickListener(new OnClickListener(){ //新增
-			@Override
-			public void onClick(View arg0) {
-				setNewAccount();				
-			}});
+		setAccount();		
 		
 		btn_backfunc.setOnClickListener(new OnClickListener(){
 			@Override
@@ -188,6 +112,89 @@ public class SetAccountsActivity extends Activity
 		
 	}
 	
+	public void setAccount()
+	{
+		Cursor accountCursor = db.rawQuery("SELECT * "
+			+ "FROM Account ", null); //要記得''包起來
+		
+		int accountCount = accountCursor.getCount(); //資料筆數
+		
+		if(accountCount == 0)		 
+		{
+			ContentValues accountCV = new ContentValues();
+			accountCV.put("account_name", "wallet01");
+			accountCV.put("money", "1000");
+			db.insert("Account", null, accountCV);			
+		}
+		
+		
+		//帳戶清單
+		table.removeAllViews();
+		//int count = 3; //帳戶總數
+		
+		TableRow tr = new TableRow(this);
+		RelativeLayout rl;
+		LinearLayout l1;
+		ImageButton[] btn;
+		TextView[] name, money;
+		
+		name = new TextView[accountCount];
+		money = new TextView[accountCount];
+		btn = new ImageButton[accountCount];
+		if(accountCount != 0)
+		{
+			accountCursor.moveToFirst();
+			for (int i = 0; i < accountCount; i++)
+			{
+				final String account_name = accountCursor.getString(accountCursor.getColumnIndex("account_name"));
+				final String account_money = accountCursor.getString(accountCursor.getColumnIndex("money"));
+				rl = new RelativeLayout(this);
+				
+				l1 = new LinearLayout(this);
+				l1.setOrientation(LinearLayout.HORIZONTAL);
+				name[i] = new TextView(this);
+				name[i].setText(account_name); //"錢包");
+				name[i].setPadding(0, 0, 20, 0);
+				name[i].setMaxEms(7);
+				name[i].setEllipsize(TruncateAt.END);
+	//			name[i].setMinWidth(500);
+				l1.addView(name[i]);
+				
+				money[i] = new TextView(this);
+				money[i].setText(account_money);
+				money[i].setPadding(0, 0, 20, 0);
+				l1.addView(money[i]);
+				
+				btn[i] = new ImageButton(this);
+				btn[i].setBackgroundColor(Color.TRANSPARENT);
+				btn[i].setMinimumWidth(810);
+				btn[i].setMinimumHeight(100);
+				btn[i].setOnClickListener(new OnClickListener(){
+	
+					@Override
+					public void onClick(View arg0) {
+						editAccount(account_name, account_money);
+					}});
+	
+				rl.addView(l1);
+				rl.addView(btn[i]);
+				tr.addView(rl);
+				table.addView(tr);
+				tr = new TableRow(this);
+				
+				accountCursor.moveToNext();
+			}
+			
+			btn_addnew.setOnClickListener(new OnClickListener(){ //新增
+				@Override
+				public void onClick(View arg0) {
+					setNewAccount();				
+				}});
+			
+		}		
+		
+	}
+	
 	public void setNewAccount()
 	{		
 		layout_addnew.setVisibility(View.VISIBLE);
@@ -206,7 +213,7 @@ public class SetAccountsActivity extends Activity
 				AccountCV.put("account_name", edit_name.getText().toString()); //發票編號
 				AccountCV.put("money", edit_money.getText().toString()); //消費金額
 				
-				Cursor InvoiceCursor = db.rawQuery("SELECT name "
+				Cursor InvoiceCursor = db.rawQuery("SELECT account_name "
 					+ "FROM Account "
 					+ "WHERE account_name = '" + edit_name.getText().toString() + "'", null); //要記得''包起來
 				
@@ -227,6 +234,7 @@ public class SetAccountsActivity extends Activity
 				btn_bg.setVisibility(View.GONE);
 				edit_name.setText("");
 				edit_money.setText("");
+				setAccount();
 			}});
 		
 		btn_cancel.setOnClickListener(new OnClickListener(){
@@ -234,35 +242,64 @@ public class SetAccountsActivity extends Activity
 			public void onClick(View v) {
 				layout_addnew.setVisibility(View.GONE);
 				btn_bg.setVisibility(View.GONE);
+				edit_name.setText("");
+				edit_money.setText("");
+				setAccount();
 			}});
 	}
 	
-	public void editAccount(){
+	public void editAccount(final String account_name, String account_money){
 
 		layout_addnew.setVisibility(View.VISIBLE);
 		btn_bg.setVisibility(View.VISIBLE);
 		btn_delete.setVisibility(View.VISIBLE);
 		
+		edit_name.setText(account_name);
+		edit_money.setText(account_money);
+		
 		btn_ok.setText("修改");
 		btn_ok.setOnClickListener(new OnClickListener(){
 			@Override
-			public void onClick(View v) {
-				edit_name.getText().toString();
-				edit_money.getText().toString();
+			public void onClick(View v) {				
+				
+				if(edit_name.getText().toString().length() > 0)
+				{
+					if(edit_money.getText().toString().length() < 1)
+						edit_money.setText(0);
+					
+					ContentValues AccountCV = new ContentValues();
+					AccountCV.put("account_name", edit_name.getText().toString()); //發票編號
+					AccountCV.put("money", edit_money.getText().toString()); //消費金額
+					
+					db.update("Account", AccountCV, "account_name = '" + account_name + "'", null);
+					
+					layout_addnew.setVisibility(View.GONE);
+					btn_bg.setVisibility(View.GONE);
+					edit_name.setText("");
+					edit_money.setText("");
+					setAccount();
+				}
+				else
+					Toast.makeText(SetAccountsActivity.this, "名稱不得為空", Toast.LENGTH_SHORT).show();
+			}});
+		
+		btn_delete.setOnClickListener(new OnClickListener(){
+			@Override
+			public void onClick(View v) { //刪除
+
+				Cursor InvoiceCursor = db.rawQuery("SELECT * "
+					+ "FROM Account "
+					+ "WHERE account_name = '" + edit_name.getText().toString() + "'", null); //要記得''包起來
+				
+				int count = InvoiceCursor.getCount(); //資料筆數
+				if(count > 1)
+					db.delete("Account", "account_name = '" + account_name + "'", null);
 				
 				layout_addnew.setVisibility(View.GONE);
 				btn_bg.setVisibility(View.GONE);
 				edit_name.setText("");
 				edit_money.setText("");
-			}});
-		
-		btn_delete.setOnClickListener(new OnClickListener(){
-			@Override
-			public void onClick(View v) {				
-				layout_addnew.setVisibility(View.GONE);
-				btn_bg.setVisibility(View.GONE);
-				edit_name.setText("");
-				edit_money.setText("");
+				setAccount();
 			}});
 		
 		btn_cancel.setOnClickListener(new OnClickListener(){

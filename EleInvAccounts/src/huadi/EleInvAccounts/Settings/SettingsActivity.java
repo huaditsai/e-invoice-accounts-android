@@ -86,7 +86,7 @@ public class SettingsActivity extends Activity
 		edit_fbpw = (EditText)findViewById(R.id.editText4);
 		btn_bg = (Button)findViewById(R.id.button1);
 		
-		text_setaccount.setText("設定帳戶");
+		text_setaccount.setText("設定錢包");
 		text_setcategory.setText("設定分類");
 		text_setphone.setText("綁定手機條碼");
 		text_setfb.setText("綁定Facebook");

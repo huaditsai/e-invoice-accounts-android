@@ -127,124 +127,122 @@ public class SetCategoryActivity extends Activity
 	
 	public void setCategory()
 	{
+		
 		Cursor mainCateCursor = db.rawQuery("SELECT main "
-			+ "FROM MainCategory ", null); //要記得''包起來
-		
-		int mainCateCount = mainCateCursor.getCount(); //資料筆數
-		mainCategoryItem = new String[mainCateCount];
-		
-		if(mainCateCount != 0)
-		{
-			mainCateCursor.moveToFirst();
-			for (int i = 0; i < mainCateCount; i++)
+				+ "FROM MainCategory ", null); //要記得''包起來
+			
+			int mainCateCount = mainCateCursor.getCount(); //資料筆數
+			mainCategoryItem = new String[mainCateCount];
+			
+			if(mainCateCount != 0)
 			{
-				mainCategoryItem[i] = mainCateCursor.getString(mainCateCursor.getColumnIndex("main"));
-				
-				Cursor subCursor = db.rawQuery("SELECT sub "
-					+ "FROM SubCategory "
-					+ "WHERE main = '" + mainCategoryItem[i] + "'", null); //要記得''包起來
-				
-				if(subCursor.getCount() == 0) 
+				mainCateCursor.moveToFirst();
+				for (int i = 0; i < mainCateCount; i++)
 				{
-					ContentValues subCateCV = new ContentValues();
-					subCateCV.put("main", mainCategoryItem[i]);
-					subCateCV.put("sub", "其他");
-					db.insert("SubCategory", null, subCateCV);
-				}				
-				mainCateCursor.moveToNext(); //移至資料庫下一筆
+					mainCategoryItem[i] = mainCateCursor.getString(mainCateCursor.getColumnIndex("main"));
+					
+					Cursor subCursor = db.rawQuery("SELECT sub "
+						+ "FROM SubCategory "
+						+ "WHERE main = '" + mainCategoryItem[i] + "'", null); //要記得''包起來
+					
+					if(subCursor.getCount() == 0) 
+					{
+						ContentValues subCateCV = new ContentValues();
+						subCateCV.put("main", mainCategoryItem[i]);
+						subCateCV.put("sub", "其他");
+						db.insert("SubCategory", null, subCateCV);
+					}				
+					mainCateCursor.moveToNext(); //移至資料庫下一筆
+				}
 			}
-		}
-		else 
-		{
-			ContentValues mainCateCV = new ContentValues();
-			mainCateCV.put("main", "食");
-			db.insert("MainCategory", null, mainCateCV);
-			mainCateCV.put("main", "衣");
-			db.insert("MainCategory", null, mainCateCV);
+			else 
+			{
+				ContentValues mainCateCV = new ContentValues();
+				mainCateCV.put("main", "食");
+				db.insert("MainCategory", null, mainCateCV);
+				mainCateCV.put("main", "衣");
+				db.insert("MainCategory", null, mainCateCV);
+				
+				ContentValues subCateCV = new ContentValues();
+				subCateCV.put("main", "食");
+				subCateCV.put("sub", "飲料");
+				db.insert("SubCategory", null, subCateCV);
+				subCateCV.put("main", "衣");
+				subCateCV.put("sub", "襯衫");
+				db.insert("SubCategory", null, subCateCV);
+				
+				mainCategoryItem = new String[]{"食", "衣"};
+			}
+				
+				
+//				setCategory(); //以防主分類為空
+				ArrayAdapter<String> adapter = new ArrayAdapter<String>(SetCategoryActivity.this, 
+					android.R.layout.simple_spinner_item, mainCategoryItem);
+				adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item); //設定下拉選單的樣式
+				spinner1.setAdapter(adapter); //mainCategory下拉
+				
+				btn_addnewsub.setText("新增次分類");		
+				btn_addnewsub.setOnClickListener(new OnClickListener(){
+					@Override
+					public void onClick(View arg0) {
+						setNewSub();
+					}});
 			
-			ContentValues subCateCV = new ContentValues();
-			subCateCV.put("main", "食");
-			subCateCV.put("sub", "飲料");
-			db.insert("SubCategory", null, subCateCV);
-			subCateCV.put("main", "衣");
-			subCateCV.put("sub", "襯衫");
-			db.insert("SubCategory", null, subCateCV);
-			
-			mainCategoryItem = new String[]{"食", "衣"};
-		}
-			
-			
-//			setCategory(); //以防主分類為空
-			ArrayAdapter<String> adapter = new ArrayAdapter<String>(SetCategoryActivity.this, 
-				android.R.layout.simple_spinner_item, mainCategoryItem);
-			adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item); //設定下拉選單的樣式
-			spinner1.setAdapter(adapter); //mainCategory下拉
-			
-			btn_addnewsub.setText("新增次分類");		
-			btn_addnewsub.setOnClickListener(new OnClickListener(){
-				@Override
-				public void onClick(View arg0) {
-					setNewSub();
-				}});
-		
-			btn_addnewmain.setText("新增主分類");		
-			btn_addnewmain.setOnClickListener(new OnClickListener(){
-				@Override
-				public void onClick(View arg0) {
-					setNewMain();				
-				}});
+				btn_addnewmain.setText("新增主分類");		
+				btn_addnewmain.setOnClickListener(new OnClickListener(){
+					@Override
+					public void onClick(View arg0) {
+						setNewMain();				
+					}});
 		
 		//主分類清單
 		table.removeAllViews();
 		
-		//int count = mainCategory.length; //主分類總數
-		
 		TableRow tr = new TableRow(this);
 		RelativeLayout rl;
-		LinearLayout l1;
+		LinearLayout[] l1, l2;
 		ImageButton[][] btn;
 		TextView[][] name;
 		
 		
-		for (int m = 0; m < mainCateCount; m++){
-
-			rl = new RelativeLayout(this);
+		for (int m = 0; m < mainCateCount; m++){ //TODO sub
 
 			Cursor subCursor = db.rawQuery("SELECT sub "
 				+ "FROM SubCategory "
 				+ "WHERE main = '" + mainCategoryItem[m] + "'", null); //要記得''包起來
 				
 				int subCateCount = subCursor.getCount()+1; //資料筆數
-				Log.e("subCateCount", subCateCount+"");
+				String[] subCategory = new String[subCateCount];
 				
-			String[] subCategory = new String[subCateCount];
-			
-			if(subCateCount != 0)
-			{
-				subCursor.moveToFirst();
-				for (int i = 1; i < subCateCount; i++)
+				if(subCateCount != 0)
 				{
-					subCategory[i] = subCursor.getString(subCursor.getColumnIndex("sub"));
-//					Log.e("sub", subCategory[i]);
-					subCursor.moveToNext(); //移至資料庫下一筆
+					subCursor.moveToFirst();
+					for (int i = 1; i < subCateCount; i++)
+					{
+						subCategory[i] = subCursor.getString(subCursor.getColumnIndex("sub"));
+						subCursor.moveToNext(); //移至資料庫下一筆
+					}
 				}
-			}
 
-			name = new TextView[mainCateCount][subCateCount];
-			btn = new ImageButton[mainCateCount][subCateCount];
+				rl = new RelativeLayout(this);
+				
+				name = new TextView[mainCateCount][subCateCount];
+				btn = new ImageButton[mainCateCount][subCateCount];
+				l1 = new LinearLayout[mainCateCount];
+				l2 = new LinearLayout[subCateCount];
 			
 			for(int s = 0; s < subCateCount; s++){
 				
 				if(s==0){
-					Log.e("main", m+":"+s);
-					l1 = new LinearLayout(this);
-					l1.setOrientation(LinearLayout.HORIZONTAL);
+					
+					l1[m] = new LinearLayout(this);
+					l1[m].setOrientation(LinearLayout.VERTICAL);
 					name[m][s] = new TextView(this);
 					name[m][s].setText(mainCategoryItem[m]); //("主分類");
 					name[m][s].setPadding(0, 0, 20, 0);
 					name[m][s].getPaint().setFakeBoldText(true);
-					l1.addView(name[m][s]);		
-
+					l1[m].addView(name[m][s]);		
+					
 					final String item = mainCategoryItem[m];
 					btn[m][s] = new ImageButton(this);
 					btn[m][s].setBackgroundColor(Color.TRANSPARENT);
@@ -256,122 +254,44 @@ public class SetCategoryActivity extends Activity
 							editMain(item);
 						}});
 					
-					rl.addView(l1);
+					rl.addView(l1[m]);
 					rl.addView(btn[m][s]);
+					
 					tr.addView(rl);
-				}else if(s!=0){
-					Log.e("sub", m+":"+s+":"+subCategory[s]); //TODO 次分類SHOW不出來
+					table.addView(tr);
+					tr = new TableRow(this);
+				}else{
 					rl = new RelativeLayout(this);
 					
-					l1 = new LinearLayout(this);
-					l1.setOrientation(LinearLayout.HORIZONTAL);
+					l2[s] = new LinearLayout(this);
+					l2[s].setOrientation(LinearLayout.VERTICAL);
 
 					name[m][s] = new TextView(this);
 					name[m][s].setText(subCategory[s]); //次分類
 					name[m][s].setPadding(50, 0, 20, 0);
-					l1.addView(name[m][s]);
-					Log.e("sub", "1"); 
-					
+					l2[s].addView(name[m][s]);
+
 					final String item = subCategory[s];
-//					Log.e("sub2", subCategory[s]);
 					btn[m][s] = new ImageButton(this);
 					btn[m][s].setBackgroundColor(Color.TRANSPARENT);
 					btn[m][s].setMinimumWidth(810);
 					btn[m][s].setMinimumHeight(50);
 					btn[m][s].setOnClickListener(new OnClickListener(){
-
+	
 						@Override
 						public void onClick(View arg0) {
 							editSub(item);
 						}});
-					Log.e("sub", "2");
-
-					rl.addView(l1);
+					
+					rl.addView(l2[s]);
 					rl.addView(btn[m][s]);
-					tr.addView(rl);		
-					Log.e("sub", "3");
+					tr.addView(rl);
+					table.addView(tr);
+					tr = new TableRow(this);
 				}
 			}
-			table.addView(tr);
-			tr = new TableRow(this);
 		}
 	}
-
-//	public void setSub()
-//	{
-//		Cursor subCursor = db.rawQuery("SELECT sub "
-//			+ "FROM SubCategory ", null); //要記得''包起來
-//		
-//		int subCateCount = subCursor.getCount(); //資料筆數
-//		String[] subCategory = new String[subCateCount];
-//		
-//		if(subCateCount != 0)
-//		{
-//			subCursor.moveToFirst();
-//			for (int i = 0; i < subCateCount; i++)
-//			{
-//				subCategory[i] = subCursor.getString(subCursor.getColumnIndex("sub"));
-//				subCursor.moveToNext(); //移至資料庫下一筆
-//			}
-//		}
-//		
-//		setCategory(); //以防主分類為空
-//		ArrayAdapter<String> adapter = new ArrayAdapter<String>(SetCategoryActivity.this, 
-//			android.R.layout.simple_spinner_item, mainCategoryItem);
-//		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item); //設定下拉選單的樣式
-//		spinner1.setAdapter(adapter); //mainCategory下拉
-//		
-//		btn_addnew.setText("新增次分類");		
-//		btn_addnew.setOnClickListener(new OnClickListener(){
-//			@Override
-//			public void onClick(View arg0) {
-//				setNewSub();
-//			}});
-//		
-//
-//		//次分類清單
-//		table.removeAllViews();
-//		//int count = 3; //次分類總數
-//		
-//		TableRow tr = new TableRow(this);
-//		RelativeLayout rl;
-//		LinearLayout l1;
-//		ImageButton[] btn;
-//		TextView[] name;
-//		
-//		name = new TextView[subCateCount];
-//		btn = new ImageButton[subCateCount];
-//		
-//		for (int i = 0; i < subCateCount; i++){
-//			rl = new RelativeLayout(this);
-//			
-//			l1 = new LinearLayout(this);
-//			l1.setOrientation(LinearLayout.HORIZONTAL);
-//			name[i] = new TextView(this);
-//			name[i].setText(subCategory[i]); //次分類
-//			name[i].setPadding(0, 0, 20, 0);
-//			name[i].setMinWidth(500);
-//			l1.addView(name[i]);
-//			
-//			final String item = subCategory[i];
-//			btn[i] = new ImageButton(this);
-//			btn[i].setBackgroundColor(Color.TRANSPARENT);
-//			btn[i].setMinimumWidth(810);
-//			btn[i].setMinimumHeight(100);
-//			btn[i].setOnClickListener(new OnClickListener(){
-//
-//				@Override
-//				public void onClick(View arg0) {
-//					editSub(item);
-//				}});
-//
-//			rl.addView(l1);
-//			rl.addView(btn[i]);
-//			tr.addView(rl);
-//			table.addView(tr);
-//			tr = new TableRow(this);
-//		}
-//	}
 	
 	public void setNewMain(){
 

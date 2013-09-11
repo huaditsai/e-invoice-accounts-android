@@ -301,9 +301,10 @@ public class AccountsActivity extends Activity
 		else 
 		{
 			ContentValues accountCV = new ContentValues();
-			accountCV.put("account_name", "User01");
+			accountCV.put("account_name", "wallet01");
+			accountCV.put("money", "1000");
 			db.insert("Account", null, accountCV);
-			account = new String[]{"User01"};
+			account = new String[]{"wallet01"};
 		}
 		
 		//建立一個ArrayAdapter物件，並放置下拉選單的內容

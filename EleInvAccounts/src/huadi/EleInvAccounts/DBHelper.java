@@ -20,10 +20,11 @@ public class DBHelper extends SQLiteOpenHelper
 	{		
 		String SQL = "";
 		
-		SQL = "CREATE TABLE IF NOT EXISTS " + tableName[0] //Account 帳戶（錢包、郵局、iCash…）
+		SQL = "CREATE TABLE IF NOT EXISTS " + tableName[0] //Account 錢包(郵局帳戶、銀行帳戶、iCash…）
 			+ "("
 			+ "_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
-			+ "account_name NTEXT" //帳戶名稱
+			+ "account_name NTEXT," //錢包
+			+ "money INTEGER" //錢包金額
 			+ ");";
 		db.execSQL(SQL);
 		

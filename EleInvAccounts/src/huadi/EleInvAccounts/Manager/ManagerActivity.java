@@ -21,6 +21,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -52,12 +53,12 @@ public class ManagerActivity extends Activity
 	ImageButton btn_backfunc, btn_account, btn_manager, btn_social, btn_setting;
 	ImageButton btn_list, btn_analysis, btn_prize, btn_prizelist;
 	TextView text_list, text_analysis, text_prize, text_prizelist;
-	LinearLayout linear1, linear2, invoice, number;
+	LinearLayout linear1, linear2, invoice, number, linear3;
 	ImageButton btn_right, btn_left, btn_right2, btn_left2;
 	TextView text_month, text_price1, text_price2, text_price3, text_price4;
 	TextView text_month2, text_input, text_prizeornot;
-	Button btn_close, btn_close2, btn_invoice, btn_number;
-	TableLayout invoicetable;
+	Button btn_close, btn_close2, btn_invoice, btn_number, btn_close3;
+	TableLayout invoicetable, analysistable;
 	Button btn_0, btn_1, btn_2, btn_3, btn_4, btn_5, btn_6, btn_7, btn_8, btn_9, btn_clear, btn_backspace, btn_bg;
 	
 	@Override
@@ -124,6 +125,9 @@ public class ManagerActivity extends Activity
 		btn_backspace = (Button)findViewById(R.id.button15);
 		btn_close2 = (Button)findViewById(R.id.button77);
 		btn_bg = (Button)findViewById(R.id.button16);
+		linear3 = (LinearLayout)findViewById(R.id.LinearLayout3);
+		btn_close3 = (Button)findViewById(R.id.button78);
+		analysistable = (TableLayout)findViewById(R.id.TableLayout1);
 		
 		text_list.setText("發票清單");
 		text_analysis.setText("消費分析");
@@ -169,6 +173,7 @@ public class ManagerActivity extends Activity
 					btn_analysis.setY(btn_analysis.getY() + btnMoveNega);
 					text_analysis.setX(text_analysis.getX() + btnMoveNega);
 					text_analysis.setY(text_analysis.getY() + btnMoveNega);
+					setAnalysis();
 				}
 				return false;
 			}});
@@ -293,6 +298,51 @@ public class ManagerActivity extends Activity
 				ManagerActivity.this.finish();
 			}});
 		//slide-----------------------------------------------------------------
+	}
+	
+	public void setAnalysis(){
+		linear3.setVisibility(View.VISIBLE);
+		analysistable.removeAllViews();
+		TableRow tr = new TableRow(this);
+		LinearLayout l1;
+		TextView[] item, percent, cost;
+		int count = 5;
+
+		item = new TextView[count];
+		percent = new TextView[count];
+		cost = new TextView[count];
+		
+		DisplayMetrics dm = new DisplayMetrics();	// 建立一個DisplayMetrics物件
+		this.getWindowManager().getDefaultDisplay().getMetrics(dm);	// 取得裝置的資訊
+		int Width = dm.widthPixels;
+		int Height = dm.heightPixels;
+		
+		for(int i=0;i<count;i++){
+			l1 = new LinearLayout(this);
+			item[i] = new TextView(this);
+			item[i].setText("分類");
+			item[i].setMinWidth(Width/4);
+			percent[i] = new TextView(this);
+			percent[i].setText("0%");
+			percent[i].setMinWidth(Width/4);
+			cost[i] = new TextView(this);
+			cost[i].setText("300NTD");
+			cost[i].setMinWidth(Width/4);
+
+			l1.addView(item[i]);
+			l1.addView(percent[i]);
+			l1.addView(cost[i]);
+			tr.addView(l1);
+			analysistable.addView(tr);
+			tr = new TableRow(this);
+		}
+		
+		
+		btn_close3.setOnClickListener(new OnClickListener(){
+			@Override
+			public void onClick(View arg0) {
+				linear3.setVisibility(View.GONE);
+			}});
 	}
 	
 	private void setPrizePop(){ //發票對獎

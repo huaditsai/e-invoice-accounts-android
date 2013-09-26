@@ -15,7 +15,7 @@ public class ManualAward
 	
 	public String Award(String input, Map<String, List<String>> winning)
 	{
-		String infoString = "¶π∏π∫b¿t";
+		String infoString = "∫b¿t";
 		
 		for (String no : winning.get("superPrizeNo"))
 		{
@@ -45,6 +45,6 @@ public class ManualAward
 			//Log.e("6", no);
 		}
 		
-		return infoString;		
+		return input + "\r\n" + infoString;		
 	}
 }

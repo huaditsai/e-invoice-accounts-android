@@ -300,7 +300,7 @@ public class ManagerActivity extends Activity
 		//slide-----------------------------------------------------------------
 	}
 	
-	public void setAnalysis(){
+	public void setAnalysis(){ //®ø¶O¤ÀªR
 		linear3.setVisibility(View.VISIBLE);
 		analysistable.removeAllViews();
 		TableRow tr = new TableRow(this);

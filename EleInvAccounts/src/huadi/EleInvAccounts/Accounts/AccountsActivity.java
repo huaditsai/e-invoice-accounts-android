@@ -372,20 +372,15 @@ public class AccountsActivity extends Activity
 		else 
 		{
 			ContentValues mainCateCV = new ContentValues();
-			mainCateCV.put("main", "食");
-			db.insert("MainCategory", null, mainCateCV);
-			mainCateCV.put("main", "衣");
+			mainCateCV.put("main", "其他");
 			db.insert("MainCategory", null, mainCateCV);
 			
 			ContentValues subCateCV = new ContentValues();
-			subCateCV.put("main", "食");
-			subCateCV.put("sub", "飲料");
+			subCateCV.put("main", "其他");
+			subCateCV.put("sub", "其他");
 			db.insert("SubCategory", null, subCateCV);
-			subCateCV.put("main", "衣");
-			subCateCV.put("sub", "襯衫");
-			db.insert("SubCategory", null, subCateCV);
-			
-			mainCategory = new String[]{"食", "衣"};
+
+			mainCategory = new String[]{"其他", "其他"};
 		}
 		
 		//建立一個ArrayAdapter物件，並放置下拉選單的內容
@@ -529,7 +524,7 @@ public class AccountsActivity extends Activity
 								invoiceCV.put("invStatus", ""); //發票狀態(已確認)
 								invoiceCV.put("invPeriod", invPeriod); //對獎發票期別(民國年月)
 								
-								//Log.e("invPeriod", invNum + ", " + invPeriod);
+//								Log.e("invPeriod", invNum + ", " + invPeriod);
 								
 								Cursor invoiceCursor = db.rawQuery("SELECT invNum "
 									+ "FROM Invoice "
@@ -873,7 +868,7 @@ public class AccountsActivity extends Activity
 											accountCV.put("remark", remark); //備註
 											
 											db.update("Charge", accountCV, "item = '" + item + "' "
-												+ "AND invNum = '" + invNum + "' ", null);	
+												+ "AND invNum = '" + invNum + "' ", null);
 											
 											InitPopView();
 											GetChargeList(_year, _month);
@@ -1036,7 +1031,10 @@ public class AccountsActivity extends Activity
 			+ "FROM InvDetail "
 			+ "WHERE invNum = '" + mInvNum + "' ", null); //要記得''包起來
 		
-		int count = invDetailCursor.getCount(); //資料筆數			
+		int count = invDetailCursor.getCount(); //資料筆數
+		
+		if(detailIndex + 1 > count)
+			isCapture = false;
 		
 		if(isCapture) //若是掃QR code
 		{
@@ -1083,10 +1081,8 @@ public class AccountsActivity extends Activity
 					editText6.setText(invCursor.getString(invCursor.getColumnIndex("sellerName")));
 					invCursor.moveToNext();
 				}
-			}
+			}			
 			
-			if(detailIndex + 1 >= count)
-				isCapture = false;
 		}
 	}
 	
@@ -1106,6 +1102,11 @@ public class AccountsActivity extends Activity
 			btn_income.getBackground().setAlpha(60);			
 			
 			btn_delete.setVisibility(View.GONE);
+			
+			if(detailIndex + 1 > count)
+				invIndex++;
+			if(invIndex + 1 > mInvNumArray.length)
+				isCarrier = false;
 			
 //			Log.e("count",""+count);
 			if(count != 0)
@@ -1145,10 +1146,6 @@ public class AccountsActivity extends Activity
 				}
 			}
 			
-			if(detailIndex + 1 >= count)
-				invIndex++;
-			if(invIndex + 1 >= mInvNumArray.length)
-				isCarrier = false;
 		}
 		
 	}

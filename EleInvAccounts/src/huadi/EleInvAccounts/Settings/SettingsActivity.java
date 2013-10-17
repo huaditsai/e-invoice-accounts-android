@@ -1,18 +1,17 @@
 package huadi.EleInvAccounts.Settings;
 
-import java.util.Calendar;
+import com.facebook.*;
+import com.facebook.model.*;
+
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 
 import huadi.EleInvAccounts.MainActivity;
 import huadi.EleInvAccounts.R;
 import huadi.EleInvAccounts.Accounts.AccountsActivity;
 import huadi.EleInvAccounts.Inquiry.CarrierHead;
-import huadi.EleInvAccounts.Inquiry.GetNTP;
 import huadi.EleInvAccounts.Manager.ManagerActivity;
 import huadi.EleInvAccounts.Social.SocialActivity;
-import android.R.integer;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -23,13 +22,14 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 //設定
 public class SettingsActivity extends Activity
@@ -40,9 +40,9 @@ public class SettingsActivity extends Activity
 	ImageButton btn_backfunc, btn_account, btn_manager, btn_social, btn_setting;
 	ImageButton btn_setaccount, btn_setcategory, btn_setfb, btn_setphone;
 	TextView text_setaccount, text_setcategory, text_setfb, text_setphone;
-	LinearLayout setphone, setfb;
-	Button btn_phoneOK, btn_phoneCancel, btn_fbOK, btn_fbCancel, btn_bg;
-	EditText edit_phone, edit_phonecode, edit_fbuser, edit_fbpw;
+	LinearLayout setphone, setfb, fbselect;
+	Button btn_phoneOK, btn_phoneCancel, btn_fbLogin, btn_fbClose, btn_bg;
+	EditText edit_phone, edit_phonecode;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -81,16 +81,15 @@ public class SettingsActivity extends Activity
 		edit_phone = (EditText)findViewById(R.id.editText1);
 		edit_phonecode = (EditText)findViewById(R.id.editText2);
 		setfb = (LinearLayout)findViewById(R.id.setfb);
-		btn_fbOK = (Button)findViewById(R.id.button8);
-		btn_fbCancel = (Button)findViewById(R.id.button9);
-		edit_fbuser = (EditText)findViewById(R.id.editText3);
-		edit_fbpw = (EditText)findViewById(R.id.editText4);
+		btn_fbLogin = (Button)findViewById(R.id.button8);
+		btn_fbClose = (Button)findViewById(R.id.button9);
 		btn_bg = (Button)findViewById(R.id.button1);
+		fbselect = (LinearLayout)findViewById(R.id.fbselect);
 		
 		text_setaccount.setText("設定錢包");
 		text_setcategory.setText("設定分類");
 		text_setphone.setText("綁定手機條碼");
-		text_setfb.setText("綁定Facebook");
+		text_setfb.setText("設定Facebook");
 		
 		btn_setaccount.setOnTouchListener(new OnTouchListener(){
 			@Override
@@ -313,42 +312,101 @@ public class SettingsActivity extends Activity
 	}
 	
 	public void setFb(){
+		
 		setfb.setVisibility(View.VISIBLE);
 		btn_bg.setVisibility(View.VISIBLE);
 		
 
-		btn_fbOK.setOnTouchListener(new OnTouchListener(){
+		final Session session = Session.getActiveSession();
+		Log.e("FBStatus", session+"");
+	    if (session != null && session.isOpened()) {
+			//logged
+	    	btn_fbLogin.setText("登出");
+	    	fbselect.setVisibility(View.VISIBLE); //參加排行與否
+	    	ToggleButton toggle = (ToggleButton) findViewById(R.id.togglebutton);
+			toggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+			    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+			        if (isChecked) {
+			            // The toggle is enabled
+			        } else {
+			            // The toggle is disabled
+			        }
+			    }
+			});
+	    } else {
+			//not login
+	    	btn_fbLogin.setText("登入");
+	    	fbselect.setVisibility(View.GONE); //參加排行與否
+	    }
+
+		btn_fbLogin.setOnClickListener(new OnClickListener(){
 			@Override
-			public boolean onTouch(View v, MotionEvent event){
-				if(event.getAction() == MotionEvent.ACTION_DOWN)
-				{
-					btn_fbOK.setBackgroundColor(Color.rgb(46, 147, 186));
-				}
-				if(event.getAction() == MotionEvent.ACTION_UP)
-				{
-					btn_fbOK.setBackgroundColor(Color.rgb(50, 179, 226));
-					edit_fbuser.getText().toString();	//FB帳號
-					edit_fbpw.getText().toString();	//FB密碼
-					setfb.setVisibility(View.GONE);
-					btn_bg.setVisibility(View.GONE);
-				}				
-			return false;
+			public void onClick(View arg0) {
+			    if (session != null && session.isOpened()) {
+					//logged
+				    Session.getActiveSession().closeAndClearTokenInformation();
+					Session.setActiveSession(null);
+			    	btn_fbLogin.setText("登入");
+			    	fbselect.setVisibility(View.GONE); //參加排行與否
+			    } else {
+					//not login
+			    	fbLogin();
+			    }
 			}});
 
-		btn_fbCancel.setOnTouchListener(new OnTouchListener(){
+		btn_fbClose.setOnTouchListener(new OnTouchListener(){
 			@Override
 			public boolean onTouch(View v, MotionEvent event){
 				if(event.getAction() == MotionEvent.ACTION_DOWN)
 				{
-					btn_fbCancel.setBackgroundColor(Color.rgb(46, 147, 186));
+					btn_fbClose.setBackgroundColor(Color.rgb(46, 147, 186));
 				}
 				if(event.getAction() == MotionEvent.ACTION_UP)
 				{
-					btn_fbCancel.setBackgroundColor(Color.rgb(50, 179, 226));
+					btn_fbClose.setBackgroundColor(Color.rgb(50, 179, 226));
 					setfb.setVisibility(View.GONE);
 					btn_bg.setVisibility(View.GONE);
 				}				
 			return false;
 			}});		
 	}
+	
+	private void fbLogin(){
+    	Log.e("fbLogin","0");
+			// start Facebook Login TODO SSO Login problem
+		    Session.openActiveSession(this, true, new Session.StatusCallback() {
+		      // callback when session changes state
+		      @SuppressWarnings("deprecation")
+			@Override
+		      public void call(Session session, SessionState state, Exception exception) {
+		        if (session.isOpened()) {
+			    	Log.e("fbLogin","1");
+
+		          // make request to the /me API
+		          Request.executeMeRequestAsync(session, new Request.GraphUserCallback() {
+
+		            // callback after Graph API response with user object
+		            @Override
+		            public void onCompleted(GraphUser user, Response response) {
+				    	Log.e("fbLogin","2");
+		              if (user != null) {
+					    	Log.e("fbLogin","3");
+			    	    	setFb();
+					    	Log.e("fbLogin", "ID:"+user.getId()+";USER NAME:"+user.getName());
+		          		}
+		            }
+		          });
+		        }
+		      }
+		    });
+	}
+	
+	
+	//facebook login
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		Session.getActiveSession().onActivityResult(this, requestCode, resultCode, data);
+	}
+
 }

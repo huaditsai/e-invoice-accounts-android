@@ -3,9 +3,11 @@ package huadi.EleInvAccounts;
 import java.io.File;
 
 import zxing.encoding.CodeGenerator;
+import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -17,6 +19,7 @@ import android.widget.RemoteViews;
 public class BarCodeWidget extends AppWidgetProvider
 {
 	RemoteViews views;
+	public static final String WidgetOpen = "huadi.EleInvAccounts.WidgetOpen";
 	@Override
 	public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds)
 	{
@@ -26,10 +29,13 @@ public class BarCodeWidget extends AppWidgetProvider
 		views.setTextColor(R.id.weget_textView, Color.BLACK);
 		
 		if(card.getString("cardNo", "").length() > 0)
-			GetBarCode(context, "EleInvAccounts", card.getString("cardNo", ""), 540, 200); //
+			GetBarCode(context, "EleInvAccounts", card.getString("cardNo", ""), 500, 150); //
 		else
-			views.setTextViewText(R.id.weget_textView, "未綁定載具條碼");
-		
+			views.setTextViewText(R.id.weget_textView, "");
+        
+	    Intent configIntent = new Intent(context, MainActivity.class);
+	    PendingIntent configPendingIntent = PendingIntent.getActivity(context, 0, configIntent, 0);
+	    views.setOnClickPendingIntent(R.id.widgetLayout, configPendingIntent);
 		appWidgetManager.updateAppWidget(appWidgetIds, views);
 	}
 

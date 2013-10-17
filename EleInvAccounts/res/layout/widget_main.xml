@@ -4,31 +4,49 @@
     android:layout_height="wrap_content"
     android:orientation="vertical" >
 
-    <ImageView
-        android:id="@+id/weget_background"
-        android:layout_width="match_parent"
-        android:layout_height="105dp"
-        android:src="@drawable/weget_background" />
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
         android:orientation="vertical" >
 
-        <ImageView
-            android:id="@+id/weget_imageView"
-            android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:layout_gravity="center"
-            android:scaleType="fitCenter"
-            android:src="@android:drawable/divider_horizontal_dark" />
-
-        <TextView
-            android:id="@+id/weget_textView"
+        <RelativeLayout
+            android:id="@+id/widgetLayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:layout_gravity="center" />
+            android:gravity="center" >
+
+            <ImageView
+                android:id="@+id/weget_background"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/widget" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:gravity="center"
+                android:orientation="vertical" >
+
+                <ImageView
+                    android:id="@+id/weget_imageView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:scaleType="fitCenter"
+                    android:src="@android:drawable/divider_horizontal_dark" />
+
+                <TextView
+                    android:id="@+id/weget_textView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            </LinearLayout>
+
+        </RelativeLayout>
+
     </LinearLayout>
 
 </RelativeLayout>

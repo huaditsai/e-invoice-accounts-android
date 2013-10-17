@@ -16,8 +16,10 @@ import android.os.Bundle;
 import android.text.TextUtils.TruncateAt;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -313,39 +315,54 @@ public class SetCategoryActivity extends Activity
 
 		text_category.setText("分類名稱");
 		btn_ok.setText("新增");
-		btn_ok.setOnClickListener(new OnClickListener(){
+		btn_ok.setOnTouchListener(new OnTouchListener(){
 			@Override
-			public void onClick(View v) 
-			{
-				//edit_main.getText().toString();
-				if(edit_main.getText().toString().length() > 0)
+			public boolean onTouch(View v, MotionEvent event){
+				if(event.getAction() == MotionEvent.ACTION_DOWN)
 				{
-					Cursor mainCateCursor = db.rawQuery("SELECT main "
-						+ "FROM MainCategory "
-						+ "Where main = '" + edit_main.getText().toString() + "'", null); //要記得''包起來
-					
-					int count = mainCateCursor.getCount(); //資料筆數				
-					if(count == 0) 
-					{
-						ContentValues mainCateCV = new ContentValues();
-						mainCateCV.put("main", edit_main.getText().toString());
-						db.insert("MainCategory", null, mainCateCV);
-					}
+					btn_ok.setBackgroundColor(Color.rgb(46, 147, 186));
 				}
-								
-				layout_main.setVisibility(View.GONE);
-				btn_bg.setVisibility(View.GONE);
-				edit_main.setText("");
-				setCategory();
-			}
-		});
-		
-		btn_cancel.setOnClickListener(new OnClickListener(){
+				if(event.getAction() == MotionEvent.ACTION_UP)
+				{
+					btn_ok.setBackgroundColor(Color.rgb(50, 179, 226));	
+					//edit_main.getText().toString();
+					if(edit_main.getText().toString().length() > 0)
+					{
+						Cursor mainCateCursor = db.rawQuery("SELECT main "
+							+ "FROM MainCategory "
+							+ "Where main = '" + edit_main.getText().toString() + "'", null); //要記得''包起來
+						
+						int count = mainCateCursor.getCount(); //資料筆數				
+						if(count == 0) 
+						{
+							ContentValues mainCateCV = new ContentValues();
+							mainCateCV.put("main", edit_main.getText().toString());
+							db.insert("MainCategory", null, mainCateCV);
+						}
+					}
+									
+					layout_main.setVisibility(View.GONE);
+					btn_bg.setVisibility(View.GONE);
+					edit_main.setText("");
+					setCategory();
+				}				
+			return false;
+			}});
+		btn_cancel.setOnTouchListener(new OnTouchListener(){
 			@Override
-			public void onClick(View v) {				
-				layout_main.setVisibility(View.GONE);
-				btn_bg.setVisibility(View.GONE);
-				edit_main.setText("");
+			public boolean onTouch(View v, MotionEvent event){
+				if(event.getAction() == MotionEvent.ACTION_DOWN)
+				{
+					btn_cancel.setBackgroundColor(Color.rgb(46, 147, 186));
+				}
+				if(event.getAction() == MotionEvent.ACTION_UP)
+				{
+					btn_cancel.setBackgroundColor(Color.rgb(50, 179, 226));	
+					layout_main.setVisibility(View.GONE);
+					btn_bg.setVisibility(View.GONE);
+					edit_main.setText("");
+				}				
+			return false;
 			}});
 	}
 	
@@ -360,71 +377,97 @@ public class SetCategoryActivity extends Activity
 		text_category.setText("修改名稱");
 		
 		btn_ok.setText("修改");
-		btn_ok.setOnClickListener(new OnClickListener(){
+		btn_ok.setOnTouchListener(new OnTouchListener(){
 			@Override
-			public void onClick(View v) {
-				//edit_main.getText().toString();
-				if(edit_main.getText().toString().length() > 0)
+			public boolean onTouch(View v, MotionEvent event){
+				if(event.getAction() == MotionEvent.ACTION_DOWN)
 				{
-//					Cursor mainCateCursor = db.rawQuery("SELECT main "
-//						+ "FROM MainCategory "
-//						+ "Where main = '" + item + "'", null); //要記得''包起來
+					btn_ok.setBackgroundColor(Color.rgb(46, 147, 186));
+				}
+				if(event.getAction() == MotionEvent.ACTION_UP)
+				{
+					btn_ok.setBackgroundColor(Color.rgb(50, 179, 226));	
+					//edit_main.getText().toString();
+					if(edit_main.getText().toString().length() > 0)
+					{
+//						Cursor mainCateCursor = db.rawQuery("SELECT main "
+//							+ "FROM MainCategory "
+//							+ "Where main = '" + item + "'", null); //要記得''包起來
+						
+						//int mainCount = mainCateCursor.getCount(); //資料筆數 = 0 就點不到啦
+						
+						ContentValues mainCateCV = new ContentValues();
+						mainCateCV.put("main", edit_main.getText().toString());
+						db.update("MainCategory", mainCateCV, "main = '" + item + "'", null);
+						
+						//SubCategory中的也要跟著更新
+						Cursor subCateCursor = db.rawQuery("SELECT main " 
+							+ "FROM SubCategory "
+							+ "Where main = '" + item + "'", null); //要記得''包起來
+						
+						int subCount = subCateCursor.getCount(); //資料筆數				
+						if(subCount > 0)
+						{
+							db.update("SubCategory", mainCateCV, "main = '" + item + "'", null);
+						}
+					}				
+					layout_main.setVisibility(View.GONE);
+					layout_original.setVisibility(View.GONE);
+					btn_bg.setVisibility(View.GONE);
+					edit_main.setText("");
+					setCategory();
+				}				
+			return false;
+			}});
+
+		btn_delete.setOnTouchListener(new OnTouchListener(){
+			@Override
+			public boolean onTouch(View v, MotionEvent event){
+				if(event.getAction() == MotionEvent.ACTION_DOWN)
+				{
+					btn_delete.setBackgroundColor(Color.rgb(46, 147, 186));
+				}
+				if(event.getAction() == MotionEvent.ACTION_UP)
+				{
+					btn_delete.setBackgroundColor(Color.rgb(50, 179, 226));	
+					db.delete("MainCategory", "main = '" + item + "'", null);
 					
-					//int mainCount = mainCateCursor.getCount(); //資料筆數 = 0 就點不到啦
-					
-					ContentValues mainCateCV = new ContentValues();
-					mainCateCV.put("main", edit_main.getText().toString());
-					db.update("MainCategory", mainCateCV, "main = '" + item + "'", null);
-					
-					//SubCategory中的也要跟著更新
-					Cursor subCateCursor = db.rawQuery("SELECT main " 
+					//SubCategory中的也要跟著刪除
+					Cursor subCateCursor = db.rawQuery("SELECT main "
 						+ "FROM SubCategory "
 						+ "Where main = '" + item + "'", null); //要記得''包起來
 					
 					int subCount = subCateCursor.getCount(); //資料筆數				
 					if(subCount > 0)
 					{
-						db.update("SubCategory", mainCateCV, "main = '" + item + "'", null);
+						db.delete("SubCategory", "main = '" + item + "'", null);
 					}
+					
+					layout_main.setVisibility(View.GONE);
+					layout_original.setVisibility(View.GONE);
+					btn_bg.setVisibility(View.GONE);
+					edit_main.setText("");
+					setCategory();
 				}				
-				layout_main.setVisibility(View.GONE);
-				layout_original.setVisibility(View.GONE);
-				btn_bg.setVisibility(View.GONE);
-				edit_main.setText("");
-				setCategory();
+			return false;
 			}});
 		
-		btn_delete.setOnClickListener(new OnClickListener(){
+		btn_cancel.setOnTouchListener(new OnTouchListener(){
 			@Override
-			public void onClick(View v) 
-			{				
-				db.delete("MainCategory", "main = '" + item + "'", null);
-				
-				//SubCategory中的也要跟著刪除
-				Cursor subCateCursor = db.rawQuery("SELECT main "
-					+ "FROM SubCategory "
-					+ "Where main = '" + item + "'", null); //要記得''包起來
-				
-				int subCount = subCateCursor.getCount(); //資料筆數				
-				if(subCount > 0)
+			public boolean onTouch(View v, MotionEvent event){
+				if(event.getAction() == MotionEvent.ACTION_DOWN)
 				{
-					db.delete("SubCategory", "main = '" + item + "'", null);
+					btn_cancel.setBackgroundColor(Color.rgb(46, 147, 186));
 				}
-				
-				layout_main.setVisibility(View.GONE);
-				layout_original.setVisibility(View.GONE);
-				btn_bg.setVisibility(View.GONE);
-				edit_main.setText("");
-				setCategory();
-			}});
-		
-		btn_cancel.setOnClickListener(new OnClickListener(){
-			@Override
-			public void onClick(View v) {
-				layout_main.setVisibility(View.GONE);
-				layout_original.setVisibility(View.GONE);
-				btn_bg.setVisibility(View.GONE);
-				edit_main.setText("");
+				if(event.getAction() == MotionEvent.ACTION_UP)
+				{
+					btn_cancel.setBackgroundColor(Color.rgb(50, 179, 226));	
+					layout_main.setVisibility(View.GONE);
+					layout_original.setVisibility(View.GONE);
+					btn_bg.setVisibility(View.GONE);
+					edit_main.setText("");
+				}				
+			return false;
 			}});
 	}
 	
@@ -435,39 +478,54 @@ public class SetCategoryActivity extends Activity
 		btn_delete2.setVisibility(View.GONE);
 		
 		btn_ok2.setText("新增");
-		btn_ok2.setOnClickListener(new OnClickListener()
-		{
+		btn_ok2.setOnTouchListener(new OnTouchListener(){
 			@Override
-			public void onClick(View v) 
-			{				
-				if(edit_sub.getText().toString().length() > 0)
+			public boolean onTouch(View v, MotionEvent event){
+				if(event.getAction() == MotionEvent.ACTION_DOWN)
 				{
-					//SubCategory
-					Cursor subCursor = db.rawQuery("SELECT sub "
-						+ "FROM SubCategory "
-						+ "WHERE sub = '" + edit_sub.getText().toString() + "'", null); //要記得''包起來
-					
-					int subCateCount = subCursor.getCount(); //資料筆數	
-					if(subCateCount == 0)
+					btn_ok2.setBackgroundColor(Color.rgb(46, 147, 186));
+				}
+				if(event.getAction() == MotionEvent.ACTION_UP)
+				{
+					btn_ok2.setBackgroundColor(Color.rgb(50, 179, 226));
+					if(edit_sub.getText().toString().length() > 0)
 					{
-						ContentValues subCateCV = new ContentValues();
-						subCateCV.put("main", spinner1.getSelectedItem().toString());
-						subCateCV.put("sub", edit_sub.getText().toString());
-						db.insert("SubCategory", null, subCateCV);
-					}
+						//SubCategory
+						Cursor subCursor = db.rawQuery("SELECT sub "
+							+ "FROM SubCategory "
+							+ "WHERE sub = '" + edit_sub.getText().toString() + "'", null); //要記得''包起來
+						
+						int subCateCount = subCursor.getCount(); //資料筆數	
+						if(subCateCount == 0)
+						{
+							ContentValues subCateCV = new ContentValues();
+							subCateCV.put("main", spinner1.getSelectedItem().toString());
+							subCateCV.put("sub", edit_sub.getText().toString());
+							db.insert("SubCategory", null, subCateCV);
+						}
+					}				
+					layout_sub.setVisibility(View.GONE);
+					btn_bg.setVisibility(View.GONE);
+					edit_sub.setText("");
+					setCategory();
 				}				
-				layout_sub.setVisibility(View.GONE);
-				btn_bg.setVisibility(View.GONE);
-				edit_sub.setText("");
-				setCategory();
+			return false;
 			}});
-		
-		btn_cancel2.setOnClickListener(new OnClickListener(){
+		btn_cancel2.setOnTouchListener(new OnTouchListener(){
 			@Override
-			public void onClick(View v) {
-				layout_sub.setVisibility(View.GONE);
-				btn_bg.setVisibility(View.GONE);
-				edit_sub.setText("");
+			public boolean onTouch(View v, MotionEvent event){
+				if(event.getAction() == MotionEvent.ACTION_DOWN)
+				{
+					btn_cancel2.setBackgroundColor(Color.rgb(46, 147, 186));
+				}
+				if(event.getAction() == MotionEvent.ACTION_UP)
+				{
+					btn_cancel2.setBackgroundColor(Color.rgb(50, 179, 226));
+					layout_sub.setVisibility(View.GONE);
+					btn_bg.setVisibility(View.GONE);
+					edit_sub.setText("");
+				}				
+			return false;
 			}});
 	}
 	
@@ -489,50 +547,74 @@ public class SetCategoryActivity extends Activity
 		btn_delete2.setVisibility(View.VISIBLE);
 		
 		btn_ok2.setText("修改");
-		btn_ok2.setOnClickListener(new OnClickListener()
-		{
+		btn_ok2.setOnTouchListener(new OnTouchListener(){
 			@Override
-			public void onClick(View v) 
-			{
-				if(edit_sub.getText().toString().length() > 0)
+			public boolean onTouch(View v, MotionEvent event){
+				if(event.getAction() == MotionEvent.ACTION_DOWN)
 				{
-					Cursor subCursor = db.rawQuery("SELECT main "
-						+ "FROM SubCategory "
-						+ "WHERE main = '" + mainItem + "'" 
-						+ "AND sub = '" + subItem + "'", null); //要記得''包起來
-					
-					if(subCursor.getCount() <= 0)
-					{
-						ContentValues subCateCV = new ContentValues();
-						subCateCV.put("main", spinner1.getSelectedItem().toString());
-						subCateCV.put("sub", edit_sub.getText().toString());
-						db.update("SubCategory", subCateCV,"main = '" + mainItem + "'" + "AND sub = '" + subItem + "'", null);
-					}
+					btn_ok2.setBackgroundColor(Color.rgb(46, 147, 186));
 				}
-				
-				layout_sub.setVisibility(View.GONE);
-				btn_bg.setVisibility(View.GONE);
-				edit_sub.setText("");
-				setCategory();
-			}
-		});
-		
-		btn_delete2.setOnClickListener(new OnClickListener(){
-			@Override
-			public void onClick(View v) {
-				db.delete("SubCategory", "main = '" + mainItem + "'" + "AND sub = '" + subItem + "'", null);
-				layout_sub.setVisibility(View.GONE);
-				btn_bg.setVisibility(View.GONE);
-				edit_sub.setText("");
-				setCategory();
+				if(event.getAction() == MotionEvent.ACTION_UP)
+				{
+					btn_ok2.setBackgroundColor(Color.rgb(50, 179, 226));
+					if(edit_sub.getText().toString().length() > 0)
+					{
+						Cursor subCursor = db.rawQuery("SELECT main "
+							+ "FROM SubCategory "
+							+ "WHERE main = '" + mainItem + "'" 
+							+ "AND sub = '" + subItem + "'", null); //要記得''包起來
+						
+						if(subCursor.getCount() <= 0)
+						{
+							ContentValues subCateCV = new ContentValues();
+							subCateCV.put("main", spinner1.getSelectedItem().toString());
+							subCateCV.put("sub", edit_sub.getText().toString());
+							db.update("SubCategory", subCateCV,"main = '" + mainItem + "'" + "AND sub = '" + subItem + "'", null);
+						}
+					}
+					
+					layout_sub.setVisibility(View.GONE);
+					btn_bg.setVisibility(View.GONE);
+					edit_sub.setText("");
+					setCategory();
+				}				
+			return false;
 			}});
-		
-		btn_cancel2.setOnClickListener(new OnClickListener(){
+
+		btn_delete2.setOnTouchListener(new OnTouchListener(){
 			@Override
-			public void onClick(View v) {
-				layout_sub.setVisibility(View.GONE);
-				btn_bg.setVisibility(View.GONE);
-				edit_sub.setText("");
+			public boolean onTouch(View v, MotionEvent event){
+				if(event.getAction() == MotionEvent.ACTION_DOWN)
+				{
+					btn_delete2.setBackgroundColor(Color.rgb(46, 147, 186));
+				}
+				if(event.getAction() == MotionEvent.ACTION_UP)
+				{
+					btn_delete2.setBackgroundColor(Color.rgb(50, 179, 226));
+					db.delete("SubCategory", "main = '" + mainItem + "'" + "AND sub = '" + subItem + "'", null);
+					layout_sub.setVisibility(View.GONE);
+					btn_bg.setVisibility(View.GONE);
+					edit_sub.setText("");
+					setCategory();
+				}				
+			return false;
+			}});
+
+		btn_cancel2.setOnTouchListener(new OnTouchListener(){
+			@Override
+			public boolean onTouch(View v, MotionEvent event){
+				if(event.getAction() == MotionEvent.ACTION_DOWN)
+				{
+					btn_cancel2.setBackgroundColor(Color.rgb(46, 147, 186));
+				}
+				if(event.getAction() == MotionEvent.ACTION_UP)
+				{
+					btn_cancel2.setBackgroundColor(Color.rgb(50, 179, 226));
+					layout_sub.setVisibility(View.GONE);
+					btn_bg.setVisibility(View.GONE);
+					edit_sub.setText("");
+				}				
+			return false;
 			}});
 	}
 }

@@ -16,6 +16,7 @@ import android.R.integer;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -213,70 +214,141 @@ public class SettingsActivity extends Activity
 		//edit_phone.setText("/XXXXXXX"); // TODO 發佈時刪除
 		//edit_phonecode.setText("YOUR_VERIFICATION_CODE");
 		edit_phone.setText("/");
+		edit_phonecode.setText("");
 		setphone.setVisibility(View.VISIBLE);
 		btn_bg.setVisibility(View.VISIBLE);
-		
-		btn_phoneOK.setOnClickListener(new OnClickListener(){
-			@Override
-			public void onClick(View arg0) {
-				edit_phone.getText().toString();	//手機代碼
-				edit_phonecode.getText().toString();	//驗證碼	
-				
-				try
-				{
-					Map<String, List<String>> CarrierHeadInfo = new CarrierHead()
-						.execute("3J0002", edit_phone.getText().toString(), "Y", UUID, appID, edit_phonecode.getText().toString()).get();
-					
-					if(CarrierHeadInfo.get("code").get(0).equals("200"))
+
+		final SharedPreferences card = getSharedPreferences("CARD", MODE_PRIVATE ); //偏好設定 
+		String cardNo, cardEncrypt;
+		cardNo = card.getString("cardNo", "");
+		cardEncrypt = card.getString("cardEncrypt", "");
+		if(cardNo.length() > 0 && cardEncrypt.length() > 0)
+		{
+			edit_phone.setText(cardNo);;	//手機代碼
+			edit_phonecode.setText(cardEncrypt);	//驗證碼
+			btn_phoneOK.setText("取消綁定");
+			btn_phoneOK.setOnTouchListener(new OnTouchListener(){
+				@Override
+				public boolean onTouch(View v, MotionEvent event){
+					if(event.getAction() == MotionEvent.ACTION_DOWN)
 					{
-						SharedPreferences card = getSharedPreferences("CARD", MODE_PRIVATE ); //偏好設定 
-						card.edit().putString("cardNo", edit_phone.getText().toString()).commit(); //卡片隱碼
-						card.edit().putString("cardEncrypt", edit_phonecode.getText().toString()).commit(); //卡片檢驗碼
-						
-						Toast.makeText(SettingsActivity.this, "成功", Toast.LENGTH_SHORT).show();
-						
+						btn_phoneOK.setBackgroundColor(Color.rgb(46, 147, 186));
+					}
+					if(event.getAction() == MotionEvent.ACTION_UP)
+					{
+						btn_phoneOK.setBackgroundColor(Color.rgb(50, 179, 226));
+						card.edit().remove("cardNo").commit(); //卡片隱碼
+						card.edit().remove("cardEncrypt").commit(); //卡片檢驗碼
+
+						Toast.makeText(SettingsActivity.this, "已取消綁定", Toast.LENGTH_SHORT).show();
+								
 						setphone.setVisibility(View.GONE);
 						btn_bg.setVisibility(View.GONE);
+					}				
+				return false;
+				}});
+		}
+		else
+		{
+			btn_phoneOK.setText("確定");
+			btn_phoneOK.setOnTouchListener(new OnTouchListener(){
+				@Override
+				public boolean onTouch(View v, MotionEvent event){
+					if(event.getAction() == MotionEvent.ACTION_DOWN)
+					{
+						btn_phoneOK.setBackgroundColor(Color.rgb(46, 147, 186));
 					}
-					else
-						Toast.makeText(SettingsActivity.this, "條碼/驗證碼 錯誤", Toast.LENGTH_SHORT).show();
-				}
-				catch (Exception e)
+					if(event.getAction() == MotionEvent.ACTION_UP)
+					{
+						btn_phoneOK.setBackgroundColor(Color.rgb(50, 179, 226));
+						edit_phone.getText().toString();	//手機代碼
+						edit_phonecode.getText().toString();	//驗證碼	
+						
+						try
+						{
+							Map<String, List<String>> CarrierHeadInfo = new CarrierHead()
+								.execute("3J0002", edit_phone.getText().toString(), "Y", UUID, appID, edit_phonecode.getText().toString()).get();
+							
+							if(CarrierHeadInfo.get("code").get(0).equals("200"))
+							{
+								card.edit().putString("cardNo", edit_phone.getText().toString()).commit(); //卡片隱碼
+								card.edit().putString("cardEncrypt", edit_phonecode.getText().toString()).commit(); //卡片檢驗碼
+								
+								Toast.makeText(SettingsActivity.this, "成功", Toast.LENGTH_SHORT).show();
+								
+								setphone.setVisibility(View.GONE);
+								btn_bg.setVisibility(View.GONE);
+							}
+							else
+								Toast.makeText(SettingsActivity.this, "條碼/驗證碼 錯誤", Toast.LENGTH_SHORT).show();
+						}
+						catch (Exception e)
+						{
+							setphone.setVisibility(View.GONE);
+							btn_bg.setVisibility(View.GONE);
+						}
+					}				
+				return false;
+				}});
+		}
+		
+
+		btn_phoneCancel.setOnTouchListener(new OnTouchListener(){
+			@Override
+			public boolean onTouch(View v, MotionEvent event){
+				if(event.getAction() == MotionEvent.ACTION_DOWN)
 				{
+					btn_phoneCancel.setBackgroundColor(Color.rgb(46, 147, 186));
+				}
+				if(event.getAction() == MotionEvent.ACTION_UP)
+				{
+					btn_phoneCancel.setBackgroundColor(Color.rgb(50, 179, 226));
+					edit_phone.setText("/");
+					edit_phonecode.setText("");
 					setphone.setVisibility(View.GONE);
 					btn_bg.setVisibility(View.GONE);
-				}
-				
-			}});
-		btn_phoneCancel.setOnClickListener(new OnClickListener(){
-			@Override
-			public void onClick(View v) {
-				edit_phone.setText("/");
-				edit_phonecode.setText("");
-				setphone.setVisibility(View.GONE);
-				btn_bg.setVisibility(View.GONE);
-			}});
-		
+				}				
+			return false;
+			}});		
 	}
 	
 	public void setFb(){
 		setfb.setVisibility(View.VISIBLE);
 		btn_bg.setVisibility(View.VISIBLE);
 		
-		btn_fbOK.setOnClickListener(new OnClickListener(){
+
+		btn_fbOK.setOnTouchListener(new OnTouchListener(){
 			@Override
-			public void onClick(View arg0) {
-				edit_fbuser.getText().toString();	//FB帳號
-				edit_fbpw.getText().toString();	//FB密碼
-				setfb.setVisibility(View.GONE);
-				btn_bg.setVisibility(View.GONE);
+			public boolean onTouch(View v, MotionEvent event){
+				if(event.getAction() == MotionEvent.ACTION_DOWN)
+				{
+					btn_fbOK.setBackgroundColor(Color.rgb(46, 147, 186));
+				}
+				if(event.getAction() == MotionEvent.ACTION_UP)
+				{
+					btn_fbOK.setBackgroundColor(Color.rgb(50, 179, 226));
+					edit_fbuser.getText().toString();	//FB帳號
+					edit_fbpw.getText().toString();	//FB密碼
+					setfb.setVisibility(View.GONE);
+					btn_bg.setVisibility(View.GONE);
+				}				
+			return false;
 			}});
-		btn_fbCancel.setOnClickListener(new OnClickListener(){
+
+		btn_fbCancel.setOnTouchListener(new OnTouchListener(){
 			@Override
-			public void onClick(View v) {
-				setfb.setVisibility(View.GONE);
-				btn_bg.setVisibility(View.GONE);
-			}});
-		
+			public boolean onTouch(View v, MotionEvent event){
+				if(event.getAction() == MotionEvent.ACTION_DOWN)
+				{
+					btn_fbCancel.setBackgroundColor(Color.rgb(46, 147, 186));
+				}
+				if(event.getAction() == MotionEvent.ACTION_UP)
+				{
+					btn_fbCancel.setBackgroundColor(Color.rgb(50, 179, 226));
+					setfb.setVisibility(View.GONE);
+					btn_bg.setVisibility(View.GONE);
+				}				
+			return false;
+			}});		
 	}
 }

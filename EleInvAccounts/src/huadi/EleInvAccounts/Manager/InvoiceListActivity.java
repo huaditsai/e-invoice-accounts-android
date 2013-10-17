@@ -17,8 +17,10 @@ import android.os.Bundle;
 import android.text.TextUtils.TruncateAt;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -60,6 +62,9 @@ public class InvoiceListActivity extends Activity
 	}
 
 	private void setUI() {
+		final int btnMovePosi = 5; //按鈕位移量
+		final int btnMoveNega = -5; //按鈕位移量
+		
 		btn_backfunc = (ImageButton)findViewById(R.id.imageButton1);
 		btn_account = (ImageButton)findViewById(R.id.imageButton2);
 		btn_manager = (ImageButton)findViewById(R.id.imageButton3);
@@ -88,32 +93,62 @@ public class InvoiceListActivity extends Activity
 		invPeriod = String.format("%d 年 %02d - %02d 月", year, month-1, month);
 		
 		text_month.setText(invPeriod); //月份
-		btn_left.setOnClickListener(new OnClickListener(){
+		
+
+		btn_left.setOnTouchListener(new OnTouchListener(){
 			@Override
-			public void onClick(View v) {
-				month -= 2;
-				if(month == 0 && year != 0)
+			public boolean onTouch(View v, MotionEvent event){
+				if(event.getAction() == MotionEvent.ACTION_DOWN)
 				{
-					year--;
-					month = 12;
+					btn_left.setX(btn_left.getX() + btnMovePosi);
+					btn_left.setY(btn_left.getY() + btnMovePosi);
 				}
-				invPeriod = String.format("%d 年 %02d - %02d 月", year, month-1, month);
-				text_month.setText(invPeriod); //月份
-				GetInvList(); //發票清單
-			}});
-		btn_right.setOnClickListener(new OnClickListener(){
+				if(event.getAction() == MotionEvent.ACTION_UP)
+				{
+					btn_left.setX(btn_left.getX() + btnMoveNega);
+					btn_left.setY(btn_left.getY() + btnMoveNega);
+
+					month -= 2;
+					if(month == 0 && year != 0)
+					{
+						year--;
+						month = 12;
+					}
+					invPeriod = String.format("%d 年 %02d - %02d 月", year, month-1, month);
+					text_month.setText(invPeriod); //月份
+					GetInvList(); //發票清單
+				}				
+				return false;
+				}});
+		
+
+		
+		btn_right.setOnTouchListener(new OnTouchListener(){
 			@Override
-			public void onClick(View v) {
-				month += 2;
-				if(month == 14 && year != 0)
+			public boolean onTouch(View v, MotionEvent event){
+				if(event.getAction() == MotionEvent.ACTION_DOWN)
 				{
-					year++;
-					month = 2;
+					btn_right.setX(btn_right.getX() + btnMovePosi);
+					btn_right.setY(btn_right.getY() + btnMovePosi);
 				}
-				invPeriod = String.format("%d 年 %02d - %02d 月", year, month-1, month);
-				text_month.setText(invPeriod); //月份
-				GetInvList(); //發票清單
-			}});
+				if(event.getAction() == MotionEvent.ACTION_UP)
+				{
+					btn_right.setX(btn_right.getX() + btnMoveNega);
+					btn_right.setY(btn_right.getY() + btnMoveNega);
+
+					month += 2;
+					if(month == 14 && year != 0)
+					{
+						year++;
+						month = 2;
+					}
+					invPeriod = String.format("%d 年 %02d - %02d 月", year, month-1, month);
+					text_month.setText(invPeriod); //月份
+					GetInvList(); //發票清單
+				}				
+				return false;
+				}});
+		
 		//月份選擇----------------------------------------------------
 		
 		GetInvList(); //發票清單, popview			
@@ -315,20 +350,53 @@ public class InvoiceListActivity extends Activity
 				invDetailCursor.moveToNext(); //移至資料庫下一筆
 			}
 			
-			popclose.setOnClickListener(new OnClickListener(){	
+			popclose.setOnTouchListener(new OnTouchListener(){
 				@Override
-				public void onClick(View v) {
-					popview.setVisibility(View.GONE);
+				public boolean onTouch(View v, MotionEvent event){
+					if(event.getAction() == MotionEvent.ACTION_DOWN)
+					{
+						popclose.setBackgroundColor(Color.rgb(46, 147, 186));
+					}
+					if(event.getAction() == MotionEvent.ACTION_UP)
+					{
+						popclose.setBackgroundColor(Color.rgb(50, 179, 226));
+
+						popview.setVisibility(View.GONE);
+					}				
+				return false;
 				}});
-			popdelete.setOnClickListener(new OnClickListener(){
+			popdelete.setOnTouchListener(new OnTouchListener(){ //刪除
 				@Override
-				public void onClick(View v) { //刪除					
-				popview.setVisibility(View.GONE);
-				db.delete("Invoice", "invNum = '" + invNum + "'", null);
-				db.delete("InvDetail", "invNum = '" + invNum + "'", null);
-				db.delete("Charge", "invNum = '" + invNum + "'", null);
-				GetInvList();					
+				public boolean onTouch(View v, MotionEvent event){
+					if(event.getAction() == MotionEvent.ACTION_DOWN)
+					{
+						popdelete.setBackgroundColor(Color.rgb(46, 147, 186));
+					}
+					if(event.getAction() == MotionEvent.ACTION_UP)
+					{
+						popdelete.setBackgroundColor(Color.rgb(50, 179, 226));					
+						popview.setVisibility(View.GONE);
+						db.delete("Invoice", "invNum = '" + invNum + "'", null);
+						db.delete("InvDetail", "invNum = '" + invNum + "'", null);
+						db.delete("Charge", "invNum = '" + invNum + "'", null);
+						GetInvList();	
+					}				
+				return false;
 				}});
+//			popclose.setOnClickListener(new OnClickListener(){	
+//				@Override
+//				public void onClick(View v) {
+//					popview.setVisibility(View.GONE);
+//				}});
+//			popdelete.setOnClickListener(new OnClickListener(){
+//				@Override
+//				public void onClick(View v) { //刪除					
+//				popview.setVisibility(View.GONE);
+//				db.delete("Invoice", "invNum = '" + invNum + "'", null);
+//				db.delete("InvDetail", "invNum = '" + invNum + "'", null);
+//				db.delete("Charge", "invNum = '" + invNum + "'", null);
+//				GetInvList();					
+//				}});
 		}
 	}
 	

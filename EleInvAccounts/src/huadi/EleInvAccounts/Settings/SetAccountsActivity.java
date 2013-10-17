@@ -14,8 +14,10 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.TextUtils.TruncateAt;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -202,49 +204,65 @@ public class SetAccountsActivity extends Activity
 		btn_delete.setVisibility(View.GONE);
 		
 		btn_ok.setText("新增");
-		btn_ok.setOnClickListener(new OnClickListener(){
+		btn_ok.setOnTouchListener(new OnTouchListener(){
 			@Override
-			public void onClick(View v) 
-			{
-//				edit_name.getText().toString();
-//				edit_money.getText().toString();
-				
-				ContentValues AccountCV = new ContentValues();
-				AccountCV.put("account_name", edit_name.getText().toString()); //發票編號
-				AccountCV.put("money", edit_money.getText().toString()); //消費金額
-				
-				Cursor InvoiceCursor = db.rawQuery("SELECT account_name "
-					+ "FROM Account "
-					+ "WHERE account_name = '" + edit_name.getText().toString() + "'", null); //要記得''包起來
-				
-				int count = InvoiceCursor.getCount(); //資料筆數
-				if(count == 0)
-					db.insert("Account", null, AccountCV); //新增一筆至 Invoice
-				else
+			public boolean onTouch(View v, MotionEvent event){
+				if(event.getAction() == MotionEvent.ACTION_DOWN)
 				{
-					InvoiceCursor.moveToFirst();
-					for (int i = 0; i < count; i++)
-					{
-						db.update("Account", AccountCV, "account_name = '" + edit_name.getText().toString() + "'", null);
-						InvoiceCursor.moveToNext(); //移至資料庫下一筆
-					}
+					btn_ok.setBackgroundColor(Color.rgb(46, 147, 186));
 				}
-				
-				layout_addnew.setVisibility(View.GONE);
-				btn_bg.setVisibility(View.GONE);
-				edit_name.setText("");
-				edit_money.setText("");
-				setAccount();
+				if(event.getAction() == MotionEvent.ACTION_UP)
+				{
+					btn_ok.setBackgroundColor(Color.rgb(50, 179, 226));
+//					edit_name.getText().toString();
+//					edit_money.getText().toString();
+					
+					ContentValues AccountCV = new ContentValues();
+					AccountCV.put("account_name", edit_name.getText().toString()); //發票編號
+					AccountCV.put("money", edit_money.getText().toString()); //消費金額
+					
+					Cursor InvoiceCursor = db.rawQuery("SELECT account_name "
+						+ "FROM Account "
+						+ "WHERE account_name = '" + edit_name.getText().toString() + "'", null); //要記得''包起來
+					
+					int count = InvoiceCursor.getCount(); //資料筆數
+					if(count == 0)
+						db.insert("Account", null, AccountCV); //新增一筆至 Invoice
+					else
+					{
+						InvoiceCursor.moveToFirst();
+						for (int i = 0; i < count; i++)
+						{
+							db.update("Account", AccountCV, "account_name = '" + edit_name.getText().toString() + "'", null);
+							InvoiceCursor.moveToNext(); //移至資料庫下一筆
+						}
+					}
+					
+					layout_addnew.setVisibility(View.GONE);
+					btn_bg.setVisibility(View.GONE);
+					edit_name.setText("");
+					edit_money.setText("");
+					setAccount();
+				}				
+			return false;
 			}});
-		
-		btn_cancel.setOnClickListener(new OnClickListener(){
+		btn_cancel.setOnTouchListener(new OnTouchListener(){
 			@Override
-			public void onClick(View v) {
-				layout_addnew.setVisibility(View.GONE);
-				btn_bg.setVisibility(View.GONE);
-				edit_name.setText("");
-				edit_money.setText("");
-				setAccount();
+			public boolean onTouch(View v, MotionEvent event){
+				if(event.getAction() == MotionEvent.ACTION_DOWN)
+				{
+					btn_cancel.setBackgroundColor(Color.rgb(46, 147, 186));
+				}
+				if(event.getAction() == MotionEvent.ACTION_UP)
+				{
+					btn_cancel.setBackgroundColor(Color.rgb(50, 179, 226));
+					layout_addnew.setVisibility(View.GONE);
+					btn_bg.setVisibility(View.GONE);
+					edit_name.setText("");
+					edit_money.setText("");
+					setAccount();
+				}				
+			return false;
 			}});
 	}
 	
@@ -258,57 +276,72 @@ public class SetAccountsActivity extends Activity
 		edit_money.setText(account_money);
 		
 		btn_ok.setText("修改");
-		btn_ok.setOnClickListener(new OnClickListener(){
+		btn_ok.setOnTouchListener(new OnTouchListener(){
 			@Override
-			public void onClick(View v) {				
-				
-				if(edit_name.getText().toString().length() > 0)
+			public boolean onTouch(View v, MotionEvent event){
+				if(event.getAction() == MotionEvent.ACTION_DOWN)
 				{
-					if(edit_money.getText().toString().length() < 1)
-						edit_money.setText(0);
-					
-					ContentValues AccountCV = new ContentValues();
-					AccountCV.put("account_name", edit_name.getText().toString()); //發票編號
-					AccountCV.put("money", edit_money.getText().toString()); //消費金額
-					
-					db.update("Account", AccountCV, "account_name = '" + account_name + "'", null);
-					
+					btn_ok.setBackgroundColor(Color.rgb(46, 147, 186));
+				}
+				if(event.getAction() == MotionEvent.ACTION_UP)
+				{
+					btn_ok.setBackgroundColor(Color.rgb(50, 179, 226));
 					layout_addnew.setVisibility(View.GONE);
 					btn_bg.setVisibility(View.GONE);
 					edit_name.setText("");
 					edit_money.setText("");
-					setAccount();
+				}				
+			return false;
+			}});
+		btn_delete.setOnTouchListener(new OnTouchListener(){ //刪除
+			@Override
+			public boolean onTouch(View v, MotionEvent event){
+				if(event.getAction() == MotionEvent.ACTION_DOWN)
+				{
+					btn_delete.setBackgroundColor(Color.rgb(46, 147, 186));
 				}
-				else
-					Toast.makeText(SetAccountsActivity.this, "名稱不得為空", Toast.LENGTH_SHORT).show();
+				if(event.getAction() == MotionEvent.ACTION_UP)
+				{
+					btn_delete.setBackgroundColor(Color.rgb(50, 179, 226));
+					
+					if(edit_name.getText().toString().length() > 0)
+					{
+						if(edit_money.getText().toString().length() < 1)
+							edit_money.setText(0);
+						
+						ContentValues AccountCV = new ContentValues();
+						AccountCV.put("account_name", edit_name.getText().toString()); //發票編號
+						AccountCV.put("money", edit_money.getText().toString()); //消費金額
+						
+						db.update("Account", AccountCV, "account_name = '" + account_name + "'", null);
+						
+						layout_addnew.setVisibility(View.GONE);
+						btn_bg.setVisibility(View.GONE);
+						edit_name.setText("");
+						edit_money.setText("");
+						setAccount();
+					}
+					else
+						Toast.makeText(SetAccountsActivity.this, "名稱不得為空", Toast.LENGTH_SHORT).show();
+				}				
+			return false;
 			}});
-		
-		btn_delete.setOnClickListener(new OnClickListener(){
+		btn_cancel.setOnTouchListener(new OnTouchListener(){
 			@Override
-			public void onClick(View v) { //刪除
-
-				Cursor InvoiceCursor = db.rawQuery("SELECT * "
-					+ "FROM Account "
-					+ "WHERE account_name = '" + edit_name.getText().toString() + "'", null); //要記得''包起來
-				
-				int count = InvoiceCursor.getCount(); //資料筆數
-				if(count > 1)
-					db.delete("Account", "account_name = '" + account_name + "'", null);
-				
-				layout_addnew.setVisibility(View.GONE);
-				btn_bg.setVisibility(View.GONE);
-				edit_name.setText("");
-				edit_money.setText("");
-				setAccount();
-			}});
-		
-		btn_cancel.setOnClickListener(new OnClickListener(){
-			@Override
-			public void onClick(View v) {
-				layout_addnew.setVisibility(View.GONE);
-				btn_bg.setVisibility(View.GONE);
-				edit_name.setText("");
-				edit_money.setText("");
+			public boolean onTouch(View v, MotionEvent event){
+				if(event.getAction() == MotionEvent.ACTION_DOWN)
+				{
+					btn_cancel.setBackgroundColor(Color.rgb(46, 147, 186));
+				}
+				if(event.getAction() == MotionEvent.ACTION_UP)
+				{
+					btn_cancel.setBackgroundColor(Color.rgb(50, 179, 226));
+					layout_addnew.setVisibility(View.GONE);
+					btn_bg.setVisibility(View.GONE);
+					edit_name.setText("");
+					edit_money.setText("");
+				}				
+			return false;
 			}});
 	}
 }

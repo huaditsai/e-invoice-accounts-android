@@ -39,6 +39,8 @@ import android.widget.TextView;
 public class ManagerActivity extends Activity
 {
 	String appID, UUID;
+	final int btnMovePosi = 5; //按鈕位移量
+	final int btnMoveNega = -5; //按鈕位移量
 	
 	int year, month, day;
 	String invPeriod; //對獎發票期別(yyyMM)
@@ -75,8 +77,6 @@ public class ManagerActivity extends Activity
 	}
 
 	private void setUI() {
-		final int btnMovePosi = 5; //按鈕位移量
-		final int btnMoveNega = -5; //按鈕位移量
 		
 		btn_backfunc = (ImageButton)findViewById(R.id.imageButton1);
 		btn_account = (ImageButton)findViewById(R.id.imageButton2);
@@ -302,6 +302,7 @@ public class ManagerActivity extends Activity
 	
 	public void setAnalysis(){ //消費分析
 		linear3.setVisibility(View.VISIBLE);
+		btn_bg.setVisibility(View.VISIBLE);
 		analysistable.removeAllViews();
 		TableRow tr = new TableRow(this);
 		LinearLayout l1;
@@ -337,11 +338,20 @@ public class ManagerActivity extends Activity
 			tr = new TableRow(this);
 		}
 		
-		
-		btn_close3.setOnClickListener(new OnClickListener(){
+		btn_close3.setOnTouchListener(new OnTouchListener(){
 			@Override
-			public void onClick(View arg0) {
-				linear3.setVisibility(View.GONE);
+			public boolean onTouch(View v, MotionEvent event){
+				if(event.getAction() == MotionEvent.ACTION_DOWN)
+				{
+					btn_close3.setBackgroundColor(Color.rgb(46, 147, 186));
+				}
+				if(event.getAction() == MotionEvent.ACTION_UP)
+				{
+					btn_close3.setBackgroundColor(Color.rgb(50, 179, 226));
+					linear3.setVisibility(View.GONE);
+					btn_bg.setVisibility(View.GONE);
+				}				
+			return false;
 			}});
 	}
 	
@@ -365,35 +375,62 @@ public class ManagerActivity extends Activity
 		invPeriod = String.format("%d 年 %02d - %02d 月", year, month-1, month);
 		text_month2.setText(invPeriod); //月份
 		
-		btn_left2.setOnClickListener(new OnClickListener(){
+
+		btn_left2.setOnTouchListener(new OnTouchListener(){
 			@Override
-			public void onClick(View arg0) {
-				month -= 2;
-				if(month == 0 && year != 0)
+			public boolean onTouch(View v, MotionEvent event){
+				if(event.getAction() == MotionEvent.ACTION_DOWN)
 				{
-					year--;
-					month = 12;
+					btn_left2.setX(btn_left2.getX() + btnMovePosi);
+					btn_left2.setY(btn_left2.getY() + btnMovePosi);
 				}
-				invPeriod = String.format("%d 年 %02d - %02d 月", year, month-1, month);
-				text_month2.setText(invPeriod); //月份
-				if(isAuto) Auto();
-				else Manual();				
-			}});
+				if(event.getAction() == MotionEvent.ACTION_UP)
+				{
+					btn_left2.setX(btn_left2.getX() + btnMoveNega);
+					btn_left2.setY(btn_left2.getY() + btnMoveNega);
+
+					month -= 2;
+					if(month == 0 && year != 0)
+					{
+						year--;
+						month = 12;
+					}
+					invPeriod = String.format("%d 年 %02d - %02d 月", year, month-1, month);
+					text_month2.setText(invPeriod); //月份
+					if(isAuto) Auto();
+					else Manual();		
+				}				
+				return false;
+				}});
 		
-		btn_right2.setOnClickListener(new OnClickListener(){
+
+		
+		btn_right2.setOnTouchListener(new OnTouchListener(){
 			@Override
-			public void onClick(View arg0) {
-				month += 2;
-				if(month == 14 && year != 0)
+			public boolean onTouch(View v, MotionEvent event){
+				if(event.getAction() == MotionEvent.ACTION_DOWN)
 				{
-					year++;
-					month = 2;
+					btn_right2.setX(btn_right2.getX() + btnMovePosi);
+					btn_right2.setY(btn_right2.getY() + btnMovePosi);
 				}
-				invPeriod = String.format("%d 年 %02d - %02d 月", year, month-1, month);
-				text_month2.setText(invPeriod); //月份
-				if(isAuto) Auto();
-				else Manual();
-			}});
+				if(event.getAction() == MotionEvent.ACTION_UP)
+				{
+					btn_right2.setX(btn_right2.getX() + btnMoveNega);
+					btn_right2.setY(btn_right2.getY() + btnMoveNega);
+
+					month += 2;
+					if(month == 14 && year != 0)
+					{
+						year++;
+						month = 2;
+					}
+					invPeriod = String.format("%d 年 %02d - %02d 月", year, month-1, month);
+					text_month2.setText(invPeriod); //月份
+					if(isAuto) Auto();
+					else Manual();
+				}				
+				return false;
+				}});
 		
 		btn_invoice.setOnClickListener(new OnClickListener(){ //發票對獎
 			@Override
@@ -413,13 +450,21 @@ public class ManagerActivity extends Activity
 				Manual(); //手動對獎
 			}});
 		
-		btn_close2.setOnClickListener(new OnClickListener(){
+		btn_close2.setOnTouchListener(new OnTouchListener(){
 			@Override
-			public void onClick(View v) {
-				linear2.setVisibility(View.GONE);
-				btn_bg.setVisibility(View.GONE);
+			public boolean onTouch(View v, MotionEvent event){
+				if(event.getAction() == MotionEvent.ACTION_DOWN)
+				{
+					btn_close2.setBackgroundColor(Color.rgb(46, 147, 186));
+				}
+				if(event.getAction() == MotionEvent.ACTION_UP)
+				{
+					btn_close2.setBackgroundColor(Color.rgb(50, 179, 226));
+					linear2.setVisibility(View.GONE);
+					btn_bg.setVisibility(View.GONE);
+				}				
+			return false;
 			}});
-		
 		
 		if(isAuto) Auto(); //自動對獎
 		else Manual(); //手動對獎
@@ -539,43 +584,79 @@ public class ManagerActivity extends Activity
 		invPeriod = String.format("%d 年 %02d - %02d 月", year, month-1, month);
 		text_month.setText(invPeriod); //月份
 		
-		btn_left.setOnClickListener(new OnClickListener(){
+
+		btn_left.setOnTouchListener(new OnTouchListener(){
 			@Override
-			public void onClick(View arg0) {
-				month -= 2;
-				if(month == 0 && year != 0)
+			public boolean onTouch(View v, MotionEvent event){
+				if(event.getAction() == MotionEvent.ACTION_DOWN)
 				{
-					year--;
-					month = 12;
+					btn_left.setX(btn_left.getX() + btnMovePosi);
+					btn_left.setY(btn_left.getY() + btnMovePosi);
 				}
-				invPeriod = String.format("%d 年 %02d - %02d 月", year, month-1, month);
-				text_month.setText(invPeriod); //月份
-				GetWinningList(String.format("%d%02d", year, month));
-			}});
+				if(event.getAction() == MotionEvent.ACTION_UP)
+				{
+					btn_left.setX(btn_left.getX() + btnMoveNega);
+					btn_left.setY(btn_left.getY() + btnMoveNega);
+
+					month -= 2;
+					if(month == 0 && year != 0)
+					{
+						year--;
+						month = 12;
+					}
+					invPeriod = String.format("%d 年 %02d - %02d 月", year, month-1, month);
+					text_month.setText(invPeriod); //月份
+					GetWinningList(String.format("%d%02d", year, month));
+				}				
+				return false;
+				}});
 		
-		btn_right.setOnClickListener(new OnClickListener(){
+
+		
+		btn_right.setOnTouchListener(new OnTouchListener(){
 			@Override
-			public void onClick(View arg0) {
-				month += 2;
-				if(month == 14 && year != 0)
+			public boolean onTouch(View v, MotionEvent event){
+				if(event.getAction() == MotionEvent.ACTION_DOWN)
 				{
-					year++;
-					month = 2;
+					btn_right.setX(btn_right.getX() + btnMovePosi);
+					btn_right.setY(btn_right.getY() + btnMovePosi);
 				}
-				invPeriod = String.format("%d 年 %02d - %02d 月", year, month-1, month);
-				text_month.setText(invPeriod); //月份
-				GetWinningList(String.format("%d%02d", year, month));
-			}});
+				if(event.getAction() == MotionEvent.ACTION_UP)
+				{
+					btn_right.setX(btn_right.getX() + btnMoveNega);
+					btn_right.setY(btn_right.getY() + btnMoveNega);
+
+					month += 2;
+					if(month == 14 && year != 0)
+					{
+						year++;
+						month = 2;
+					}
+					invPeriod = String.format("%d 年 %02d - %02d 月", year, month-1, month);
+					text_month.setText(invPeriod); //月份
+					GetWinningList(String.format("%d%02d", year, month));
+				}				
+				return false;
+				}});
 		
 		GetWinningList(String.format("%d%02d", year, month));
 		
-		btn_close.setOnClickListener(new OnClickListener(){
+
+		btn_close.setOnTouchListener(new OnTouchListener(){
 			@Override
-			public void onClick(View v) {
-				linear1.setVisibility(View.GONE);
-				btn_bg.setVisibility(View.GONE);
-			}});
-		
+			public boolean onTouch(View v, MotionEvent event){
+				if(event.getAction() == MotionEvent.ACTION_DOWN)
+				{
+					btn_close.setBackgroundColor(Color.rgb(46, 147, 186));
+				}
+				if(event.getAction() == MotionEvent.ACTION_UP)
+				{
+					btn_close.setBackgroundColor(Color.rgb(50, 179, 226));
+					linear1.setVisibility(View.GONE);
+					btn_bg.setVisibility(View.GONE);
+				}				
+			return false;
+			}});		
 	}
 	
 	public void GetWinningList(String _invPeriod) //取得開獎號碼

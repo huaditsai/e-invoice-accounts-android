@@ -7,10 +7,19 @@ import com.facebook.android.Facebook.DialogListener;
 import com.facebook.android.FacebookError;
 import com.facebook.model.*;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.List;
 import java.util.Map;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import huadi.EleInvAccounts.MainActivity;
 import huadi.EleInvAccounts.R;
@@ -21,8 +30,11 @@ import huadi.EleInvAccounts.Social.SocialActivity;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.StrictMode;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -33,6 +45,7 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -50,7 +63,8 @@ public class SettingsActivity extends Activity
 	//UI宣告
 	ImageButton btn_backfunc, btn_account, btn_manager, btn_social, btn_setting;
 	ImageButton btn_setaccount, btn_setcategory, btn_setfb, btn_setphone;
-	TextView text_setaccount, text_setcategory, text_setfb, text_setphone;
+	TextView text_setaccount, text_setcategory, text_setfb, text_setphone, username;
+	ImageView userpic;
 	LinearLayout setphone, setfb, fbselect;
 	Button btn_phoneOK, btn_phoneCancel, btn_fbLogin, btn_fbClose, btn_bg;
 	EditText edit_phone, edit_phonecode;
@@ -101,6 +115,8 @@ public class SettingsActivity extends Activity
 		btn_fbClose = (Button)findViewById(R.id.button9);
 		btn_bg = (Button)findViewById(R.id.button1);
 		fbselect = (LinearLayout)findViewById(R.id.fbselect);
+		userpic = (ImageView)findViewById(R.id.userpic);
+		username = (TextView)findViewById(R.id.username);
 		
 		text_setaccount.setText("設定錢包");
 		text_setcategory.setText("設定分類");
@@ -329,9 +345,10 @@ public class SettingsActivity extends Activity
 	
 	@SuppressWarnings("deprecation")
 	public void setFb(){
-		
 		setfb.setVisibility(View.VISIBLE);
 		btn_bg.setVisibility(View.VISIBLE);
+		username.setVisibility(View.GONE);
+		userpic.setVisibility(View.GONE);
 		
     	fb = getSharedPreferences("FaceBook", MODE_PRIVATE ); //偏好設定 
     	final String access_token = fb.getString("access_token", null); 
@@ -340,6 +357,22 @@ public class SettingsActivity extends Activity
     	if (access_token != null && expires != -1){
     		facebook.setAccessToken(access_token);
     	    facebook.setAccessExpires(expires);
+    		username.setVisibility(View.VISIBLE);
+    		userpic.setVisibility(View.VISIBLE);
+			String name = fb.getString("fbname", "");
+			String id = fb.getString("fbid", "");
+			String profile_picture = "https://graph.facebook.com/"+id+"/picture?type=square";
+    		username.setText(name+"你好!");
+    		
+    		String filePath = Environment.getExternalStorageDirectory() + "/EleInvAccounts/" + id + ".png";
+    		File file = new File(filePath);
+    		if (!file.exists())
+    			userpic.setImageBitmap(getFBpic(profile_picture, id));
+    		
+    		else{
+        		Bitmap bitmap = BitmapFactory.decodeFile(filePath);
+        		userpic.setImageBitmap(bitmap);}
+    		
 			//logged
 	    	btn_fbLogin.setText("登出");
 	    	fbselect.setVisibility(View.VISIBLE); //參加排行與否
@@ -366,9 +399,12 @@ public class SettingsActivity extends Activity
 					//logged
 					fb.edit().remove("access_expires").commit();
 					fb.edit().remove("access_token").commit();
+					fb.edit().remove("fbid").commit();
+					fb.edit().remove("fbname").commit();
 					Toast.makeText(SettingsActivity.this, "已登出Facebook", Toast.LENGTH_SHORT).show();
 			    	btn_fbLogin.setText("登入");
 			    	fbselect.setVisibility(View.GONE); //參加排行與否
+			    	setFb();
 			    } else {
 					//not login
 			    	fbLogin();
@@ -395,30 +431,63 @@ public class SettingsActivity extends Activity
 	@SuppressWarnings("deprecation")
 	private void fbLogin(){
     	Log.e("fbLogin","0");
-    	    	
-    	if(facebook.isSessionValid()){}
-    	else if(!facebook.isSessionValid()){
-    		facebook.authorize(this, new String[]{}, Facebook.FORCE_DIALOG_AUTH, new DialogListener(){
+    	facebook.authorize(this, new String[]{"user_about_me"}, Facebook.FORCE_DIALOG_AUTH, new DialogListener(){
 
-				@Override
-				public void onComplete(Bundle values) {
-			    	String token = facebook.getAccessToken();
-		            long token_expires = facebook.getAccessExpires();
-		            SharedPreferences.Editor editor = fb.edit();
-		            editor.putLong("access_expires", token_expires);
-		            editor.putString("access_token", token);
-		            editor.commit();
-		            setFb();
-			    	Log.e("fbLogin", "Complete:[token]"+token);
-				}
+			@Override
+			public void onComplete(Bundle values) {
+			  	try {
+				  	String token = facebook.getAccessToken();
+				  	long token_expires = facebook.getAccessExpires();
+					String about_me = facebook.request("me"); //json string
+					
+					JSONObject jb1 = new JSONObject(about_me);
+					String id = jb1.getString("id");
+					String name = jb1.getString("name");
+					String profile_picture = "https://graph.facebook.com/"+id+"/picture?type=square";
+					username.setText(name+"你好!");
+					userpic.setImageBitmap(getFBpic(profile_picture, id));
+					
+			        SharedPreferences.Editor editor = fb.edit();
+			        editor.putLong("access_expires", token_expires);
+			        editor.putString("access_token", token);
+			        editor.putString("fbid", id);
+			        editor.putString("fbname", name);
+			        editor.commit();
+			        setFb();
+					Toast.makeText(SettingsActivity.this, name+"已登入Facebook", Toast.LENGTH_SHORT).show();
+				} catch (MalformedURLException e) {e.printStackTrace();} 
+			  	catch (IOException e) {e.printStackTrace();} 
+			  	catch (JSONException e) {e.printStackTrace();}
+			}
 
-				@Override
-				public void onFacebookError(FacebookError e) {Log.e("fbLogin","FacebookError:"+e);}
-				@Override
-				public void onError(DialogError e) {Log.e("fbLogin","Error:"+e);}
-				@Override
-				public void onCancel() {}});
-    	}
+			@Override
+			public void onFacebookError(FacebookError e) {Log.e("fbLogin","FacebookError:"+e);}
+			@Override
+			public void onError(DialogError e) {Log.e("fbLogin","Error:"+e);}
+			@Override
+			public void onCancel() {}});
+	}
+	
+	private Bitmap getFBpic(String profile_picture, String id){ //儲存FB User大頭照
+		Bitmap bitmap = null;
+		try {
+			URL url = new URL(profile_picture);URLConnection conn = url.openConnection();
+	        conn.connect();
+	        InputStream is = conn.getInputStream();
+	        BitmapFactory.Options options=new BitmapFactory.Options();
+	        bitmap = BitmapFactory.decodeStream(is,null,options);
+	
+			File folder = new File(Environment.getExternalStorageDirectory(), "EleInvAccounts");
+			if(!folder.exists())
+				folder.mkdir();
+			File file = new File(Environment.getExternalStorageDirectory() + "/EleInvAccounts/", id + ".png");
+			FileOutputStream fos = new FileOutputStream(file);
+			bitmap.compress(Bitmap.CompressFormat.PNG, 0, fos);
+		}
+		catch (MalformedURLException e) {e.printStackTrace();} 
+		catch (IOException e) {e.printStackTrace();}
+		
+		return bitmap;
 	}
 	
 	@SuppressWarnings("deprecation")

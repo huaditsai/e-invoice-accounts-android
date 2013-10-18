@@ -1,8 +1,14 @@
 package huadi.EleInvAccounts.Settings;
 
 import com.facebook.*;
+import com.facebook.android.DialogError;
+import com.facebook.android.Facebook;
+import com.facebook.android.Facebook.DialogListener;
+import com.facebook.android.FacebookError;
 import com.facebook.model.*;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.List;
 import java.util.Map;
 
@@ -17,6 +23,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -35,6 +42,10 @@ import android.widget.ToggleButton;
 public class SettingsActivity extends Activity
 {
 	String appID, UUID;
+	String fbappID = "1421440268083722";
+	String fbappSecret = "YOUR_FACEBOOK_APP_SECRET";
+	private Facebook facebook = new Facebook(fbappID);
+	private SharedPreferences fb;
 	
 	//UI宣告
 	ImageButton btn_backfunc, btn_account, btn_manager, btn_social, btn_setting;
@@ -49,12 +60,17 @@ public class SettingsActivity extends Activity
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_settings);
+	        
+	    StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().detectDiskReads()
+	    		.detectDiskWrites().detectNetwork().penaltyLog().build());
+	    StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder().detectLeakedSqlLiteObjects()
+	    		.detectLeakedClosableObjects().penaltyLog().penaltyDeath().build());
 		
 		SharedPreferences ids = getSharedPreferences("IDs", MODE_PRIVATE ); //偏好設定
 		appID = ids.getString("appID", "");
 		UUID = ids.getString("UUID", "");
 		
-		setUI();		
+		setUI();
 	}
 
 	private void setUI() {
@@ -311,15 +327,19 @@ public class SettingsActivity extends Activity
 			}});		
 	}
 	
+	@SuppressWarnings("deprecation")
 	public void setFb(){
 		
 		setfb.setVisibility(View.VISIBLE);
 		btn_bg.setVisibility(View.VISIBLE);
 		
-
-		final Session session = Session.getActiveSession();
-		Log.e("FBStatus", session+"");
-	    if (session != null && session.isOpened()) {
+    	fb = getSharedPreferences("FaceBook", MODE_PRIVATE ); //偏好設定 
+    	final String access_token = fb.getString("access_token", null); 
+    	final Long expires = fb.getLong("access_expires", -1);
+		
+    	if (access_token != null && expires != -1){
+    		facebook.setAccessToken(access_token);
+    	    facebook.setAccessExpires(expires);
 			//logged
 	    	btn_fbLogin.setText("登出");
 	    	fbselect.setVisibility(View.VISIBLE); //參加排行與否
@@ -342,10 +362,11 @@ public class SettingsActivity extends Activity
 		btn_fbLogin.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View arg0) {
-			    if (session != null && session.isOpened()) {
+				if (access_token != null && expires != -1){
 					//logged
-				    Session.getActiveSession().closeAndClearTokenInformation();
-					Session.setActiveSession(null);
+					fb.edit().remove("access_expires").commit();
+					fb.edit().remove("access_token").commit();
+					Toast.makeText(SettingsActivity.this, "已登出Facebook", Toast.LENGTH_SHORT).show();
 			    	btn_fbLogin.setText("登入");
 			    	fbselect.setVisibility(View.GONE); //參加排行與否
 			    } else {
@@ -371,42 +392,48 @@ public class SettingsActivity extends Activity
 			}});		
 	}
 	
+	@SuppressWarnings("deprecation")
 	private void fbLogin(){
     	Log.e("fbLogin","0");
-			// start Facebook Login TODO SSO Login problem
-		    Session.openActiveSession(this, true, new Session.StatusCallback() {
-		      // callback when session changes state
-		      @SuppressWarnings("deprecation")
-			@Override
-		      public void call(Session session, SessionState state, Exception exception) {
-		        if (session.isOpened()) {
-			    	Log.e("fbLogin","1");
+    	    	
+    	if(facebook.isSessionValid()){}
+    	else if(!facebook.isSessionValid()){
+    		facebook.authorize(this, new String[]{}, Facebook.FORCE_DIALOG_AUTH, new DialogListener(){
 
-		          // make request to the /me API
-		          Request.executeMeRequestAsync(session, new Request.GraphUserCallback() {
+				@Override
+				public void onComplete(Bundle values) {
+			    	String token = facebook.getAccessToken();
+		            long token_expires = facebook.getAccessExpires();
+		            SharedPreferences.Editor editor = fb.edit();
+		            editor.putLong("access_expires", token_expires);
+		            editor.putString("access_token", token);
+		            editor.commit();
+		            setFb();
+			    	Log.e("fbLogin", "Complete:[token]"+token);
+				}
 
-		            // callback after Graph API response with user object
-		            @Override
-		            public void onCompleted(GraphUser user, Response response) {
-				    	Log.e("fbLogin","2");
-		              if (user != null) {
-					    	Log.e("fbLogin","3");
-			    	    	setFb();
-					    	Log.e("fbLogin", "ID:"+user.getId()+";USER NAME:"+user.getName());
-		          		}
-		            }
-		          });
-		        }
-		      }
-		    });
+				@Override
+				public void onFacebookError(FacebookError e) {Log.e("fbLogin","FacebookError:"+e);}
+				@Override
+				public void onError(DialogError e) {Log.e("fbLogin","Error:"+e);}
+				@Override
+				public void onCancel() {}});
+    	}
 	}
 	
+	@SuppressWarnings("deprecation")
+	@Override
+	protected void onResume(){
+		super.onResume();
+		facebook.extendAccessTokenIfNeeded(this, null);
+	}
 	
 	//facebook login
+	@SuppressWarnings("deprecation")
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
-		Session.getActiveSession().onActivityResult(this, requestCode, resultCode, data);
+		facebook.authorizeCallback(requestCode, resultCode, data);
 	}
 
 }

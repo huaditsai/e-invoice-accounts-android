@@ -445,7 +445,15 @@ public class SettingsActivity extends Activity
 					String name = jb1.getString("name");
 					String profile_picture = "https://graph.facebook.com/"+id+"/picture?type=square";
 					username.setText(name+"§A¦n!");
-					userpic.setImageBitmap(getFBpic(profile_picture, id));
+					
+					String filePath = Environment.getExternalStorageDirectory() + "/EleInvAccounts/" + id + ".png";
+		    		File file = new File(filePath);
+		    		if (!file.exists())
+		    			userpic.setImageBitmap(getFBpic(profile_picture, id));
+		    		
+		    		else{
+		        		Bitmap bitmap = BitmapFactory.decodeFile(filePath);
+		        		userpic.setImageBitmap(bitmap);}
 					
 			        SharedPreferences.Editor editor = fb.edit();
 			        editor.putLong("access_expires", token_expires);

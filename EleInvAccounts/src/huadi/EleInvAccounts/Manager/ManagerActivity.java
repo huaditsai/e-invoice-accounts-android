@@ -1,9 +1,11 @@
 package huadi.EleInvAccounts.Manager;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
+import huadi.EleInvAccounts.DBHelper;
 import huadi.EleInvAccounts.MainActivity;
 import huadi.EleInvAccounts.R;
 import huadi.EleInvAccounts.Accounts.AccountsActivity;
@@ -16,6 +18,8 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -39,6 +43,8 @@ import android.widget.TextView;
 public class ManagerActivity extends Activity
 {
 	String appID, UUID;
+	SQLiteDatabase db = null;
+	
 	final int btnMovePosi = 5; //按鈕位移量
 	final int btnMoveNega = -5; //按鈕位移量
 	
@@ -72,6 +78,9 @@ public class ManagerActivity extends Activity
 		SharedPreferences ids = getSharedPreferences("IDs", MODE_PRIVATE ); //偏好設定
 		appID = ids.getString("appID", "");
 		UUID = ids.getString("UUID", "");
+		
+		DBHelper dbHelper = new DBHelper(this);
+		db = dbHelper.getWritableDatabase();
 		
 		setUI();
 	}
@@ -300,14 +309,49 @@ public class ManagerActivity extends Activity
 		//slide-----------------------------------------------------------------
 	}
 	
-	public void setAnalysis(){ //消費分析
+	public void setAnalysis()
+	{ //消費分析
+		
+		Cursor mainCat = db.rawQuery("SELECT main "
+			+ "FROM MainCategory ", null); //要記得''包起來 ASC小-大 DESC大-小
+		
+		int count = mainCat.getCount(); //資料筆數
+		if(count > 0 )
+			mainCat.moveToFirst();
+		
+		List<Integer> moneyList = new ArrayList<Integer>();
+		
+		for (int i = 0; i < count; i++)
+		{
+			Cursor charge = db.rawQuery("SELECT money "
+				+ "FROM Charge "
+				+ "WHERE mainCategory = '" + mainCat.getString(mainCat.getColumnIndex("main")) + "'", null);
+			
+			int tmp = 0;
+			if(charge.getCount() > 0)
+				charge.moveToFirst();
+			for (int j = 0; j < charge.getCount(); j++)
+			{
+				tmp += charge.getInt(charge.getColumnIndex("money"));
+				charge.moveToNext();
+			}
+			moneyList.add(tmp);
+			mainCat.moveToNext();
+		}
+		
+		float total = 0;
+		for (int i = 0; i < moneyList.size(); i++)
+		{
+			total += moneyList.get(i);			
+		}
+		
 		linear3.setVisibility(View.VISIBLE);
 		btn_bg.setVisibility(View.VISIBLE);
 		analysistable.removeAllViews();
 		TableRow tr = new TableRow(this);
 		LinearLayout l1;
 		TextView[] item, percent, cost;
-		int count = 5;
+//		int count = 5;
 
 		item = new TextView[count];
 		percent = new TextView[count];
@@ -318,16 +362,20 @@ public class ManagerActivity extends Activity
 		int Width = dm.widthPixels;
 		int Height = dm.heightPixels;
 		
-		for(int i=0;i<count;i++){
+		if(count > 0 )
+			mainCat.moveToFirst();
+		
+		for(int i=0;i<count;i++)
+		{
 			l1 = new LinearLayout(this);
 			item[i] = new TextView(this);
-			item[i].setText("分類");
+			item[i].setText(mainCat.getString(mainCat.getColumnIndex("main")));//("分類");
 			item[i].setMinWidth(Width/4);
 			percent[i] = new TextView(this);
-			percent[i].setText("0%");
+			percent[i].setText(((float)moneyList.get(i)/total)*100 + " %");
 			percent[i].setMinWidth(Width/4);
 			cost[i] = new TextView(this);
-			cost[i].setText("300NTD");
+			cost[i].setText(moneyList.get(i) + " NTD");
 			cost[i].setMinWidth(Width/4);
 
 			l1.addView(item[i]);
@@ -336,6 +384,8 @@ public class ManagerActivity extends Activity
 			tr.addView(l1);
 			analysistable.addView(tr);
 			tr = new TableRow(this);
+			
+			mainCat.moveToNext();
 		}
 		
 		btn_close3.setOnTouchListener(new OnTouchListener(){

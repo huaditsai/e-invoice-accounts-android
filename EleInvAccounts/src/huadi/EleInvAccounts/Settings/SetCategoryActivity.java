@@ -409,16 +409,13 @@ public class SetCategoryActivity extends Activity
 						db.update("MainCategory", mainCateCV, "main = '" + item + "'", null);
 						
 						//SubCategory中的也要跟著更新
-						Cursor subCateCursor = db.rawQuery("SELECT main " 
-							+ "FROM SubCategory "
-							+ "Where main = '" + item + "'", null); //要記得''包起來
+						db.update("SubCategory", mainCateCV, "main = '" + item + "'", null);
 						
-						int subCount = subCateCursor.getCount(); //資料筆數
-						subCateCursor.close();
-						if(subCount > 0)
-						{
-							db.update("SubCategory", mainCateCV, "main = '" + item + "'", null);
-						}
+						//記帳裡也要改
+						ContentValues chargeCV = new ContentValues();
+						chargeCV.put("mainCategory", edit_main.getText().toString());
+						db.update("Charge", chargeCV, "mainCategory = '" + item + "'", null);
+						
 					}				
 					layout_main.setVisibility(View.GONE);
 					layout_original.setVisibility(View.GONE);
@@ -570,17 +567,23 @@ public class SetCategoryActivity extends Activity
 					btn_ok2.setBackgroundColor(Color.rgb(50, 179, 226));
 					if(edit_sub.getText().toString().length() > 0)
 					{
-						Cursor subCursor = db.rawQuery("SELECT main "
-							+ "FROM SubCategory "
-							+ "WHERE main = '" + mainItem + "'" 
-							+ "AND sub = '" + subItem + "'", null); //要記得''包起來
+//						Cursor subCursor = db.rawQuery("SELECT main "
+//							+ "FROM SubCategory "
+//							+ "WHERE main = '" + mainItem + "'" 
+//							+ "AND sub = '" + subItem + "'", null); //要記得''包起來
 
 						ContentValues subCateCV = new ContentValues();
 						subCateCV.put("main", spinner1.getSelectedItem().toString());
 						subCateCV.put("sub", edit_sub.getText().toString());
 						db.update("SubCategory", subCateCV,"main = '" + mainItem + "'" + "AND sub = '" + subItem + "'", null);
+						
+						//記帳裡也要改
+						ContentValues chargeCV = new ContentValues();
+						chargeCV.put("mainCategory", spinner1.getSelectedItem().toString());
+						chargeCV.put("subCategory", edit_sub.getText().toString());
+						db.update("Charge", chargeCV, "mainCategory = '" + mainItem + "'" + "AND subCategory = '" + subItem + "'", null);
 
-						subCursor.close();
+//						subCursor.close();
 					}
 					
 					layout_sub.setVisibility(View.GONE);

@@ -399,7 +399,10 @@ public class ManagerActivity extends Activity
 
 		for (int i = 0; i < count; i++)
 		{
-			Cursor charge = db.rawQuery("SELECT money " + "FROM Charge " + "WHERE mainCategory = '" + mainCat.getString(mainCat.getColumnIndex("main")) + "'", null);
+			Cursor charge = db.rawQuery("SELECT money " 
+					+ "FROM Charge " 
+					+ "WHERE mainCategory = '" + mainCat.getString(mainCat.getColumnIndex("main"))
+					+ "'", null);
 
 			int tmp = 0;
 			if (charge.getCount() > 0)

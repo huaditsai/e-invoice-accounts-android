@@ -193,7 +193,8 @@ public class SetAccountsActivity extends Activity
 					setNewAccount();				
 				}});
 			
-		}		
+		}
+		accountCursor.close();
 		
 	}
 	
@@ -243,6 +244,8 @@ public class SetAccountsActivity extends Activity
 					edit_name.setText("");
 					edit_money.setText("");
 					setAccount();
+					
+					InvoiceCursor.close();
 				}				
 			return false;
 			}});
@@ -286,10 +289,31 @@ public class SetAccountsActivity extends Activity
 				if(event.getAction() == MotionEvent.ACTION_UP)
 				{
 					btn_ok.setBackgroundColor(Color.rgb(50, 179, 226));
+					
+					Cursor InvoiceCursor = db.rawQuery("SELECT account_name "
+						+ "FROM Account "
+						+ "WHERE account_name = '" + edit_name.getText().toString() + "'", null); //要記得''包起來
+					
+					ContentValues AccountCV = new ContentValues();
+					AccountCV.put("account_name", edit_name.getText().toString()); //發票編號
+					AccountCV.put("money", edit_money.getText().toString()); //消費金額
+					
+//					int count = InvoiceCursor.getCount(); //資料筆數
+//					
+//					InvoiceCursor.moveToFirst();
+//					for (int i = 0; i < count; i++)
+//					{
+						db.update("Account", AccountCV, "account_name = '" + account_name + "'", null);
+//						InvoiceCursor.moveToNext(); //移至資料庫下一筆
+//					}
+					
 					layout_addnew.setVisibility(View.GONE);
 					btn_bg.setVisibility(View.GONE);
 					edit_name.setText("");
 					edit_money.setText("");
+					setAccount();
+					
+					InvoiceCursor.close();
 				}				
 			return false;
 			}});
@@ -303,26 +327,13 @@ public class SetAccountsActivity extends Activity
 				if(event.getAction() == MotionEvent.ACTION_UP)
 				{
 					btn_delete.setBackgroundColor(Color.rgb(50, 179, 226));
+					db.delete("Account", "account_name = '" + account_name + "'", null);
 					
-					if(edit_name.getText().toString().length() > 0)
-					{
-						if(edit_money.getText().toString().length() < 1)
-							edit_money.setText(0);
-						
-						ContentValues AccountCV = new ContentValues();
-						AccountCV.put("account_name", edit_name.getText().toString()); //發票編號
-						AccountCV.put("money", edit_money.getText().toString()); //消費金額
-						
-						db.update("Account", AccountCV, "account_name = '" + account_name + "'", null);
-						
-						layout_addnew.setVisibility(View.GONE);
-						btn_bg.setVisibility(View.GONE);
-						edit_name.setText("");
-						edit_money.setText("");
-						setAccount();
-					}
-					else
-						Toast.makeText(SetAccountsActivity.this, "名稱不得為空", Toast.LENGTH_SHORT).show();
+					layout_addnew.setVisibility(View.GONE);
+					btn_bg.setVisibility(View.GONE);
+					edit_name.setText("");
+					edit_money.setText("");
+					setAccount();
 				}				
 			return false;
 			}});

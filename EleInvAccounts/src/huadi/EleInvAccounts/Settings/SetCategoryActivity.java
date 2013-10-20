@@ -160,6 +160,7 @@ public class SetCategoryActivity extends Activity
 						db.insert("SubCategory", null, subCateCV);
 					}				
 					mainCateCursor.moveToNext(); //移至資料庫下一筆
+					subCursor.close();
 				}
 			}
 			else 
@@ -180,6 +181,7 @@ public class SetCategoryActivity extends Activity
 				
 				mainCategoryItem = new String[]{"食", "衣"};
 			}
+			mainCateCursor.close();
 				
 				
 //				setCategory(); //以防主分類為空
@@ -230,6 +232,7 @@ public class SetCategoryActivity extends Activity
 						subCursor.moveToNext(); //移至資料庫下一筆
 					}
 				}
+				subCursor.close();
 
 				rl = new RelativeLayout(this);
 				
@@ -339,12 +342,17 @@ public class SetCategoryActivity extends Activity
 							mainCateCV.put("main", edit_main.getText().toString());
 							db.insert("MainCategory", null, mainCateCV);
 						}
+						Log.e("error","1");
+						mainCateCursor.close();
+						Log.e("error","2");
 					}
 									
 					layout_main.setVisibility(View.GONE);
 					btn_bg.setVisibility(View.GONE);
 					edit_main.setText("");
+					Log.e("error","3");
 					setCategory();
+					Log.e("error","4");
 				}				
 			return false;
 			}});
@@ -405,7 +413,8 @@ public class SetCategoryActivity extends Activity
 							+ "FROM SubCategory "
 							+ "Where main = '" + item + "'", null); //要記得''包起來
 						
-						int subCount = subCateCursor.getCount(); //資料筆數				
+						int subCount = subCateCursor.getCount(); //資料筆數
+						subCateCursor.close();
 						if(subCount > 0)
 						{
 							db.update("SubCategory", mainCateCV, "main = '" + item + "'", null);
@@ -437,7 +446,8 @@ public class SetCategoryActivity extends Activity
 						+ "FROM SubCategory "
 						+ "Where main = '" + item + "'", null); //要記得''包起來
 					
-					int subCount = subCateCursor.getCount(); //資料筆數				
+					int subCount = subCateCursor.getCount(); //資料筆數
+					subCateCursor.close();
 					if(subCount > 0)
 					{
 						db.delete("SubCategory", "main = '" + item + "'", null);
@@ -495,7 +505,8 @@ public class SetCategoryActivity extends Activity
 							+ "FROM SubCategory "
 							+ "WHERE sub = '" + edit_sub.getText().toString() + "'", null); //要記得''包起來
 						
-						int subCateCount = subCursor.getCount(); //資料筆數	
+						int subCateCount = subCursor.getCount(); //資料筆數
+						subCursor.close();
 						if(subCateCount == 0)
 						{
 							ContentValues subCateCV = new ContentValues();
@@ -563,14 +574,13 @@ public class SetCategoryActivity extends Activity
 							+ "FROM SubCategory "
 							+ "WHERE main = '" + mainItem + "'" 
 							+ "AND sub = '" + subItem + "'", null); //要記得''包起來
-						
-						if(subCursor.getCount() <= 0)
-						{
-							ContentValues subCateCV = new ContentValues();
-							subCateCV.put("main", spinner1.getSelectedItem().toString());
-							subCateCV.put("sub", edit_sub.getText().toString());
-							db.update("SubCategory", subCateCV,"main = '" + mainItem + "'" + "AND sub = '" + subItem + "'", null);
-						}
+
+						ContentValues subCateCV = new ContentValues();
+						subCateCV.put("main", spinner1.getSelectedItem().toString());
+						subCateCV.put("sub", edit_sub.getText().toString());
+						db.update("SubCategory", subCateCV,"main = '" + mainItem + "'" + "AND sub = '" + subItem + "'", null);
+
+						subCursor.close();
 					}
 					
 					layout_sub.setVisibility(View.GONE);

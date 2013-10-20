@@ -380,6 +380,7 @@ public class AccountsActivity extends Activity
 			db.insert("Account", null, accountCV);
 			account = new String[]{"wallet01"};
 		}
+		accountCursor.close();
 		
 		//建立一個ArrayAdapter物件，並放置下拉選單的內容
 		ArrayAdapter<String> adapter1 = new ArrayAdapter<String>(AccountsActivity.this, 
@@ -416,6 +417,7 @@ public class AccountsActivity extends Activity
 
 			mainCategory = new String[]{"其他", "其他"};
 		}
+		mainCateCursor.close();
 		
 		//建立一個ArrayAdapter物件，並放置下拉選單的內容
 		ArrayAdapter<String> adapter2 = new ArrayAdapter<String>(AccountsActivity.this, 
@@ -453,6 +455,7 @@ public class AccountsActivity extends Activity
 					db.insert("SubCategory", null, subCateCV);
 					subCategory = new String[]{"其他"};
 				}
+				subCursor.close();
 				
 				ArrayAdapter<String> adapter3 = new ArrayAdapter<String>(AccountsActivity.this, 
 					android.R.layout.simple_spinner_item, subCategory);
@@ -551,6 +554,7 @@ public class AccountsActivity extends Activity
 										accountCursor.moveToNext(); //移至資料庫下一筆
 									}
 								}
+								accountCursor.close();
 								
 								if(!isCapture && !isCarrier) //手動發票記帳(傳統發票), 若為 發票, 就要存到Invoice,InvDetail
 								{					
@@ -583,6 +587,7 @@ public class AccountsActivity extends Activity
 											invoiceCursor.moveToNext(); //移至資料庫下一筆
 										}
 									}
+									invoiceCursor.close();
 									
 									ContentValues invDetailCV = new ContentValues();
 									invDetailCV.put("invNum", invNum); //發票編號
@@ -608,6 +613,7 @@ public class AccountsActivity extends Activity
 											invDetailCursor.moveToNext(); //移至資料庫下一筆
 										}
 									}
+									invDetailCursor.close();
 								}
 				
 								InitPopView();
@@ -673,6 +679,7 @@ public class AccountsActivity extends Activity
 									accountCursor.moveToNext(); //移至資料庫下一筆
 								}
 							}
+							accountCursor.close();
 							InitPopView();
 						}
 					}
@@ -803,6 +810,7 @@ public class AccountsActivity extends Activity
 				invListCursor.moveToNext(); //移至資料庫下一筆
 			}
 		}
+		invListCursor.close();
 		
 		text_total.setText("總資產");
 		text_income.setText("本月收入 " + income);
@@ -1085,6 +1093,7 @@ public class AccountsActivity extends Activity
 				ChargeListCursor.moveToNext(); //移至資料庫下一筆
 			}
 		}
+		ChargeListCursor.close();
 	}
 	
 	private void InitPopView()
@@ -1168,6 +1177,7 @@ public class AccountsActivity extends Activity
 			}			
 			
 		}
+		invDetailCursor.close();
 	}
 	
 	private void CarrierPopView(int _invIndex, int _detailIndex)
@@ -1231,6 +1241,7 @@ public class AccountsActivity extends Activity
 			}
 			
 		}
+		invDetailCursor.close();
 		
 	}
 	

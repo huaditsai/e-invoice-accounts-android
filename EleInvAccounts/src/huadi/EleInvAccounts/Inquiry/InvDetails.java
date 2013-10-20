@@ -3,6 +3,7 @@ package huadi.EleInvAccounts.Inquiry;
 import huadi.EleInvAccounts.DBHelper;
 import huadi.EleInvAccounts.Accounts.AccountsActivity;
 
+import java.net.URL;
 import java.text.MessageFormat;
 
 import org.apache.http.HttpResponse;
@@ -134,6 +135,7 @@ public class InvDetails extends AsyncTask<String, Integer, String> // <傳入參數,
 							InvoiceCursor.moveToNext(); //移至資料庫下一筆
 						}
 					}
+					InvoiceCursor.close();
 
 					publishProgress(70); //進度
 
@@ -177,6 +179,7 @@ public class InvDetails extends AsyncTask<String, Integer, String> // <傳入參數,
 //								Log.e("db.update", "" + count2 + ", " + rowNum);
 							}
 						}
+						invDetailCursor.close();
 					}
 					
 					publishProgress(90); //進度

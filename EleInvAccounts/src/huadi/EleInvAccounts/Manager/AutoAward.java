@@ -86,6 +86,7 @@ public class AutoAward
 			//Log.e("prize", "" + prize);
 			winnerMap.put("prize", prize);
 		}
+		InvoiceCursor.close();
 
 		return winnerMap;
 	}

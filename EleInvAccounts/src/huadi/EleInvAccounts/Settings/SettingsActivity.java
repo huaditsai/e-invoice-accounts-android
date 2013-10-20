@@ -1,23 +1,16 @@
 package huadi.EleInvAccounts.Settings;
 
-import com.facebook.*;
 import com.facebook.android.DialogError;
 import com.facebook.android.Facebook;
 import com.facebook.android.Facebook.DialogListener;
 import com.facebook.android.FacebookError;
-import com.facebook.model.*;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.List;
 import java.util.Map;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -27,6 +20,7 @@ import huadi.EleInvAccounts.Accounts.AccountsActivity;
 import huadi.EleInvAccounts.Inquiry.CarrierHead;
 import huadi.EleInvAccounts.Manager.ManagerActivity;
 import huadi.EleInvAccounts.Social.SocialActivity;
+import huadi.EleInvAccounts.Social.Utility;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -344,7 +338,8 @@ public class SettingsActivity extends Activity
 	}
 	
 	@SuppressWarnings("deprecation")
-	public void setFb(){
+	public void setFb(){		
+		
 		setfb.setVisibility(View.VISIBLE);
 		btn_bg.setVisibility(View.VISIBLE);
 		username.setVisibility(View.GONE);
@@ -367,7 +362,7 @@ public class SettingsActivity extends Activity
     		String filePath = Environment.getExternalStorageDirectory() + "/EleInvAccounts/" + id + ".png";
     		File file = new File(filePath);
     		if (!file.exists())
-    			userpic.setImageBitmap(getFBpic(profile_picture, id));
+    			userpic.setImageBitmap(Utility.getFBpic(profile_picture, id));
     		
     		else{
         		Bitmap bitmap = BitmapFactory.decodeFile(filePath);
@@ -377,12 +372,28 @@ public class SettingsActivity extends Activity
 	    	btn_fbLogin.setText("登出");
 	    	fbselect.setVisibility(View.VISIBLE); //參加排行與否
 	    	ToggleButton toggle = (ToggleButton) findViewById(R.id.togglebutton);
+	    	if(fb.getString("join", "").toString().equals("true"))
+	    		toggle.setChecked(true);
+	    	else if(fb.getString("join", "").toString().equals("false"))
+	    		toggle.setChecked(false);
+	    	else if(fb.getString("join", "").toString().equals(null))
+	    		toggle.setChecked(true);
 			toggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 			    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 			        if (isChecked) {
 			            // The toggle is enabled
+				        SharedPreferences.Editor editor = fb.edit();
+				        editor.putString("join", "true");
+				        editor.commit();
+						//更新後台資料
+				        Utility.getJson(SettingsActivity.this, "update");
 			        } else {
 			            // The toggle is disabled
+				        SharedPreferences.Editor editor = fb.edit();
+				        editor.putString("join", "false");
+				        editor.commit();
+						//更新後台資料
+				        Utility.getJson(SettingsActivity.this, "update");
 			        }
 			    }
 			});
@@ -401,6 +412,7 @@ public class SettingsActivity extends Activity
 					fb.edit().remove("access_token").commit();
 					fb.edit().remove("fbid").commit();
 					fb.edit().remove("fbname").commit();
+					fb.edit().remove("join").commit();
 					Toast.makeText(SettingsActivity.this, "已登出Facebook", Toast.LENGTH_SHORT).show();
 			    	btn_fbLogin.setText("登入");
 			    	fbselect.setVisibility(View.GONE); //參加排行與否
@@ -445,21 +457,15 @@ public class SettingsActivity extends Activity
 					String name = jb1.getString("name");
 					String profile_picture = "https://graph.facebook.com/"+id+"/picture?type=square";
 					username.setText(name+"你好!");
-					
-					String filePath = Environment.getExternalStorageDirectory() + "/EleInvAccounts/" + id + ".png";
-		    		File file = new File(filePath);
-		    		if (!file.exists())
-		    			userpic.setImageBitmap(getFBpic(profile_picture, id));
-		    		
-		    		else{
-		        		Bitmap bitmap = BitmapFactory.decodeFile(filePath);
-		        		userpic.setImageBitmap(bitmap);}
+		    		userpic.setImageBitmap(Utility.getFBpic(profile_picture, id));
 					
 			        SharedPreferences.Editor editor = fb.edit();
 			        editor.putLong("access_expires", token_expires);
 			        editor.putString("access_token", token);
 			        editor.putString("fbid", id);
 			        editor.putString("fbname", name);
+			        if(fb.getString("join", "").length()<0)
+			        	editor.putString("join", "true");
 			        editor.commit();
 			        setFb();
 					Toast.makeText(SettingsActivity.this, name+"已登入Facebook", Toast.LENGTH_SHORT).show();
@@ -474,28 +480,6 @@ public class SettingsActivity extends Activity
 			public void onError(DialogError e) {Log.e("fbLogin","Error:"+e);}
 			@Override
 			public void onCancel() {}});
-	}
-	
-	private Bitmap getFBpic(String profile_picture, String id){ //儲存FB User大頭照
-		Bitmap bitmap = null;
-		try {
-			URL url = new URL(profile_picture);URLConnection conn = url.openConnection();
-	        conn.connect();
-	        InputStream is = conn.getInputStream();
-	        BitmapFactory.Options options=new BitmapFactory.Options();
-	        bitmap = BitmapFactory.decodeStream(is,null,options);
-	
-			File folder = new File(Environment.getExternalStorageDirectory(), "EleInvAccounts");
-			if(!folder.exists())
-				folder.mkdir();
-			File file = new File(Environment.getExternalStorageDirectory() + "/EleInvAccounts/", id + ".png");
-			FileOutputStream fos = new FileOutputStream(file);
-			bitmap.compress(Bitmap.CompressFormat.PNG, 0, fos);
-		}
-		catch (MalformedURLException e) {e.printStackTrace();} 
-		catch (IOException e) {e.printStackTrace();}
-		
-		return bitmap;
 	}
 	
 	@SuppressWarnings("deprecation")

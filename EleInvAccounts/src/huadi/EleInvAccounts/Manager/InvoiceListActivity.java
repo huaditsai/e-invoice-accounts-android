@@ -285,6 +285,7 @@ public class InvoiceListActivity extends Activity
 			}
 			
 		}
+		invListCursor.close();
 		
 	}
 	
@@ -398,6 +399,7 @@ public class InvoiceListActivity extends Activity
 //				GetInvList();					
 //				}});
 		}
+		invDetailCursor.close();
 	}
 	
 	

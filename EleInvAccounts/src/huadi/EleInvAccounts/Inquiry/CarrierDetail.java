@@ -135,6 +135,7 @@ public class CarrierDetail extends AsyncTask<String, Integer, String> // <傳入參
 							InvoiceCursor.moveToNext(); //移至資料庫下一筆
 						}
 					}
+					InvoiceCursor.close();
 					
 					publishProgress(70); //進度
 					
@@ -178,6 +179,7 @@ public class CarrierDetail extends AsyncTask<String, Integer, String> // <傳入參
 //								Log.e("db.update", "" + count2 + ", " + rowNum);
 							}
 						}
+						invDetailCursor.close();
 					}
 					publishProgress(90); //進度
 				}

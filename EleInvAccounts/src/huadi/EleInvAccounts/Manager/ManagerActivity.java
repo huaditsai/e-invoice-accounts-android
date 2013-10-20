@@ -32,6 +32,7 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -343,7 +344,11 @@ public class ManagerActivity extends Activity
 	private CategorySeries mSeries; //類別序列
 	private DefaultRenderer mRenderer;
 	private GraphicalView mChartView; //由CategorySeries與DefaultRenderer得到的圖表視圖
-	private static int[] COLORS = new int[] { Color.BLUE, Color.CYAN, Color.GRAY, Color.GREEN, Color.MAGENTA, Color.RED, Color.YELLOW };
+	private static int[] COLORS = new int[] 
+		{ 
+			Color.BLUE, Color.CYAN, Color.DKGRAY, Color.GRAY, 
+			Color.GREEN, Color.LTGRAY, Color.MAGENTA, Color.RED, Color.YELLOW 
+		};
 
 	private void initialPieChartBuilder()
 	{
@@ -387,62 +392,17 @@ public class ManagerActivity extends Activity
 
 	public void setAnalysis() //消費分析
 	{
-		initialPieChartBuilder();
-
-		Cursor mainCat = db.rawQuery("SELECT main " + "FROM MainCategory ", null); //要記得''包起來 ASC小-大 DESC大-小
-
-		int count = mainCat.getCount(); //資料筆數
-		if (count > 0)
-			mainCat.moveToFirst();
-
-		List<Integer> moneyList = new ArrayList<Integer>();
-
-		for (int i = 0; i < count; i++)
-		{
-			Cursor charge = db.rawQuery("SELECT money " 
-					+ "FROM Charge " 
-					+ "WHERE mainCategory = '" + mainCat.getString(mainCat.getColumnIndex("main"))
-					+ "'", null);
-
-			int tmp = 0;
-			if (charge.getCount() > 0)
-				charge.moveToFirst();
-			for (int j = 0; j < charge.getCount(); j++)
-			{
-				tmp += charge.getInt(charge.getColumnIndex("money"));
-				charge.moveToNext();
-			}
-			moneyList.add(tmp);
-			mainCat.moveToNext();
-		}
-
-		float total = 0;
-		for (int i = 0; i < moneyList.size(); i++)
-		{
-			total += moneyList.get(i);
-		}
-
-		linear3.setVisibility(View.VISIBLE);
-		btn_bg.setVisibility(View.VISIBLE);
-		
-		//TODO code用copy的還沒改
+		//TODO 左右相反了
+		//月份選擇----------------------------------------------------
 		Calendar calendar = Calendar.getInstance();
-		year = calendar.get(Calendar.YEAR) - 1911; //民國
+		year = calendar.get(Calendar.YEAR); //民國
 		month = calendar.get(Calendar.MONTH) + 1; //Calendar.MONTH 從0開始...
-		day = calendar.get(Calendar.DAY_OF_MONTH);
 		if(month % 2 == 1)
-		{
-			if(day < 25)
-				month -= 3; //若現在為9月, 還沒到25號, 只能看56月
-			else 
-				month--; //若現在為9月, 減減來看78月
-		}
-		else
-			month -= 2; //若現在為10月, 減2來看78月
+			month ++;
 		
-		invPeriod = String.format("%d 年 %02d - %02d 月", year, month-1, month);
-		text_month3.setText(invPeriod); //月份
+		invPeriod = String.format("%d 年 %02d - %02d 月", year - 1911, month-1, month);
 		
+		text_month3.setText(invPeriod); //月份		
 
 		btn_left3.setOnTouchListener(new OnTouchListener(){
 			@Override
@@ -463,10 +423,9 @@ public class ManagerActivity extends Activity
 						year--;
 						month = 12;
 					}
-					invPeriod = String.format("%d 年 %02d - %02d 月", year, month-1, month);
+					invPeriod = String.format("%d 年 %02d - %02d 月", year -1911, month-1, month);
 					text_month3.setText(invPeriod); //月份
-					if(isAuto) Auto();
-					else Manual();		
+					Analysis();
 				}				
 				return false;
 				}});
@@ -492,13 +451,60 @@ public class ManagerActivity extends Activity
 						year++;
 						month = 2;
 					}
-					invPeriod = String.format("%d 年 %02d - %02d 月", year, month-1, month);
+					invPeriod = String.format("%d 年 %02d - %02d 月", year-1911, month-1, month);
 					text_month3.setText(invPeriod); //月份
-					if(isAuto) Auto();
-					else Manual();
+					Analysis();
 				}				
 				return false;
 				}});
+		
+		//月份選擇----------------------------------------------------				
+		Analysis();
+	}
+	
+	private void Analysis()
+	{
+		initialPieChartBuilder();
+
+		Cursor mainCat = db.rawQuery("SELECT main " + "FROM MainCategory ", null); //要記得''包起來 ASC小-大 DESC大-小
+
+		int count = mainCat.getCount(); //資料筆數
+		if (count > 0)
+			mainCat.moveToFirst();
+
+		List<Integer> moneyList = new ArrayList<Integer>();
+
+		for (int i = 0; i < count; i++)
+		{
+			Cursor charge = db.rawQuery("SELECT money " 
+					+ "FROM Charge " 
+					+ "WHERE mainCategory = '" + mainCat.getString(mainCat.getColumnIndex("main")) + "' "
+					+ "AND date >= '" + String.format("%d%02d00", year, month -1) + "' "
+					+ "AND date <= '" + String.format("%d%02d31", year, month) + "' ", null);
+
+			int tmp = 0;
+			if (charge.getCount() > 0)
+				charge.moveToFirst();
+			for (int j = 0; j < charge.getCount(); j++)
+			{
+				tmp += charge.getInt(charge.getColumnIndex("money"));
+				charge.moveToNext();
+			}
+			moneyList.add(tmp);
+			mainCat.moveToNext();
+		}
+
+		float total = 0; //為正
+		for (int i = 0; i < moneyList.size(); i++)
+		{
+			if(moneyList.get(i) >= 0)
+				total += moneyList.get(i);
+			else
+				total -= moneyList.get(i);
+		}
+
+		linear3.setVisibility(View.VISIBLE);
+		btn_bg.setVisibility(View.VISIBLE);		
 		
 		analysistable.removeAllViews();
 		TableRow tr = new TableRow(this);
@@ -528,9 +534,16 @@ public class ManagerActivity extends Activity
 		for (int i = 0; i < count; i++)
 		{
 			String mcateString = mainCat.getString(mainCat.getColumnIndex("main"));
+			float percentage = (float) moneyList.get(i) / total;
+			if(percentage <= 0)
+				percentage = -percentage;
 
 			//餅圖的資訊
-			mSeries.add(mcateString + " : " + moneyList.get(i) + " NTD", (float) moneyList.get(i) / total);
+			if(moneyList.get(i) > 0) //為0的時候就不畫在圖上
+				mSeries.add(mcateString + " : " + moneyList.get(i) + " NTD", moneyList.get(i));
+			else if(moneyList.get(i) < 0)
+				mSeries.add(mcateString + " : " + moneyList.get(i) + " NTD", -moneyList.get(i));
+			
 			SimpleSeriesRenderer renderer = new SimpleSeriesRenderer();
 			renderer.setColor(COLORS[i % COLORS.length]); //設定每一部分的顏色
 			mRenderer.addSeriesRenderer(renderer);
@@ -545,7 +558,7 @@ public class ManagerActivity extends Activity
 			item[i].setText(mcateString);//("分類");
 			item[i].setMinWidth(Width / 4);
 			percent[i] = new TextView(this);
-			percent[i].setText(((float) moneyList.get(i) / total) * 100 + " %");
+			percent[i].setText(String.format("%2.2f", percentage * 100) + " %");
 			percent[i].setMinWidth(Width / 4);
 			cost[i] = new TextView(this);
 			cost[i].setText(moneyList.get(i) + " NTD");

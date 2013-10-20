@@ -68,9 +68,9 @@ public class ManagerActivity extends Activity
 	ImageButton btn_list, btn_analysis, btn_prize, btn_prizelist;
 	TextView text_list, text_analysis, text_prize, text_prizelist;
 	LinearLayout linear1, linear2, invoice, number, linear3;
-	ImageButton btn_right, btn_left, btn_right2, btn_left2;
+	ImageButton btn_right, btn_left, btn_right2, btn_left2, btn_right3, btn_left3;
 	TextView text_month, text_price1, text_price2, text_price3, text_price4;
-	TextView text_month2, text_input, text_prizeornot;
+	TextView text_month2, text_input, text_prizeornot, text_month3;
 	Button btn_close, btn_close2, btn_invoice, btn_number, btn_close3;
 	TableLayout invoicetable, analysistable;
 	Button btn_0, btn_1, btn_2, btn_3, btn_4, btn_5, btn_6, btn_7, btn_8, btn_9, btn_clear, btn_backspace, btn_bg;
@@ -91,60 +91,63 @@ public class ManagerActivity extends Activity
 		setUI();
 	}
 
-	private void setUI()
-	{
-
-		btn_backfunc = (ImageButton) findViewById(R.id.imageButton1);
-		btn_account = (ImageButton) findViewById(R.id.imageButton2);
-		btn_manager = (ImageButton) findViewById(R.id.imageButton3);
-		btn_social = (ImageButton) findViewById(R.id.imageButton4);
-		btn_setting = (ImageButton) findViewById(R.id.imageButton5);
-		text_list = (TextView) findViewById(R.id.textView6);
-		text_analysis = (TextView) findViewById(R.id.textView7);
-		text_prize = (TextView) findViewById(R.id.textView8);
-		text_prizelist = (TextView) findViewById(R.id.textView9);
-		btn_list = (ImageButton) findViewById(R.id.imageButton6);
-		btn_analysis = (ImageButton) findViewById(R.id.imageButton7);
-		btn_prize = (ImageButton) findViewById(R.id.imageButton8);
-		btn_prizelist = (ImageButton) findViewById(R.id.imageButton9);
-		linear1 = (LinearLayout) findViewById(R.id.LinearLayout1);
-		btn_right = (ImageButton) findViewById(R.id.imageButton97);
-		btn_left = (ImageButton) findViewById(R.id.imageButton96);
-		text_month = (TextView) findViewById(R.id.textView27);
-		text_price1 = (TextView) findViewById(R.id.textView11);
-		text_price2 = (TextView) findViewById(R.id.textView12);
-		text_price3 = (TextView) findViewById(R.id.textView16);
-		text_price4 = (TextView) findViewById(R.id.textView17);
-		btn_close = (Button) findViewById(R.id.button7);
-		linear2 = (LinearLayout) findViewById(R.id.LinearLayout2);
-		btn_right2 = (ImageButton) findViewById(R.id.imageButton77);
-		btn_left2 = (ImageButton) findViewById(R.id.imageButton76);
-		text_month2 = (TextView) findViewById(R.id.textView37);
-		btn_invoice = (Button) findViewById(R.id.button1);
-		btn_number = (Button) findViewById(R.id.button2);
-		invoice = (LinearLayout) findViewById(R.id.invoice);
-		number = (LinearLayout) findViewById(R.id.number);
-		invoicetable = (TableLayout) findViewById(R.id.invoicetable);
-		text_input = (TextView) findViewById(R.id.textView97);
-		text_prizeornot = (TextView) findViewById(R.id.textView22);
-		btn_0 = (Button) findViewById(R.id.button14);
-		btn_1 = (Button) findViewById(R.id.button10);
-		btn_2 = (Button) findViewById(R.id.button11);
-		btn_3 = (Button) findViewById(R.id.button12);
-		btn_4 = (Button) findViewById(R.id.button6);
-		btn_5 = (Button) findViewById(R.id.button8);
-		btn_6 = (Button) findViewById(R.id.button9);
-		btn_7 = (Button) findViewById(R.id.button3);
-		btn_8 = (Button) findViewById(R.id.button4);
-		btn_9 = (Button) findViewById(R.id.button5);
-		btn_clear = (Button) findViewById(R.id.button13);
-		btn_backspace = (Button) findViewById(R.id.button15);
-		btn_close2 = (Button) findViewById(R.id.button77);
-		btn_bg = (Button) findViewById(R.id.button16);
-		linear3 = (LinearLayout) findViewById(R.id.LinearLayout3);
-		btn_close3 = (Button) findViewById(R.id.button78);
-		analysistable = (TableLayout) findViewById(R.id.TableLayout1);
-
+	private void setUI() {
+		
+		btn_backfunc = (ImageButton)findViewById(R.id.imageButton1);
+		btn_account = (ImageButton)findViewById(R.id.imageButton2);
+		btn_manager = (ImageButton)findViewById(R.id.imageButton3);
+		btn_social = (ImageButton)findViewById(R.id.imageButton4);
+		btn_setting = (ImageButton)findViewById(R.id.imageButton5);
+		text_list = (TextView)findViewById(R.id.textView6);
+		text_analysis = (TextView)findViewById(R.id.textView7);
+		text_prize = (TextView)findViewById(R.id.textView8);
+		text_prizelist = (TextView)findViewById(R.id.textView9);
+		btn_list = (ImageButton)findViewById(R.id.imageButton6);
+		btn_analysis = (ImageButton)findViewById(R.id.imageButton7);
+		btn_prize = (ImageButton)findViewById(R.id.imageButton8);
+		btn_prizelist = (ImageButton)findViewById(R.id.imageButton9);
+		linear1 = (LinearLayout)findViewById(R.id.LinearLayout1);
+		btn_right = (ImageButton)findViewById(R.id.imageButton97);
+		btn_left = (ImageButton)findViewById(R.id.imageButton96);
+		text_month = (TextView)findViewById(R.id.textView27);
+		text_price1 = (TextView)findViewById(R.id.textView11);
+		text_price2 = (TextView)findViewById(R.id.textView12);
+		text_price3 = (TextView)findViewById(R.id.textView16);
+		text_price4 = (TextView)findViewById(R.id.textView17);
+		btn_close = (Button)findViewById(R.id.button7);
+		linear2 = (LinearLayout)findViewById(R.id.LinearLayout2);
+		btn_right2 = (ImageButton)findViewById(R.id.imageButton77);
+		btn_left2 = (ImageButton)findViewById(R.id.imageButton76);
+		text_month2 = (TextView)findViewById(R.id.textView37);
+		btn_invoice = (Button)findViewById(R.id.button1);
+		btn_number = (Button)findViewById(R.id.button2);
+		invoice = (LinearLayout)findViewById(R.id.invoice);
+		number = (LinearLayout)findViewById(R.id.number);
+		invoicetable = (TableLayout)findViewById(R.id.invoicetable);
+		text_input = (TextView)findViewById(R.id.textView97);
+		text_prizeornot = (TextView)findViewById(R.id.textView22);
+		btn_0 = (Button)findViewById(R.id.button14);
+		btn_1 = (Button)findViewById(R.id.button10);
+		btn_2 = (Button)findViewById(R.id.button11);
+		btn_3 = (Button)findViewById(R.id.button12);
+		btn_4 = (Button)findViewById(R.id.button6);
+		btn_5 = (Button)findViewById(R.id.button8);
+		btn_6 = (Button)findViewById(R.id.button9);
+		btn_7 = (Button)findViewById(R.id.button3);
+		btn_8 = (Button)findViewById(R.id.button4);
+		btn_9 = (Button)findViewById(R.id.button5);
+		btn_clear = (Button)findViewById(R.id.button13);
+		btn_backspace = (Button)findViewById(R.id.button15);
+		btn_close2 = (Button)findViewById(R.id.button77);
+		btn_bg = (Button)findViewById(R.id.button16);
+		linear3 = (LinearLayout)findViewById(R.id.LinearLayout3);
+		btn_close3 = (Button)findViewById(R.id.button78);
+		analysistable = (TableLayout)findViewById(R.id.TableLayout1);
+		btn_right3 = (ImageButton)findViewById(R.id.imageButton10);
+		btn_left3 = (ImageButton)findViewById(R.id.imageButton11);
+		text_month3 = (TextView)findViewById(R.id.textView122);
+		
+		
 		text_list.setText("發票清單");
 		text_analysis.setText("消費分析");
 		text_prize.setText("發票對獎");
@@ -418,6 +421,82 @@ public class ManagerActivity extends Activity
 
 		linear3.setVisibility(View.VISIBLE);
 		btn_bg.setVisibility(View.VISIBLE);
+		
+		//TODO code用copy的還沒改
+		Calendar calendar = Calendar.getInstance();
+		year = calendar.get(Calendar.YEAR) - 1911; //民國
+		month = calendar.get(Calendar.MONTH) + 1; //Calendar.MONTH 從0開始...
+		day = calendar.get(Calendar.DAY_OF_MONTH);
+		if(month % 2 == 1)
+		{
+			if(day < 25)
+				month -= 3; //若現在為9月, 還沒到25號, 只能看56月
+			else 
+				month--; //若現在為9月, 減減來看78月
+		}
+		else
+			month -= 2; //若現在為10月, 減2來看78月
+		
+		invPeriod = String.format("%d 年 %02d - %02d 月", year, month-1, month);
+		text_month3.setText(invPeriod); //月份
+		
+
+		btn_left3.setOnTouchListener(new OnTouchListener(){
+			@Override
+			public boolean onTouch(View v, MotionEvent event){
+				if(event.getAction() == MotionEvent.ACTION_DOWN)
+				{
+					btn_left3.setX(btn_left3.getX() + btnMovePosi);
+					btn_left3.setY(btn_left3.getY() + btnMovePosi);
+				}
+				if(event.getAction() == MotionEvent.ACTION_UP)
+				{
+					btn_left3.setX(btn_left3.getX() + btnMoveNega);
+					btn_left3.setY(btn_left3.getY() + btnMoveNega);
+
+					month -= 2;
+					if(month == 0 && year != 0)
+					{
+						year--;
+						month = 12;
+					}
+					invPeriod = String.format("%d 年 %02d - %02d 月", year, month-1, month);
+					text_month3.setText(invPeriod); //月份
+					if(isAuto) Auto();
+					else Manual();		
+				}				
+				return false;
+				}});
+		
+
+		
+		btn_right3.setOnTouchListener(new OnTouchListener(){
+			@Override
+			public boolean onTouch(View v, MotionEvent event){
+				if(event.getAction() == MotionEvent.ACTION_DOWN)
+				{
+					btn_right3.setX(btn_right3.getX() + btnMovePosi);
+					btn_right3.setY(btn_right3.getY() + btnMovePosi);
+				}
+				if(event.getAction() == MotionEvent.ACTION_UP)
+				{
+					btn_right3.setX(btn_right3.getX() + btnMoveNega);
+					btn_right3.setY(btn_right3.getY() + btnMoveNega);
+
+					month += 2;
+					if(month == 14 && year != 0)
+					{
+						year++;
+						month = 2;
+					}
+					invPeriod = String.format("%d 年 %02d - %02d 月", year, month-1, month);
+					text_month3.setText(invPeriod); //月份
+					if(isAuto) Auto();
+					else Manual();
+				}				
+				return false;
+				}});
+		
 		analysistable.removeAllViews();
 		TableRow tr = new TableRow(this);
 		LinearLayout l1;

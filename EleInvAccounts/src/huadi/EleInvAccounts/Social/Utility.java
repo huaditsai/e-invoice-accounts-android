@@ -101,6 +101,7 @@ public class Utility {
 			url = webname+"Default.aspx?function="+function +"&access_token="+access_token;
 		
         url = url.replace(" ", "%20");
+        Log.e("JsonUrl", url);
         
         String result = "";
         HttpClient httpclient = new DefaultHttpClient(); // for port 80 requests!

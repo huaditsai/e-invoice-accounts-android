@@ -35,7 +35,7 @@ import android.util.Log;
 
 public class Utility {
 
-	static String webname = "http://www.artist-wu.com/WebSite3/"; //TODO 待網站上線後更改
+	static String webname = "http://120.127.14.60/eAsset/"; //TODO 待網站上線後更改
 	
 	private static void connectWeb()
 	{
@@ -124,6 +124,7 @@ public class Utility {
 		} catch (ClientProtocolException e) {e.printStackTrace();}
 		catch (IOException e) {e.printStackTrace();}
 		
+        Log.e("json", result);
         return result;
 	}
 	

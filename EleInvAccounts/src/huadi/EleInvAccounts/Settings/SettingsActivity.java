@@ -338,7 +338,7 @@ public class SettingsActivity extends Activity
 	}
 	
 	@SuppressWarnings("deprecation")
-	public void setFb(){		
+	public void setFb(){	
 		
 		setfb.setVisibility(View.VISIBLE);
 		btn_bg.setVisibility(View.VISIBLE);

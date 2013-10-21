@@ -98,7 +98,7 @@ public class Utility {
 			url = webname+"Default.aspx?function="+function
 					+"&user_id="+user_id+"&user_name="+user_name+"&join="+join+"&money="+money;
         if (function.equals("friend"))
-			url = webname+"Default.aspx?function="+function +"&access_token="+access_token;
+			url = webname+"Default.aspx?function="+function +"&user_id="+user_id+"&access_token="+access_token;
 		
         url = url.replace(" ", "%20");
         Log.e("JsonUrl", url);

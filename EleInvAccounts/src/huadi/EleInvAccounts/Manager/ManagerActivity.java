@@ -144,8 +144,8 @@ public class ManagerActivity extends Activity
 		linear3 = (LinearLayout)findViewById(R.id.LinearLayout3);
 		btn_close3 = (Button)findViewById(R.id.button78);
 		analysistable = (TableLayout)findViewById(R.id.TableLayout1);
-		btn_right3 = (ImageButton)findViewById(R.id.imageButton10);
-		btn_left3 = (ImageButton)findViewById(R.id.imageButton11);
+		btn_left3 = (ImageButton)findViewById(R.id.imageButton10);
+		btn_right3 = (ImageButton)findViewById(R.id.imageButton11);
 		text_month3 = (TextView)findViewById(R.id.textView122);
 		
 		
@@ -392,7 +392,6 @@ public class ManagerActivity extends Activity
 
 	public void setAnalysis() //消費分析
 	{
-		//TODO 左右相反了
 		//月份選擇----------------------------------------------------
 		Calendar calendar = Calendar.getInstance();
 		year = calendar.get(Calendar.YEAR); //民國

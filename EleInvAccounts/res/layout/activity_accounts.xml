@@ -549,11 +549,11 @@
                     android:id="@+id/editText5"
                     android:layout_width="150dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:hint="(西元)年月日 yyyyMMdd"
+                    android:layout_weight="1"                    
                     android:maxLength="8"
                     android:singleLine="true"
-                    android:inputType="date" />
+                    android:inputType="date"
+                    android:focusableInTouchMode="false" />
             </LinearLayout>
 
             <LinearLayout

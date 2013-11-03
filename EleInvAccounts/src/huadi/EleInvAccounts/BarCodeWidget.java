@@ -29,9 +29,15 @@ public class BarCodeWidget extends AppWidgetProvider
 		views.setTextColor(R.id.weget_textView, Color.BLACK);
 		
 		if(card.getString("cardNo", "").length() > 0)
+		{
 			GetBarCode(context, "EleInvAccounts", card.getString("cardNo", ""), 500, 150); //
+			views.setImageViewResource(R.id.weget_background, R.drawable.widget_blank);
+		}
 		else
+		{
 			views.setTextViewText(R.id.weget_textView, "");
+			views.setImageViewResource(R.id.weget_background, R.drawable.widget);
+		}
         
 	    Intent configIntent = new Intent(context, MainActivity.class);
 	    PendingIntent configPendingIntent = PendingIntent.getActivity(context, 0, configIntent, 0);

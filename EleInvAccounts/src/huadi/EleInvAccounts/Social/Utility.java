@@ -35,7 +35,7 @@ import android.util.Log;
 
 public class Utility {
 
-	static String webname = "http://120.127.14.60/eAsset/"; //TODO 待網站上線後更改
+	static String webname = "http://140.137.51.80/eAsset/"; //TODO 待網站上線後更改
 	
 	private static void connectWeb()
 	{

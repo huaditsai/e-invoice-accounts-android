@@ -489,10 +489,12 @@ public class ManagerActivity extends Activity
 				tmp += charge.getInt(charge.getColumnIndex("money"));
 				charge.moveToNext();
 			}
+			charge.close();
+			
 			moneyList.add(tmp);
 			mainCat.moveToNext();
 		}
-
+		
 		float total = 0; //¬°¥¿
 		for (int i = 0; i < moneyList.size(); i++)
 		{
@@ -571,7 +573,8 @@ public class ManagerActivity extends Activity
 			tr = new TableRow(this);
 
 			mainCat.moveToNext();
-		}
+		}		
+		mainCat.close();
 
 		btn_close3.setOnTouchListener(new OnTouchListener()
 		{

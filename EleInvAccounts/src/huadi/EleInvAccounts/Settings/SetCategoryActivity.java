@@ -342,17 +342,17 @@ public class SetCategoryActivity extends Activity
 							mainCateCV.put("main", edit_main.getText().toString());
 							db.insert("MainCategory", null, mainCateCV);
 						}
-						Log.e("error","1");
+//						Log.e("error","1");
 						mainCateCursor.close();
-						Log.e("error","2");
+//						Log.e("error","2");
 					}
 									
 					layout_main.setVisibility(View.GONE);
 					btn_bg.setVisibility(View.GONE);
 					edit_main.setText("");
-					Log.e("error","3");
+//					Log.e("error","3");
 					setCategory();
-					Log.e("error","4");
+//					Log.e("error","4");
 				}				
 			return false;
 			}});

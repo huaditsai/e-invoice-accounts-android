@@ -249,7 +249,7 @@ containing a value of this type.
         public static final int com_facebook_list_section_header_background=0x7f020023;
         public static final int com_facebook_loginbutton_silver=0x7f020024;
         public static final int com_facebook_logo=0x7f020025;
-        public static final int com_facebook_picker_default_separator_color=0x7f020044;
+        public static final int com_facebook_picker_default_separator_color=0x7f020045;
         public static final int com_facebook_picker_item_background=0x7f020026;
         public static final int com_facebook_picker_list_focused=0x7f020027;
         public static final int com_facebook_picker_list_longpressed=0x7f020028;
@@ -280,16 +280,16 @@ containing a value of this type.
         public static final int toggle_me_on=0x7f020041;
         public static final int weget_background=0x7f020042;
         public static final int widget=0x7f020043;
+        public static final int widget_blank=0x7f020044;
     }
     public static final class id {
         public static final int LinearLayout1=0x7f07002e;
         public static final int LinearLayout2=0x7f07005f;
         public static final int LinearLayout3=0x7f070070;
-        public static final int RelativeLayout1=0x7f070096;
         public static final int TableLayout=0x7f070045;
         public static final int TableLayout1=0x7f07001e;
         public static final int TablePop=0x7f070047;
-        public static final int action_settings=0x7f07009b;
+        public static final int action_settings=0x7f070099;
         /**  Messages IDs 
          */
         public static final int auto_focus=0x7f070003;
@@ -436,10 +436,9 @@ containing a value of this type.
         public static final int username=0x7f07007e;
         public static final int userpic=0x7f07007d;
         public static final int viewfinder_view=0x7f070077;
-        public static final int weget_background=0x7f070098;
-        public static final int weget_imageView=0x7f070099;
-        public static final int weget_textView=0x7f07009a;
-        public static final int widgetLayout=0x7f070097;
+        public static final int weget_imageView=0x7f070097;
+        public static final int weget_textView=0x7f070098;
+        public static final int widgetLayout=0x7f070096;
     }
     public static final class layout {
         public static final int activity_accounts=0x7f030000;

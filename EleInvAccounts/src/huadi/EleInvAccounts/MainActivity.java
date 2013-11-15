@@ -221,7 +221,7 @@ public class MainActivity extends Activity
 	{		
 		String filePath = Environment.getExternalStorageDirectory() + "/" + folderName + "/" + content + ".png";		
 		File file = new File(filePath);
-		file.delete(); //TODO 發佈時要記得註解掉
+		//file.delete(); //TODO 發佈時要記得註解掉
         if( !file.exists() ) //沒有檔案就產生吧
         	new CodeGenerator(folderName, content, desiredWidth, desiredHeight);
         

@@ -27,13 +27,11 @@ public class AutoAward
 
 	public Map<String, List<String>> Award(String invPeriod, Map<String, List<String>> winningList)
 	{
-		Cursor InvoiceCursor = db.rawQuery("SELECT invNum, invTotalCost, invDate, sellerName " 
-											+ "FROM Invoice " 
-											+ "WHERE invPeriod = '" + invPeriod + "'", null); //要記得''包起來
+		Cursor InvoiceCursor = db.rawQuery("SELECT invNum, invTotalCost, invDate, sellerName " + "FROM Invoice " + "WHERE invPeriod = '" + invPeriod + "'", null); //要記得''包起來
 
 		int count = InvoiceCursor.getCount(); //資料筆數
-		
-		if (count != 0)
+
+		if (count != 0 && winningList.size() > 0)
 		{
 			InvoiceCursor.moveToFirst();
 
@@ -44,15 +42,15 @@ public class AutoAward
 				String invNum = InvoiceCursor.getString(InvoiceCursor.getColumnIndex("invNum"));
 				int invTotalCost = InvoiceCursor.getInt(InvoiceCursor.getColumnIndex("invTotalCost"));
 				String invDate = InvoiceCursor.getString(InvoiceCursor.getColumnIndex("invDate"));
-				invDate = invDate.substring(0,4) + "-" + invDate.substring(4,6) + "-" + invDate.substring(6,8);
+				invDate = invDate.substring(0, 4) + "-" + invDate.substring(4, 6) + "-" + invDate.substring(6, 8);
 				String sellerName = InvoiceCursor.getString(InvoiceCursor.getColumnIndex("sellerName"));
-				
+
 				//Log.e("invNum","" + invNum);
-				
+
 				String infoString = invDate + "," + invNum + "," + sellerName + "," + invTotalCost;
-				
+
 				String input = invNum.substring(2, 10); //前兩個英文			
-				
+
 				for (String no : winningList.get("superPrizeNo"))
 					if (input.equals(no))
 						prize.add("特別獎," + infoString);
@@ -79,8 +77,8 @@ public class AutoAward
 
 				for (String no : winningList.get("sixthPrizeNo"))
 					if (input.substring(input.length() - 3, input.length()).equals(no)) //末三碼
-						prize.add("增開六獎," + infoString);	
-				
+						prize.add("增開六獎," + infoString);
+
 				InvoiceCursor.moveToNext(); //移至資料庫下一筆				
 			}
 			//Log.e("prize", "" + prize);

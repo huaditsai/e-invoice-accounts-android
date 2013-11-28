@@ -37,6 +37,7 @@ import android.provider.Settings;
 import android.text.TextPaint;
 import android.text.TextUtils.TruncateAt;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -67,7 +68,7 @@ public class AccountsActivity extends Activity
 	String mInvNum = "";
 	int detailIndex = 0;
 
-	boolean isCarrier = false;
+	boolean isCarrier = false; //載具匯入
 	String[] mInvNumArray = new String[] {};
 	int invIndex = 0;
 
@@ -153,7 +154,7 @@ public class AccountsActivity extends Activity
 		return dialog;
 	}
 
-	private void setUI()
+	public void setUI()
 	{
 		btn_backfunc = (ImageButton) findViewById(R.id.imageButton1);
 		btn_account = (ImageButton) findViewById(R.id.imageButton2);
@@ -303,11 +304,12 @@ public class AccountsActivity extends Activity
 				{
 					if (cardNo.length() > 0 && cardEncrypt.length() > 0)
 					{
-						isCarrier = true;
+						isCarrier = true; //載具匯入
 						invIndex = 0;
 						detailIndex = 0;
 						try
 						{
+							new CarrierHead().execute("3J0002", cardNo, "N", UUID, appID, cardEncrypt);
 							Map<String, List<String>> head = new CarrierHead().execute("3J0002", cardNo, "N", UUID, appID, cardEncrypt).get();
 							mInvNumArray = new String[head.get("invNum").size()];
 
@@ -323,6 +325,7 @@ public class AccountsActivity extends Activity
 						}
 						catch (Exception e)
 						{
+							Log.e("e", "" + e);
 							Toast.makeText(AccountsActivity.this, "資料擷取失敗, \n請檢查網路狀態", Toast.LENGTH_LONG).show();
 						}
 					}
@@ -656,7 +659,7 @@ public class AccountsActivity extends Activity
 									CapturePopView(detailIndex);
 									//Log.e("detailIndex", "" + detailIndex);
 								}
-								if (isCarrier) //發票掃完會逐一跳出
+								if (isCarrier) //載具匯入完會逐一跳出
 								{
 									detailIndex++;
 									CarrierPopView(invIndex, detailIndex);
@@ -743,7 +746,7 @@ public class AccountsActivity extends Activity
 						CapturePopView(detailIndex);
 						//Log.e("detailIndex", "" + detailIndex);
 					}
-					else if (isCarrier)
+					else if (isCarrier) //載具匯入
 					{
 						detailIndex++;
 						CarrierPopView(invIndex, detailIndex);
@@ -1218,7 +1221,7 @@ public class AccountsActivity extends Activity
 
 		int count = invDetailCursor.getCount(); //資料筆數			
 
-		if (isCarrier) //若是掃QR code
+		if (isCarrier) //載具匯入
 		{
 			//發票應該都是支出
 			isIncome = false;

@@ -19,11 +19,13 @@ package zxing.camera;
 import android.content.Context;
 import android.graphics.Point;
 import android.hardware.Camera;
+import android.hardware.Camera.Parameters;
 import android.os.Build;
 import android.util.Log;
 import android.view.Display;
 import android.view.WindowManager;
 
+import java.util.List;
 import java.util.regex.Pattern;
 
 final class CameraConfigurationManager
@@ -221,6 +223,14 @@ final class CameraConfigurationManager
 		}
 		// This is the standard setting to turn the flash off that all devices should honor.
 		parameters.set("flash-mode", "off");
+		
+		//Check Whether device supports AutoFlash, If you YES then set AutoFlash
+//		List<String> flashModes = parameters.getSupportedFlashModes();
+//		Log.e("flashModes", "" + flashModes);
+//		if (flashModes.contains(android.hardware.Camera.Parameters.FLASH_MODE_AUTO))
+//		{
+//		     parameters.setFlashMode(Parameters.FLASH_MODE_AUTO);
+//		}
 	}
 
 	private void setZoom(Camera.Parameters parameters)

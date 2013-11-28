@@ -102,7 +102,7 @@ public final class ViewfinderView extends View
 		else
 		{
 			// Draw a two pixel solid black border inside the framing rect
-			paint.setColor(frameColor);
+			paint.setColor(android.graphics.Color.GREEN); //(frameColor);
 			canvas.drawRect(frame.left, frame.top, frame.right + 1, frame.top + 2, paint);
 			canvas.drawRect(frame.left, frame.top + 2, frame.left + 2, frame.bottom - 1, paint);
 			canvas.drawRect(frame.right - 1, frame.top, frame.right + 1, frame.bottom - 1, paint);

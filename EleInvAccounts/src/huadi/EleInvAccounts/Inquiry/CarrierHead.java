@@ -65,7 +65,7 @@ public class CarrierHead extends AsyncTask<String, String, Map<String, List<Stri
 														, endDate, params[2], params[3], params[4], params[5]);
 			
 			HttpGet get = new HttpGet(url);
-			Log.e("url", url);
+			//Log.e("url", url);
 			
 			HttpParams httpParameters = new BasicHttpParams();
 			HttpConnectionParams.setConnectionTimeout(httpParameters, 3000);

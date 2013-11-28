@@ -42,6 +42,8 @@ public final class CameraManager
 
 	private static final String TAG = CameraManager.class.getSimpleName();
 
+	
+	//苯磞跋
 	private static final int MIN_FRAME_WIDTH = 240;
 	private static final int MIN_FRAME_HEIGHT = 240;
 	private static final int MAX_FRAME_WIDTH = 480;
@@ -154,7 +156,7 @@ public final class CameraManager
 			configManager.setDesiredCameraParameters(camera);
 
 			//     SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-			//是否使用前灯
+			//琌ㄏノ玡縊
 			//      if (prefs.getBoolean(PreferencesActivity.KEY_FRONT_LIGHT, false)) {
 			//        FlashlightManager.enableFlashlight();
 			//      }

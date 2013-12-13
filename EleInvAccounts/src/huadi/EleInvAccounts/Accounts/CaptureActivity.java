@@ -2,7 +2,9 @@ package huadi.EleInvAccounts.Accounts;
 
 import huadi.EleInvAccounts.R;
 import huadi.EleInvAccounts.Inquiry.InvDetails;
+
 import java.io.IOException;
+import java.util.List;
 import java.util.Vector;
 
 import zxing.camera.CameraManager;
@@ -13,6 +15,8 @@ import android.app.Activity;
 import android.content.SharedPreferences;
 import android.content.res.AssetFileDescriptor;
 import android.graphics.Bitmap;
+import android.hardware.Camera;
+import android.hardware.Camera.Parameters;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
@@ -22,8 +26,10 @@ import android.os.Vibrator;
 import android.view.SurfaceHolder;
 import android.view.SurfaceHolder.Callback;
 import android.view.SurfaceView;
+import android.widget.CompoundButton;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.Result;
@@ -44,6 +50,10 @@ public class CaptureActivity extends Activity implements Callback
 	private static final float BEEP_VOLUME = 0.10f;
 	private boolean vibrate;
 
+	Camera camera;
+	Camera.Parameters parameter;
+	private ToggleButton tbtn_light;
+
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState)
@@ -51,7 +61,7 @@ public class CaptureActivity extends Activity implements Callback
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_scanner);
 
-		SharedPreferences ids = getSharedPreferences("IDs", MODE_PRIVATE ); //偏好設定
+		SharedPreferences ids = getSharedPreferences("IDs", MODE_PRIVATE); //偏好設定
 		appID = ids.getString("appID", "");
 		UUID = ids.getString("UUID", "");
 
@@ -62,6 +72,9 @@ public class CaptureActivity extends Activity implements Callback
 		txtResult = (TextView) findViewById(R.id.txtResult);
 		hasSurface = false;
 		inactivityTimer = new InactivityTimer(this);
+
+		
+		tbtn_light = (ToggleButton) findViewById(R.id.tbtn_light);
 	}
 
 	@Override
@@ -116,6 +129,28 @@ public class CaptureActivity extends Activity implements Callback
 		try
 		{
 			CameraManager.get().openDriver(surfaceHolder);
+			
+			camera = CameraManager.getCamera();
+			parameter = camera.getParameters();
+			
+			tbtn_light.setOnCheckedChangeListener(new ToggleButton.OnCheckedChangeListener()
+			{
+				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
+				{				
+					if (isChecked)
+					{
+						parameter.setFlashMode(Parameters.FLASH_MODE_TORCH);
+						camera.setParameters(parameter);
+						//Log.d("tglbtn", "This checkbox is: checked");
+					}
+					else
+					{
+						parameter.setFlashMode(Parameters.FLASH_MODE_OFF);
+						camera.setParameters(parameter);
+						//Log.d("tglbtn", "This checkbox is: unchecked");
+					}
+				}
+			});
 		}
 		catch (IOException ioe)
 		{
@@ -152,7 +187,6 @@ public class CaptureActivity extends Activity implements Callback
 	public void surfaceDestroyed(SurfaceHolder holder)
 	{
 		hasSurface = false;
-
 	}
 
 	public ViewfinderView getViewfinderView()
@@ -203,7 +237,7 @@ public class CaptureActivity extends Activity implements Callback
 			String sellerID = content.substring(45, 53); //商家統一編號
 			String encrypt = content.substring(53, 77); //加密驗證資訊
 
-			new InvDetails(CaptureActivity.this).execute(type, invNum, "", invDate, encrypt, sellerID, UUID, randomCode, appID, "" + totlal);			
+			new InvDetails(CaptureActivity.this).execute(type, invNum, "", invDate, encrypt, sellerID, UUID, randomCode, appID, "" + totlal);
 
 			//Log.e("",format + "\n" + code + "\n" + date + "\n" + encryptedAuthentication + "\n" + vendorUniformNumbers + "\n" + randomCode);
 			//txtResult.setText(format + "\n" + code + "\n" + date + "\n" + encryptedAuthentication + "\n" + vendorUniformNumbers + "\n" + randomCode);
@@ -229,7 +263,7 @@ public class CaptureActivity extends Activity implements Callback
 		{
 			Toast.makeText(CaptureActivity.this, "非發票條碼", Toast.LENGTH_LONG).show();
 		}
-		
+
 		//Intent intent = new Intent(CaptureActivity.this, AccountsActivity.class);
 		//intent.putExtra("isCapture", true);
 		//intent.putExtra("invNum", invNum);

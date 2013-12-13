@@ -69,7 +69,7 @@ public final class CameraManager
 
 	private final Context context;
 	private final CameraConfigurationManager configManager;
-	private Camera camera;
+	private static Camera camera;
 	private Rect framingRect;
 	private Rect framingRectInPreview;
 	private boolean initialized;
@@ -368,6 +368,12 @@ public final class CameraManager
 				}
 		}
 		throw new IllegalArgumentException("Unsupported picture format: " + previewFormat + '/' + previewFormatString);
+	}
+
+	public static Camera getCamera()
+	{
+		// TODO Auto-generated method stub
+		return camera;
 	}
 
 }

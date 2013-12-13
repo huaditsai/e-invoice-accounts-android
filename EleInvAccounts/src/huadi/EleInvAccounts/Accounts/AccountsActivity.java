@@ -698,7 +698,7 @@ public class AccountsActivity extends Activity
 							accountCV.put("invNum", invNum); //發票編號
 							accountCV.put("remark", remark); //備註
 
-							Cursor accountCursor = db.rawQuery("SELECT invNum " + "FROM Charge " + "WHERE item = '" + item + "' " + "AND invNum = '" + invNum + "' ", null); //要記得''包起來
+							Cursor accountCursor = db.rawQuery("SELECT invNum " + "FROM Charge " + "WHERE item = '" + item + "' " + "AND date = '" + date + "' ", null); //要記得''包起來
 
 							int count = accountCursor.getCount(); //資料筆數
 							if (count == 0)
@@ -708,7 +708,8 @@ public class AccountsActivity extends Activity
 								accountCursor.moveToFirst();
 								for (int i = 0; i < count; i++)
 								{
-									db.update("Charge", accountCV, "invNum = '" + invNum + "'" + "AND item = '" + item + "' ", null);
+									//TODO 若是同一天, 同項目, 不同時間呢?
+									db.update("Charge", accountCV, "item = '" + item + "' " + "AND date = '" + date + "' ", null);
 									accountCursor.moveToNext(); //移至資料庫下一筆
 								}
 							}

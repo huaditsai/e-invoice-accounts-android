@@ -586,12 +586,36 @@ public class ManagerActivity extends Activity
 		if (month % 2 == 1)
 		{
 			if (day < 25)
-				month -= 3; //若現在為9月, 還沒到25號, 只能看56月
+			{
+				if(month == 1) //若現在為1月, 還沒到25號, 只能看9-10月
+				{
+					month = 10;
+					year--;
+				}
+				else
+					month -= 3; //若現在為9月, 還沒到25號, 只能看56月
+			}
 			else
-				month--; //若現在為9月, 減減來看78月
+			{
+				if(month == 1) //若現在為1月, 只能看11-12月
+				{
+					month = 12;
+					year--;
+				}
+				else
+					month--; //若現在為9月, 減減來看78月
+			}
 		}
 		else
-			month -= 2; //若現在為10月, 減2來看78月
+		{
+			if(month == 2) //若現在為1月, 只能看11-12月
+			{
+				month = 12;
+				year--;
+			}
+			else
+				month -= 2; //若現在為10月, 減2來看78月
+		}
 
 		invPeriod = String.format("%d 年 %02d - %02d 月", year, month - 1, month);
 		text_month2.setText(invPeriod); //月份
@@ -724,12 +748,36 @@ public class ManagerActivity extends Activity
 		if (month % 2 == 1)
 		{
 			if (day < 25)
-				month -= 3; //若現在為9月, 還沒到25號, 只能看56月
+			{
+				if(month == 1) //若現在為1月, 還沒到25號, 只能看9-10月
+				{
+					month = 10;
+					year--;
+				}
+				else
+					month -= 3; //若現在為9月, 還沒到25號, 只能看56月
+			}
 			else
-				month--; //若現在為9月, 減減來看78月
+			{
+				if(month == 1) //若現在為1月, 只能看11-12月
+				{
+					month = 12;
+					year--;
+				}
+				else
+					month--; //若現在為9月, 減減來看78月
+			}
 		}
 		else
-			month -= 2; //若現在為10月, 減2來看78月
+		{
+			if(month == 2) //若現在為1月, 只能看11-12月
+			{
+				month = 12;
+				year--;
+			}
+			else
+				month -= 2; //若現在為10月, 減2來看78月
+		}
 
 		invPeriod = String.format("%d 年 %02d - %02d 月", year, month - 1, month);
 		text_month.setText(invPeriod); //月份
